@@ -1,0 +1,66 @@
+/* WC Subscription Team Access — espace client. S'appuie sur les styles WooCommerce du thème. */
+.wcsta-team { display: grid; gap: 2rem; }
+.wcsta-team__intro { margin: 0; }
+
+.wcsta-subscription { border: 1px solid rgba(0, 0, 0, .12); border-radius: 6px; padding: 1.25rem; }
+.wcsta-subscription__header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1rem; margin-bottom: 1rem; }
+.wcsta-subscription__title { margin: 0; }
+.wcsta-subscription__meta { margin: 0; display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+.wcsta-subscription__status { font-size: .85em; padding: .15em .6em; border-radius: 999px; background: rgba(0, 0, 0, .06); }
+.wcsta-subscription__status.status-active { background: #e6f4ea; color: #1e6b34; }
+.wcsta-subscription__status.status-on-hold { background: #fff4e5; color: #8a4b00; }
+
+.wcsta-counters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 0 0 .75rem; }
+.wcsta-counters__item { background: rgba(0, 0, 0, .03); border-radius: 4px; padding: .6rem .8rem; }
+.wcsta-counters dt { font-size: .8em; opacity: .75; margin: 0; }
+.wcsta-counters dd { font-size: 1.5em; font-weight: 700; margin: 0; font-variant-numeric: tabular-nums; }
+
+.wcsta-meter { height: 6px; border-radius: 3px; background: rgba(0, 0, 0, .08); overflow: hidden; margin-bottom: 1.25rem; }
+.wcsta-meter span { display: block; height: 100%; background: currentColor; opacity: .7; }
+.wcsta-meter--over span { background: #b32d2e; opacity: 1; }
+
+.wcsta-status { display: inline-block; font-size: .85em; font-weight: 600; padding: .1em .55em; border-radius: 999px; background: rgba(0, 0, 0, .06); white-space: nowrap; }
+.wcsta-status--accepted { background: #e6f4ea; color: #1e6b34; }
+.wcsta-status--pending { background: #eef3fb; color: #1d4f91; }
+.wcsta-status--suspended { background: #fff4e5; color: #8a4b00; }
+.wcsta-status--revoked, .wcsta-status--cancelled, .wcsta-status--expired { background: #f3f3f3; color: #555; }
+.wcsta-status__reason { display: block; margin-top: .25rem; opacity: .8; }
+
+.wcsta-seats__email { word-break: break-all; }
+.wcsta-seats__actions { display: flex; flex-wrap: wrap; gap: .4rem; align-items: flex-start; justify-content: flex-end; }
+.wcsta-inline-form { display: inline; margin: 0; }
+.wcsta-button { font-size: .85em !important; padding: .45em .9em !important; }
+.wcsta-button--danger { background: transparent !important; color: #b32d2e !important; border: 1px solid currentColor !important; }
+
+.wcsta-replace { position: relative; }
+.wcsta-replace > summary { list-style: none; cursor: pointer; }
+.wcsta-replace > summary::-webkit-details-marker { display: none; }
+.wcsta-replace__form { display: grid; gap: .4rem; margin-top: .5rem; min-width: min(18rem, 80vw); padding: .75rem; border: 1px solid rgba(0, 0, 0, .12); border-radius: 4px; background: #fff; }
+
+.wcsta-invite-form { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(0, 0, 0, .08); }
+.wcsta-invite-form__title { margin: 0 0 .5rem; }
+.wcsta-invite-form__row { display: flex; gap: .5rem; flex-wrap: wrap; }
+.wcsta-invite-form__row input { flex: 1 1 16rem; }
+.wcsta-invite-form__help, .wcsta-full, .wcsta-empty { font-size: .9em; opacity: .85; }
+
+.wcsta-history { margin-top: 1rem; font-size: .9em; }
+.wcsta-history ul { margin: .5rem 0 0 1rem; }
+
+/* Page d'invitation */
+.wcsta-invitation { max-width: 960px; margin: 2rem auto; padding: 0 16px; }
+.wcsta-invitation-card__lead { font-size: 1.1em; }
+.wcsta-invitation-card__email { opacity: .8; }
+.wcsta-invitation-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: 2rem; }
+.wcsta-invitation-columns .col-1, .wcsta-invitation-columns .col-2 { float: none; width: auto; max-width: none; }
+.wcsta-invitation .woocommerce-form-login { margin: 0; }
+.wcsta-register-form input[readonly] { opacity: .75; }
+
+@media (max-width: 600px) {
+	.wcsta-counters { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; }
+	.wcsta-counters dd { font-size: 1.2em; }
+	.wcsta-seats__actions { justify-content: flex-start; }
+}
+
+/* « Remplacer » est un <summary> : les thèmes ne le stylent pas toujours comme un bouton. */
+.wcsta-replace > summary.wcsta-button { display: inline-block; border: 1px solid currentColor; border-radius: 3px; background: transparent; line-height: 1.4; }
+.wcsta-replace[open] > summary.wcsta-button { opacity: .7; }

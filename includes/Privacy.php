@@ -1,0 +1,158 @@
+<?php
+/**
+ * Outils de confidentialité WordPress : export et effacement des données personnelles.
+ *
+ * @package WCSubscriptionTeamAccess
+ */
+
+declare( strict_types=1 );
+
+namespace WCSubscriptionTeamAccess;
+
+use WCSubscriptionTeamAccess\Domain\EmailAddress;
+use WCSubscriptionTeamAccess\Repository\Seat;
+use WCSubscriptionTeamAccess\Repository\SeatRepository;
+use WCSubscriptionTeamAccess\Support\Dates;
+
+/**
+ * Données traitées : adresse e-mail invitée, compte invité, dates d'invitation et d'acceptation.
+ * Les adresses des places terminées sont anonymisées automatiquement (réglage « anonymize_after_days »).
+ */
+final class Privacy {
+
+	/**
+	 * Constructeur.
+	 *
+	 * @param SeatRepository $seats      Places.
+	 * @param TeamManager    $team       Opérations.
+	 */
+	public function __construct(
+		private readonly SeatRepository $seats,
+		private readonly TeamManager $team
+	) {}
+
+	/** Branche les crochets. */
+	public function register(): void {
+		add_filter( 'wp_privacy_personal_data_exporters', array( $this, 'register_exporter' ) );
+		add_filter( 'wp_privacy_personal_data_erasers', array( $this, 'register_eraser' ) );
+		add_action( 'admin_init', array( $this, 'add_policy_text' ) );
+	}
+
+	/**
+	 * Déclare l'exportateur.
+	 *
+	 * @param array<string, array<string, mixed>> $exporters Exportateurs.
+	 * @return array<string, array<string, mixed>>
+	 */
+	public function register_exporter( $exporters ) {
+		$exporters['wc-subscription-team-access'] = array(
+			'exporter_friendly_name' => __( 'Shared subscription access', 'wc-subscription-team-access' ),
+			'callback'               => array( $this, 'export' ),
+		);
+		return $exporters;
+	}
+
+	/**
+	 * Déclare l'effaceur.
+	 *
+	 * @param array<string, array<string, mixed>> $erasers Effaceurs.
+	 * @return array<string, array<string, mixed>>
+	 */
+	public function register_eraser( $erasers ) {
+		$erasers['wc-subscription-team-access'] = array(
+			'eraser_friendly_name' => __( 'Shared subscription access', 'wc-subscription-team-access' ),
+			'callback'             => array( $this, 'erase' ),
+		);
+		return $erasers;
+	}
+
+	/**
+	 * Exporte les invitations reçues par une adresse.
+	 *
+	 * @param string $email Adresse.
+	 * @return array{data: array<int, array<string, mixed>>, done: bool}
+	 */
+	public function export( $email ): array {
+		$data = array();
+		foreach ( $this->seats_for( (string) $email ) as $seat ) {
+			$data[] = array(
+				'group_id'    => 'wcsta-seats',
+				'group_label' => __( 'Shared subscription access', 'wc-subscription-team-access' ),
+				'item_id'     => 'wcsta-seat-' . $seat->id,
+				'data'        => array(
+					array(
+						'name'  => __( 'Invited email address', 'wc-subscription-team-access' ),
+						'value' => $seat->email,
+					),
+					array(
+						'name'  => __( 'Status', 'wc-subscription-team-access' ),
+						'value' => Labels::status( $seat ),
+					),
+					array(
+						'name'  => __( 'Invited on', 'wc-subscription-team-access' ),
+						'value' => Dates::display( $seat->created_at, true ),
+					),
+					array(
+						'name'  => __( 'Accepted on', 'wc-subscription-team-access' ),
+						'value' => Dates::display( $seat->accepted_at, true ),
+					),
+				),
+			);
+		}
+		return array(
+			'data' => $data,
+			'done' => true,
+		);
+	}
+
+	/**
+	 * Efface : révoque les accès et invitations vivants, puis anonymise l'adresse.
+	 *
+	 * @param string $email Adresse.
+	 * @return array{items_removed: bool, items_retained: bool, messages: string[], done: bool}
+	 */
+	public function erase( $email ): array {
+		$removed = false;
+
+		foreach ( $this->seats_for( (string) $email ) as $seat ) {
+			if ( $seat->is_live() ) {
+				$this->team->remove_as_system( $seat->id );
+			}
+			$this->seats->update( $seat->id, array( 'email' => 'anonymized-' . $seat->id . '@invalid' ) );
+			$removed = true;
+		}
+
+		return array(
+			'items_removed'  => $removed,
+			'items_retained' => false,
+			'messages'       => array(),
+			'done'           => true,
+		);
+	}
+
+	/** Texte suggéré pour la politique de confidentialité. */
+	public function add_policy_text(): void {
+		if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
+			return;
+		}
+		wp_add_privacy_policy_content(
+			'WC Subscription Team Access',
+			wp_kses_post(
+				wpautop(
+					__( 'When a subscription holder invites someone to share their access, we store the invited email address, the date of the invitation and, once accepted, the account of the guest. This data is used only to send the invitation and to grant access to the content covered by the subscription. The subscription holder can see the email addresses they invited. The email addresses of ended invitations are anonymized automatically.', 'wc-subscription-team-access' )
+				)
+			)
+		);
+	}
+
+	/**
+	 * Places liées à une adresse (comme invité, par adresse ou par compte).
+	 *
+	 * @param string $email Adresse.
+	 * @return Seat[]
+	 */
+	private function seats_for( string $email ): array {
+		$user = get_user_by( 'email', $email );
+		return $this->seats->for_user_or_email( $user ? (int) $user->ID : 0, EmailAddress::normalize( $email ) );
+	}
+}

@@ -1,0 +1,13 @@
+/* WC Subscription Team Access — administration. */
+.wcsta-admin .wcsta-table { margin-top: 1rem; }
+.wcsta-admin .wcsta-inline-form { display: inline-block; margin: 0 .25rem .25rem 0; }
+.wcsta-admin .wcsta-badge { display: inline-block; padding: 0 .5em; border-radius: 3px; background: #f0f0f1; font-size: 12px; }
+.wcsta-admin .wcsta-badge--error { background: #fcf0f1; color: #b32d2e; font-weight: 600; }
+.wcsta-admin .wcsta-status { display: inline-block; padding: 0 .5em; border-radius: 3px; background: #f0f0f1; font-weight: 600; }
+.wcsta-admin .wcsta-status--accepted { background: #edfaef; color: #00691a; }
+.wcsta-admin .wcsta-status--pending { background: #f0f6fc; color: #0a4b78; }
+.wcsta-admin .wcsta-status--suspended { background: #fcf9e8; color: #8a4b00; }
+.wcsta-admin .wcsta-level--error { color: #b32d2e; font-weight: 600; }
+.wcsta-admin .wcsta-level--warning { color: #8a4b00; font-weight: 600; }
+.wcsta-admin .wcsta-facts th { width: 220px; }
+.wcsta-admin .search-box { float: none; margin: 1rem 0 0; }

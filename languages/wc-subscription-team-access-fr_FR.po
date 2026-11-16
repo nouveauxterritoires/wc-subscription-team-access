@@ -1,0 +1,977 @@
+# Copyright (C) 2026 Nouveaux Territoires
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: WC Subscription Team Access 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/nouveauxterritoires/wc-subscription-team-access/issues\n"
+"Last-Translator: Nouveaux Territoires\n"
+"Language-Team: Français\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-16T10:34:23+00:00\n"
+"PO-Revision-Date: 2026-11-16 10:35+0000\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: wc-subscription-team-access\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. Plugin Name of the plugin
+#: wc-subscription-team-access.php
+msgid "WC Subscription Team Access"
+msgstr "WC Subscription Team Access"
+
+#. Plugin URI of the plugin
+#: wc-subscription-team-access.php
+msgid "https://github.com/nouveauxterritoires/wc-subscription-team-access"
+msgstr "https://github.com/nouveauxterritoires/wc-subscription-team-access"
+
+#. Description of the plugin
+#: wc-subscription-team-access.php
+msgid "Lets a WooCommerce Subscriptions holder share their WooCommerce Memberships access with guests who use their own accounts."
+msgstr "Permet au titulaire d’un abonnement WooCommerce Subscriptions de partager ses accès WooCommerce Memberships avec des invités disposant de leur propre compte."
+
+#. Author of the plugin
+#: wc-subscription-team-access.php
+msgid "Nouveaux Territoires"
+msgstr "Nouveaux Territoires"
+
+#. Author URI of the plugin
+#: wc-subscription-team-access.php
+msgid "https://nouveauxterritoires.fr"
+msgstr "https://nouveauxterritoires.fr"
+
+#: includes/AccountEndpoint.php:71
+#: includes/AccountEndpoint.php:86
+msgid "My guests"
+msgstr "Mes invités"
+
+#: includes/AccountEndpoint.php:135
+msgid "Your session has expired. Please try again."
+msgstr "Votre session a expiré. Veuillez réessayer."
+
+#. translators: %s: email address.
+#: includes/AccountEndpoint.php:156
+#, php-format
+msgid "An invitation has been sent to %s."
+msgstr "Une invitation a été envoyée à %s."
+
+#. translators: %s: email address.
+#: includes/AccountEndpoint.php:164
+#, php-format
+msgid "The guest has been replaced. An invitation has been sent to %s."
+msgstr "L’invité a été remplacé. Une invitation a été envoyée à %s."
+
+#. translators: %s: email address.
+#: includes/AccountEndpoint.php:172
+#, php-format
+msgid "The invitation has been sent again to %s."
+msgstr "L’invitation a été renvoyée à %s."
+
+#. translators: %s: email address.
+#: includes/AccountEndpoint.php:182
+#, php-format
+msgid "The invitation sent to %s has been cancelled."
+msgstr "L’invitation envoyée à %s a été annulée."
+
+#. translators: %s: email address.
+#: includes/AccountEndpoint.php:185
+#, php-format
+msgid "The access of %s has been revoked. The seat is available again."
+msgstr "L’accès de %s a été révoqué. La place est de nouveau disponible."
+
+#: includes/Admin/AdminPage.php:70
+#: includes/Admin/AdminPage.php:71
+#: includes/Admin/AdminPage.php:112
+#: includes/Admin/SettingsPage.php:29
+#: includes/Admin/SubscriptionMetaBox.php:47
+msgid "Team access"
+msgstr "Accès équipe"
+
+#: includes/Admin/AdminPage.php:103
+#: includes/Admin/AdminPage.php:150
+msgid "You are not allowed to access this page."
+msgstr "Vous n’avez pas l’autorisation d’accéder à cette page."
+
+#: includes/Admin/AdminPage.php:117
+#: includes/Plugin.php:160
+msgid "Shared subscriptions"
+msgstr "Abonnements partagés"
+
+#: includes/Admin/AdminPage.php:118
+msgid "Log"
+msgstr "Journal"
+
+#: includes/Admin/AdminPage.php:129
+#: includes/Plugin.php:159
+msgid "Settings"
+msgstr "Réglages"
+
+#: includes/Admin/AdminPage.php:162
+msgid "The seat has been ended."
+msgstr "La place a été libérée."
+
+#: includes/Admin/AdminPage.php:166
+msgid "The invitation has been sent again."
+msgstr "L’invitation a été renvoyée."
+
+#: includes/Admin/AdminPage.php:171
+msgid "The invitation has been sent."
+msgstr "L’invitation a été envoyée."
+
+#: includes/Admin/AdminPage.php:175
+msgid "The subscription has been synchronized."
+msgstr "L’abonnement a été resynchronisé."
+
+#: includes/Admin/AdminPage.php:180
+msgid "A full synchronization has been scheduled. It runs in the background."
+msgstr "Une resynchronisation complète a été planifiée. Elle s’exécute en arrière-plan."
+
+#: includes/Admin/AdminPage.php:188
+msgid "Unknown action."
+msgstr "Action inconnue."
+
+#: includes/Admin/AdminPage.php:207
+msgid "Search"
+msgstr "Rechercher"
+
+#: includes/Admin/AdminPage.php:209
+msgid "Email or subscription number"
+msgstr "E-mail ou numéro d’abonnement"
+
+#: includes/Admin/AdminPage.php:215
+#: includes/Admin/AdminPage.php:452
+msgid "Subscription"
+msgstr "Abonnement"
+
+#: includes/Admin/AdminPage.php:216
+#: includes/Admin/AdminPage.php:295
+msgid "Holder"
+msgstr "Titulaire"
+
+#: includes/Admin/AdminPage.php:217
+#: includes/Admin/AdminPage.php:328
+#: includes/Privacy.php:88
+#: templates/my-account/team-access.php:98
+#: templates/my-account/team-access.php:107
+msgid "Status"
+msgstr "Statut"
+
+#: includes/Admin/AdminPage.php:218
+#: includes/Admin/SettingsPage.php:76
+msgid "Quota"
+msgstr "Quota"
+
+#: includes/Admin/AdminPage.php:219
+msgid "Used"
+msgstr "Utilisées"
+
+#: includes/Admin/AdminPage.php:220
+msgid "Available"
+msgstr "Disponibles"
+
+#: includes/Admin/AdminPage.php:221
+msgid "Pending / accepted / suspended"
+msgstr "En attente / acceptées / suspendues"
+
+#: includes/Admin/AdminPage.php:222
+#: includes/Admin/AdminPage.php:332
+#: templates/my-account/team-access.php:100
+#: templates/my-account/team-access.php:129
+msgid "Actions"
+msgstr "Actions"
+
+#: includes/Admin/AdminPage.php:229
+msgid "No subscription has guests yet."
+msgstr "Aucun abonnement n’a encore d’invités."
+
+#: includes/Admin/AdminPage.php:239
+msgid "deleted"
+msgstr "supprimé"
+
+#: includes/Admin/AdminPage.php:244
+msgid "forced"
+msgstr "imposé"
+
+#. translators: %d: number of guests over quota.
+#: includes/Admin/AdminPage.php:251
+#: includes/Admin/AdminPage.php:311
+#: includes/Admin/SubscriptionMetaBox.php:78
+#, php-format
+msgid "Over quota: %d"
+msgstr "Dépassement : %d"
+
+#: includes/Admin/AdminPage.php:257
+msgid "Details"
+msgstr "Détails"
+
+#: includes/Admin/AdminPage.php:258
+msgid "Resynchronize"
+msgstr "Resynchroniser"
+
+#: includes/Admin/AdminPage.php:265
+msgid "A catch-up synchronization runs every day. You can start one now."
+msgstr "Une synchronisation de rattrapage s’exécute chaque jour. Vous pouvez en lancer une maintenant."
+
+#: includes/Admin/AdminPage.php:266
+msgid "Resynchronize all shared subscriptions"
+msgstr "Resynchroniser tous les abonnements partagés"
+
+#: includes/Admin/AdminPage.php:278
+msgid "All shared subscriptions"
+msgstr "Tous les abonnements partagés"
+
+#: includes/Admin/AdminPage.php:281
+msgid "This subscription no longer exists. Its seats have been ended."
+msgstr "Cet abonnement n’existe plus. Ses places ont été libérées."
+
+#: includes/Admin/AdminPage.php:296
+msgid "Subscription status"
+msgstr "Statut de l’abonnement"
+
+#: includes/Admin/AdminPage.php:297
+msgid "Guest access"
+msgstr "Accès des invités"
+
+#: includes/Admin/AdminPage.php:298
+msgid "Shared membership plans"
+msgstr "Plans d’adhésion partagés"
+
+#: includes/Admin/AdminPage.php:300
+msgid "Seats"
+msgstr "Places"
+
+#. translators: 1: used seats, 2: quota, 3: available seats.
+#: includes/Admin/AdminPage.php:304
+#, php-format
+msgid "%1$d used of %2$d (%3$d available)"
+msgstr "%1$d utilisée(s) sur %2$d (%3$d disponible(s))"
+
+#: includes/Admin/AdminPage.php:319
+msgid "Resynchronize this subscription"
+msgstr "Resynchroniser cet abonnement"
+
+#: includes/Admin/AdminPage.php:323
+msgid "Guests"
+msgstr "Invités"
+
+#: includes/Admin/AdminPage.php:326
+msgid "Email"
+msgstr "E-mail"
+
+#: includes/Admin/AdminPage.php:327
+msgid "Account"
+msgstr "Compte"
+
+#: includes/Admin/AdminPage.php:329
+#: includes/Privacy.php:92
+msgid "Invited on"
+msgstr "Invité le"
+
+#: includes/Admin/AdminPage.php:330
+#: includes/Privacy.php:96
+msgid "Accepted on"
+msgstr "Accepté le"
+
+#: includes/Admin/AdminPage.php:331
+msgid "Memberships"
+msgstr "Adhésions"
+
+#: includes/Admin/AdminPage.php:339
+msgid "No guest."
+msgstr "Aucun invité."
+
+#. translators: %s: date.
+#: includes/Admin/AdminPage.php:353
+#: templates/my-account/team-access.php:124
+#, php-format
+msgid "Expires on %s"
+msgstr "Expire le %s"
+
+#: includes/Admin/AdminPage.php:361
+msgid "Cancel invitation"
+msgstr "Annuler l’invitation"
+
+#: includes/Admin/AdminPage.php:361
+msgid "Revoke access"
+msgstr "Révoquer l’accès"
+
+#: includes/Admin/AdminPage.php:362
+msgid "Confirm?"
+msgstr "Confirmer ?"
+
+#: includes/Admin/AdminPage.php:366
+#: templates/my-account/team-access.php:133
+msgid "Resend"
+msgstr "Renvoyer"
+
+#: includes/Admin/AdminPage.php:373
+msgid "Invite on behalf of the holder"
+msgstr "Inviter pour le compte du titulaire"
+
+#: includes/Admin/AdminPage.php:376
+#: templates/invitation/accept.php:90
+msgid "Email address"
+msgstr "Adresse e-mail"
+
+#: includes/Admin/AdminPage.php:377
+msgid "Send invitation"
+msgstr "Envoyer l’invitation"
+
+#: includes/Admin/AdminPage.php:381
+msgid "Recent events"
+msgstr "Événements récents"
+
+#: includes/Admin/AdminPage.php:395
+msgid "Forced quota"
+msgstr "Quota imposé"
+
+#: includes/Admin/AdminPage.php:397
+msgid "Save"
+msgstr "Enregistrer"
+
+#. translators: %s: quota stored at purchase.
+#: includes/Admin/AdminPage.php:401
+#, php-format
+msgid "Leave empty to use the quota recorded at purchase or at the last plan change (%s)."
+msgstr "Laisser vide pour utiliser le quota enregistré à l’achat ou au dernier changement de formule (%s)."
+
+#: includes/Admin/AdminPage.php:416
+msgid "Errors and warnings"
+msgstr "Erreurs et avertissements"
+
+#: includes/Admin/AdminPage.php:417
+msgid "All events"
+msgstr "Tous les événements"
+
+#: includes/Admin/AdminPage.php:449
+#: templates/my-account/team-access.php:99
+#: templates/my-account/team-access.php:114
+msgid "Date"
+msgstr "Date"
+
+#: includes/Admin/AdminPage.php:450
+msgid "Level"
+msgstr "Niveau"
+
+#: includes/Admin/AdminPage.php:451
+msgid "Event"
+msgstr "Événement"
+
+#: includes/Admin/AdminPage.php:453
+msgid "User"
+msgstr "Utilisateur"
+
+#: includes/Admin/AdminPage.php:454
+msgid "Message"
+msgstr "Message"
+
+#: includes/Admin/AdminPage.php:460
+msgid "Nothing to show."
+msgstr "Rien à afficher."
+
+#: includes/Admin/AdminPage.php:496
+msgid "The quota has been updated."
+msgstr "Le quota a été mis à jour."
+
+#. translators: %s: plan name.
+#: includes/Admin/AdminPage.php:517
+#, php-format
+msgid "%s (covered by the guest's own membership)"
+msgstr "%s (couvert par l’adhésion personnelle de l’invité)"
+
+#: includes/Admin/AdminPage.php:543
+msgid "None: this subscription does not grant any membership plan."
+msgstr "Aucun : cet abonnement n’accorde aucun plan d’adhésion."
+
+#: includes/Admin/AdminPage.php:562
+msgid "Active"
+msgstr "Actif"
+
+#. translators: %s: date.
+#: includes/Admin/AdminPage.php:564
+#, php-format
+msgid "Active until %s"
+msgstr "Actif jusqu’au %s"
+
+#: includes/Admin/AdminPage.php:566
+msgid "Suspended"
+msgstr "Suspendu"
+
+#: includes/Admin/AdminPage.php:566
+msgid "None"
+msgstr "Aucun"
+
+#. translators: %d: number of errors.
+#: includes/Admin/AdminPage.php:700
+#, php-format
+msgid "%d synchronization error in the last 7 days."
+msgid_plural "%d synchronization errors in the last 7 days."
+msgstr[0] "%d erreur de synchronisation ces 7 derniers jours."
+msgstr[1] "%d erreurs de synchronisation ces 7 derniers jours."
+
+#: includes/Admin/AdminPage.php:705
+msgid "See the log"
+msgstr "Voir le journal"
+
+#: includes/Admin/SettingsPage.php:50
+msgid "Invitations"
+msgstr "Invitations"
+
+#. translators: %s: link to the shared subscriptions page.
+#: includes/Admin/SettingsPage.php:53
+#, php-format
+msgid "The maximum number of guests is set on each subscription product (General tab, or per variation). Shared subscriptions and the log are available in %s."
+msgstr "Le nombre maximal d’invités se règle sur chaque produit d’abonnement (onglet Général, ou par variation). Les abonnements partagés et le journal sont consultables dans %s."
+
+#: includes/Admin/SettingsPage.php:54
+msgid "WooCommerce > Team access"
+msgstr "WooCommerce > Accès équipe"
+
+#: includes/Admin/SettingsPage.php:57
+msgid "Invitation validity (days)"
+msgstr "Validité des invitations (jours)"
+
+#: includes/Admin/SettingsPage.php:58
+msgid "Invitation emails per holder per hour"
+msgstr "E-mails d’invitation par titulaire et par heure"
+
+#: includes/Admin/SettingsPage.php:59
+msgid "Minimum delay between two sends of an invitation (minutes)"
+msgstr "Délai minimal entre deux envois d’une invitation (minutes)"
+
+#: includes/Admin/SettingsPage.php:60
+msgid "Maximum number of resends per invitation"
+msgstr "Nombre maximal de renvois par invitation"
+
+#: includes/Admin/SettingsPage.php:64
+msgid "Holder notification"
+msgstr "Notification du titulaire"
+
+#: includes/Admin/SettingsPage.php:65
+msgid "Notify the holder when a guest accepts an invitation"
+msgstr "Prévenir le titulaire lorsqu’un invité accepte une invitation"
+
+#: includes/Admin/SettingsPage.php:81
+msgid "When the quota decreases"
+msgstr "Quand le quota diminue"
+
+#: includes/Admin/SettingsPage.php:82
+msgid "Guests are ranked by acceptance date (oldest first), then pending invitations by creation date. Nobody is deleted: suspended guests regain access automatically when a seat becomes available."
+msgstr "Les invités sont classés par date d’acceptation (les plus anciens d’abord), puis les invitations en attente par date de création. Personne n’est supprimé : les invités suspendus retrouvent leur accès automatiquement dès qu’une place se libère."
+
+#: includes/Admin/SettingsPage.php:87
+msgid "Suspend the most recent guests beyond the quota (default)"
+msgstr "Suspendre les invités les plus récents au-delà du quota (par défaut)"
+
+#: includes/Admin/SettingsPage.php:88
+msgid "Keep all guests, only block new invitations"
+msgstr "Conserver tous les invités et bloquer seulement les nouvelles invitations"
+
+#: includes/Admin/SettingsPage.php:99
+msgid "Memberships and privacy"
+msgstr "Adhésions et confidentialité"
+
+#: includes/Admin/SettingsPage.php:104
+msgid "Memberships emails"
+msgstr "E-mails Memberships"
+
+#: includes/Admin/SettingsPage.php:105
+msgid "Do not send the WooCommerce Memberships emails (activated, ending soon, ended, renewal reminder) for guest memberships"
+msgstr "Ne pas envoyer les e-mails WooCommerce Memberships (activation, fin prochaine, fin, rappel de renouvellement) pour les adhésions des invités"
+
+#: includes/Admin/SettingsPage.php:108
+msgid "Anonymize the email of ended invitations after (days, 0 = never)"
+msgstr "Anonymiser l’e-mail des invitations terminées après (jours, 0 = jamais)"
+
+#: includes/Admin/SettingsPage.php:117
+msgid "Addresses"
+msgstr "Adresses"
+
+#: includes/Admin/SettingsPage.php:119
+msgid "Invitation page slug"
+msgstr "Slug de la page d’invitation"
+
+#: includes/Admin/SettingsPage.php:120
+msgid "My account endpoint slug"
+msgstr "Slug de l’onglet Mon compte"
+
+#. translators: 1: used seats, 2: quota.
+#: includes/Admin/SubscriptionMetaBox.php:68
+#, php-format
+msgid "%1$d guest seat(s) used of %2$d."
+msgstr "%1$d place(s) d’invité utilisée(s) sur %2$d."
+
+#: includes/Admin/SubscriptionMetaBox.php:72
+msgid "(forced quota)"
+msgstr "(quota imposé)"
+
+#: includes/Admin/SubscriptionMetaBox.php:95
+msgid "Manage guests"
+msgstr "Gérer les invités"
+
+#: includes/Emails/InvitationAcceptedEmail.php:34
+msgid "Team access invitation accepted"
+msgstr "Invitation accès équipe acceptée"
+
+#: includes/Emails/InvitationAcceptedEmail.php:35
+msgid "Sent to the subscription holder when a guest accepts an invitation."
+msgstr "Envoyé au titulaire de l’abonnement lorsqu’un invité accepte une invitation."
+
+#: includes/Emails/InvitationAcceptedEmail.php:49
+msgid "{guest_email} joined your subscription on {site_title}"
+msgstr "{guest_email} a rejoint votre abonnement sur {site_title}"
+
+#: includes/Emails/InvitationAcceptedEmail.php:54
+msgid "A guest joined your subscription"
+msgstr "Un invité a rejoint votre abonnement"
+
+#: includes/Emails/InvitationEmail.php:38
+msgid "Team access invitation"
+msgstr "Invitation accès équipe"
+
+#: includes/Emails/InvitationEmail.php:39
+msgid "Sent to a person invited by a subscription holder to share their premium access."
+msgstr "Envoyé à une personne invitée par le titulaire d’un abonnement à partager ses accès premium."
+
+#: includes/Emails/InvitationEmail.php:53
+msgid "{inviter_name} invites you to share their access on {site_title}"
+msgstr "{inviter_name} vous invite à partager son accès sur {site_title}"
+
+#: includes/Emails/InvitationEmail.php:58
+msgid "You are invited"
+msgstr "Vous êtes invité"
+
+#: includes/Emails/InvitationEmail.php:63
+msgid "If you were not expecting this invitation, you can ignore this email: nothing will happen without your action."
+msgstr "Si vous n’attendiez pas cette invitation, vous pouvez ignorer cet e-mail : rien ne se passera sans action de votre part."
+
+#: includes/InvitationController.php:79
+#: includes/InvitationController.php:159
+#: templates/invitation/accept.php:24
+msgid "Invitation"
+msgstr "Invitation"
+
+#. translators: %d: minimum number of characters.
+#: includes/InvitationController.php:342
+#, php-format
+msgid "Your password must contain at least %d characters."
+msgstr "Votre mot de passe doit contenir au moins %d caractères."
+
+#: includes/InvitationController.php:345
+msgid "The two passwords do not match."
+msgstr "Les deux mots de passe ne correspondent pas."
+
+#: includes/InvitationController.php:348
+msgid "An account may already exist for this email address: please log in to accept the invitation."
+msgstr "Un compte existe peut-être déjà pour cette adresse e-mail : connectez-vous pour accepter l’invitation."
+
+#: includes/InvitationController.php:392
+msgid "Welcome! Your invitation is accepted: you now have access to the premium content."
+msgstr "Bienvenue ! Votre invitation est acceptée : vous avez désormais accès aux contenus premium."
+
+#: includes/Labels.php:40
+msgid "Invitation pending"
+msgstr "Invitation en attente"
+
+#: includes/Labels.php:41
+msgid "Invitation accepted"
+msgstr "Invitation acceptée"
+
+#: includes/Labels.php:42
+msgid "Access suspended"
+msgstr "Accès suspendu"
+
+#: includes/Labels.php:43
+msgid "Access revoked"
+msgstr "Accès révoqué"
+
+#: includes/Labels.php:44
+msgid "Invitation cancelled"
+msgstr "Invitation annulée"
+
+#: includes/Labels.php:45
+msgid "Invitation expired"
+msgstr "Invitation expirée"
+
+#: includes/Labels.php:61
+msgid "The number of guests exceeds the subscription quota."
+msgstr "Le nombre d’invités dépasse le quota de l’abonnement."
+
+#: includes/Labels.php:62
+msgid "The subscription is on hold."
+msgstr "L’abonnement est suspendu."
+
+#: includes/Labels.php:63
+msgid "The subscription is no longer active."
+msgstr "L’abonnement n’est plus actif."
+
+#: includes/Labels.php:64
+msgid "The subscription does not grant any membership plan."
+msgstr "L’abonnement n’accorde aucun plan d’adhésion."
+
+#: includes/MembershipManager.php:417
+msgid "Guest membership created by WC Subscription Team Access: access is shared by a subscription holder."
+msgstr "Adhésion invitée créée par WC Subscription Team Access : l’accès est partagé par le titulaire d’un abonnement."
+
+#: includes/MembershipManager.php:453
+msgid "Guest access activated: the sharing subscription grants access."
+msgstr "Accès invité activé : l’abonnement partagé donne accès."
+
+#: includes/MembershipManager.php:456
+msgid "Guest access suspended: the sharing subscription is on hold or the seat is over quota."
+msgstr "Accès invité suspendu : l’abonnement partagé est suspendu ou la place dépasse le quota."
+
+#: includes/MembershipManager.php:478
+msgid "Guest access ended: no active sharing subscription for this member."
+msgstr "Accès invité terminé : aucun abonnement partagé actif pour ce membre."
+
+#: includes/MembershipManager.php:505
+msgid "This membership is now linked to the member's own purchase and is no longer managed by WC Subscription Team Access."
+msgstr "Cette adhésion est désormais liée à un achat du membre et n’est plus gérée par WC Subscription Team Access."
+
+#. translators: %s: list of missing plugins.
+#: includes/Plugin.php:54
+#, php-format
+msgid "WC Subscription Team Access is inactive: the following plugins are required: %s."
+msgstr "WC Subscription Team Access est inactif : les extensions suivantes sont requises : %s."
+
+#: includes/Privacy.php:49
+#: includes/Privacy.php:63
+#: includes/Privacy.php:80
+msgid "Shared subscription access"
+msgstr "Accès partagé à un abonnement"
+
+#: includes/Privacy.php:84
+msgid "Invited email address"
+msgstr "Adresse e-mail invitée"
+
+#: includes/Privacy.php:142
+msgid "When a subscription holder invites someone to share their access, we store the invited email address, the date of the invitation and, once accepted, the account of the guest. This data is used only to send the invitation and to grant access to the content covered by the subscription. The subscription holder can see the email addresses they invited. The email addresses of ended invitations are anonymized automatically."
+msgstr "Lorsque le titulaire d’un abonnement invite une personne à partager son accès, nous enregistrons l’adresse e-mail invitée, la date de l’invitation et, une fois celle-ci acceptée, le compte de l’invité. Ces données servent uniquement à envoyer l’invitation et à donner accès aux contenus couverts par l’abonnement. Le titulaire voit les adresses e-mail qu’il a invitées. Les adresses des invitations terminées sont anonymisées automatiquement."
+
+#: includes/ProductSettings.php:35
+#: includes/ProductSettings.php:76
+msgid "Maximum number of guests"
+msgstr "Nombre maximal d’invités"
+
+#: includes/ProductSettings.php:36
+msgid "Number of people the buyer can invite, in addition to themselves, to share the premium access granted by this subscription. 0 disables the feature. For variable subscriptions, this is the default value for variations that leave their own field empty."
+msgstr "Nombre de personnes que l’acheteur peut inviter, en plus de lui-même, à partager les accès premium de cet abonnement. 0 désactive la fonctionnalité. Pour un abonnement variable, c’est la valeur par défaut des variations dont le champ est vide."
+
+#: includes/ProductSettings.php:77
+msgid "Leave empty to use the product value."
+msgstr "Laisser vide pour utiliser la valeur du produit."
+
+#. translators: %s: subscription number.
+#: includes/SubscriptionManager.php:195
+#: templates/my-account/team-access.php:49
+#, php-format
+msgid "Subscription #%s"
+msgstr "Abonnement n°%s"
+
+#: includes/Support/Lock.php:47
+msgid "Another operation is in progress on this subscription. Please try again in a moment."
+msgstr "Une autre opération est en cours sur cet abonnement. Veuillez réessayer dans un instant."
+
+#: includes/TeamManager.php:495
+msgid "This guest could not be found."
+msgstr "Cet invité est introuvable."
+
+#: includes/TeamManager.php:496
+msgid "You are not allowed to manage the guests of this subscription."
+msgstr "Vous n’êtes pas autorisé à gérer les invités de cet abonnement."
+
+#: includes/TeamManager.php:497
+msgid "This subscription does not allow inviting guests."
+msgstr "Cet abonnement ne permet pas d’inviter des personnes."
+
+#: includes/TeamManager.php:498
+msgid "The subscription that shares this access is not active."
+msgstr "L’abonnement qui partage cet accès n’est pas actif."
+
+#: includes/TeamManager.php:499
+msgid "Please enter a valid email address."
+msgstr "Veuillez saisir une adresse e-mail valide."
+
+#: includes/TeamManager.php:500
+msgid "The subscription holder already has access and cannot be invited."
+msgstr "Le titulaire de l’abonnement a déjà accès et ne peut pas être invité."
+
+#: includes/TeamManager.php:501
+msgid "This email address has already been invited to this subscription."
+msgstr "Cette adresse e-mail a déjà été invitée sur cet abonnement."
+
+#: includes/TeamManager.php:502
+msgid "This person already has access through this subscription."
+msgstr "Cette personne a déjà accès grâce à cet abonnement."
+
+#: includes/TeamManager.php:503
+msgid "No guest seat is available on this subscription."
+msgstr "Aucune place d’invité n’est disponible sur cet abonnement."
+
+#: includes/TeamManager.php:504
+msgid "The number of guests exceeds the quota of this subscription. Remove guests before inviting new ones."
+msgstr "Le nombre d’invités dépasse le quota de cet abonnement. Retirez des invités avant d’en inviter de nouveaux."
+
+#: includes/TeamManager.php:505
+msgid "Too many invitations have been sent recently. Please try again later."
+msgstr "Trop d’invitations ont été envoyées récemment. Veuillez réessayer plus tard."
+
+#: includes/TeamManager.php:506
+msgid "This invitation was sent a few minutes ago. Please wait before sending it again."
+msgstr "Cette invitation a été envoyée il y a quelques minutes. Patientez avant de la renvoyer."
+
+#: includes/TeamManager.php:507
+msgid "This invitation has been sent too many times."
+msgstr "Cette invitation a été envoyée trop de fois."
+
+#: includes/TeamManager.php:508
+msgid "Only pending or expired invitations can be sent again."
+msgstr "Seules les invitations en attente ou expirées peuvent être renvoyées."
+
+#: includes/TeamManager.php:509
+msgid "This invitation link is no longer valid: it may have already been used, cancelled or replaced by a more recent invitation."
+msgstr "Ce lien d’invitation n’est plus valide : il a peut-être déjà été utilisé, annulé ou remplacé par une invitation plus récente."
+
+#: includes/TeamManager.php:510
+msgid "This invitation has expired. Ask the person who invited you to send it again."
+msgstr "Cette invitation a expiré. Demandez à la personne qui vous a invité de vous la renvoyer."
+
+#: includes/TeamManager.php:511
+msgid "This invitation was sent to a different email address than the one of your account."
+msgstr "Cette invitation a été envoyée à une autre adresse e-mail que celle de votre compte."
+
+#: includes/TeamManager.php:512
+msgid "Please log in to accept this invitation."
+msgstr "Connectez-vous pour accepter cette invitation."
+
+#: includes/TeamManager.php:513
+msgid "The invitation was saved but the email could not be sent. Use \"Resend\" to try again."
+msgstr "L’invitation a été enregistrée mais l’e-mail n’a pas pu être envoyé. Utilisez « Renvoyer » pour réessayer."
+
+#: includes/TeamManager.php:516
+#: includes/TeamManager.php:644
+msgid "An error occurred."
+msgstr "Une erreur est survenue."
+
+#: templates/emails/plain/wcsta-team-invitation-accepted.php:21
+#: templates/emails/plain/wcsta-team-invitation.php:22
+#: templates/emails/wcsta-team-invitation-accepted.php:21
+#: templates/emails/wcsta-team-invitation.php:22
+msgid "Hello,"
+msgstr "Bonjour,"
+
+#. translators: 1: guest email, 2: subscription name.
+#: templates/emails/plain/wcsta-team-invitation-accepted.php:27
+#, php-format
+msgid "%1$s accepted your invitation and now shares the premium access of your subscription %2$s."
+msgstr "%1$s a accepté votre invitation et partage désormais les accès premium de votre abonnement %2$s."
+
+#: templates/emails/plain/wcsta-team-invitation-accepted.php:34
+#: templates/emails/wcsta-team-invitation-accepted.php:35
+msgid "Manage my guests"
+msgstr "Gérer mes invités"
+
+#. translators: 1: holder name, 2: subscription name, 3: site name.
+#: templates/emails/plain/wcsta-team-invitation.php:28
+#, php-format
+msgid "%1$s invites you to share the premium access of their subscription %2$s on %3$s."
+msgstr "%1$s vous invite à partager les accès premium de son abonnement %2$s sur %3$s."
+
+#: templates/emails/plain/wcsta-team-invitation.php:36
+#: templates/emails/wcsta-team-invitation.php:37
+msgid "To accept, follow the link below. You will be able to log in to your account or create one with this email address. No password is sent by email."
+msgstr "Pour accepter, suivez le lien ci-dessous. Vous pourrez vous connecter à votre compte ou en créer un avec cette adresse e-mail. Aucun mot de passe n’est envoyé par e-mail."
+
+#. translators: %s: date.
+#: templates/emails/plain/wcsta-team-invitation.php:40
+#: templates/emails/wcsta-team-invitation.php:44
+#, php-format
+msgid "This link is personal and can be used only once. It expires on %s."
+msgstr "Ce lien est personnel et ne peut servir qu’une fois. Il expire le %s."
+
+#. translators: 1: guest email, 2: subscription name.
+#: templates/emails/wcsta-team-invitation-accepted.php:27
+#, php-format
+msgid "<strong>%1$s</strong> accepted your invitation and now shares the premium access of your subscription <strong>%2$s</strong>."
+msgstr "<strong>%1$s</strong> a accepté votre invitation et partage désormais les accès premium de votre abonnement <strong>%2$s</strong>."
+
+#. translators: 1: holder name, 2: subscription name, 3: site name.
+#: templates/emails/wcsta-team-invitation.php:28
+#, php-format
+msgid "<strong>%1$s</strong> invites you to share the premium access of their subscription <strong>%2$s</strong> on %3$s."
+msgstr "<strong>%1$s</strong> vous invite à partager les accès premium de son abonnement <strong>%2$s</strong> sur %3$s."
+
+#: templates/emails/wcsta-team-invitation.php:39
+#: templates/invitation/accept.php:58
+msgid "Accept the invitation"
+msgstr "Accepter l’invitation"
+
+#: templates/invitation/accept.php:29
+msgid "Back to the website"
+msgstr "Retour au site"
+
+#. translators: 1: holder name, 2: subscription name.
+#: templates/invitation/accept.php:38
+#, php-format
+msgid "<strong>%1$s</strong> invites you to share the premium access of their subscription <strong>%2$s</strong>."
+msgstr "<strong>%1$s</strong> vous invite à partager les accès premium de son abonnement <strong>%2$s</strong>."
+
+#. translators: %s: masked email address.
+#: templates/invitation/accept.php:49
+#, php-format
+msgid "Invitation sent to: %s"
+msgstr "Invitation envoyée à : %s"
+
+#: templates/invitation/accept.php:64
+msgid "Log out, then log in with the account that uses the invited email address, or create an account with it."
+msgstr "Déconnectez-vous, puis connectez-vous avec le compte qui utilise l’adresse invitée, ou créez un compte avec cette adresse."
+
+#: templates/invitation/accept.php:65
+msgid "Log out"
+msgstr "Se déconnecter"
+
+#: templates/invitation/accept.php:71
+msgid "I already have an account"
+msgstr "J’ai déjà un compte"
+
+#: templates/invitation/accept.php:72
+msgid "Log in with the account that uses the invited email address."
+msgstr "Connectez-vous avec le compte qui utilise l’adresse e-mail invitée."
+
+#: templates/invitation/accept.php:84
+msgid "I am creating my account"
+msgstr "Je crée mon compte"
+
+#: templates/invitation/accept.php:94
+msgid "First name"
+msgstr "Prénom"
+
+#: templates/invitation/accept.php:98
+msgid "Last name"
+msgstr "Nom"
+
+#: templates/invitation/accept.php:102
+msgid "Password"
+msgstr "Mot de passe"
+
+#. translators: %d: minimum number of characters.
+#: templates/invitation/accept.php:107
+#, php-format
+msgid "At least %d characters."
+msgstr "Au moins %d caractères."
+
+#: templates/invitation/accept.php:112
+msgid "Confirm password"
+msgstr "Confirmer le mot de passe"
+
+#: templates/invitation/accept.php:121
+msgid "Create my account and accept"
+msgstr "Créer mon compte et accepter"
+
+#: templates/my-account/team-access.php:19
+msgid "None of your subscriptions allows inviting guests."
+msgstr "Aucun de vos abonnements ne permet d’inviter des personnes."
+
+#: templates/my-account/team-access.php:25
+msgid "Invite people to share the premium access of your subscription. Each guest uses their own account. You can remove or replace a guest at any time."
+msgstr "Invitez des personnes à partager les accès premium de votre abonnement. Chaque invité utilise son propre compte. Vous pouvez retirer ou remplacer un invité à tout moment."
+
+#: templates/my-account/team-access.php:58
+msgid "Maximum guests"
+msgstr "Invités maximum"
+
+#: templates/my-account/team-access.php:62
+msgid "Seats used"
+msgstr "Places utilisées"
+
+#: templates/my-account/team-access.php:66
+msgid "Seats available"
+msgstr "Places disponibles"
+
+#. translators: %d: number of guests over quota.
+#: templates/my-account/team-access.php:78
+#, php-format
+msgid "Your subscription now allows fewer guests: %d guest is over the quota and their access is suspended. Remove guests to free seats; no new invitation is possible until then."
+msgid_plural "Your subscription now allows fewer guests: %d guests are over the quota and their access is suspended. Remove guests to free seats; no new invitation is possible until then."
+msgstr[0] "Votre abonnement autorise désormais moins d’invités : %d invité dépasse le quota et son accès est suspendu. Retirez des invités pour libérer des places ; aucune nouvelle invitation n’est possible d’ici là."
+msgstr[1] "Votre abonnement autorise désormais moins d’invités : %d invités dépassent le quota et leur accès est suspendu. Retirez des invités pour libérer des places ; aucune nouvelle invitation n’est possible d’ici là."
+
+#: templates/my-account/team-access.php:90
+msgid "Your subscription is not active: guests cannot access premium content and new invitations are not possible."
+msgstr "Votre abonnement n’est pas actif : vos invités n’ont pas accès aux contenus premium et aucune nouvelle invitation n’est possible."
+
+#: templates/my-account/team-access.php:97
+#: templates/my-account/team-access.php:106
+msgid "Guest"
+msgstr "Invité"
+
+#. translators: %s: date.
+#: templates/my-account/team-access.php:118
+#, php-format
+msgid "Joined on %s"
+msgstr "A rejoint le %s"
+
+#. translators: %s: date.
+#: templates/my-account/team-access.php:121
+#, php-format
+msgid "Invited on %s"
+msgstr "Invité le %s"
+
+#: templates/my-account/team-access.php:138
+msgid "Replace"
+msgstr "Remplacer"
+
+#: templates/my-account/team-access.php:141
+msgid "New guest email address"
+msgstr "Adresse e-mail du nouvel invité"
+
+#: templates/my-account/team-access.php:143
+msgid "Replace and invite"
+msgstr "Remplacer et inviter"
+
+#: templates/my-account/team-access.php:147
+msgid "Cancel this invitation?"
+msgstr "Annuler cette invitation ?"
+
+#: templates/my-account/team-access.php:147
+msgid "Remove this guest? They will immediately lose the access shared by your subscription."
+msgstr "Retirer cet invité ? Il perdra immédiatement l’accès partagé par votre abonnement."
+
+#: templates/my-account/team-access.php:150
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/my-account/team-access.php:150
+msgid "Remove"
+msgstr "Supprimer"
+
+#: templates/my-account/team-access.php:159
+msgid "You have not invited anyone yet."
+msgstr "Vous n’avez encore invité personne."
+
+#: templates/my-account/team-access.php:165
+#: templates/my-account/team-access.php:170
+msgid "Invite a user"
+msgstr "Inviter un utilisateur"
+
+#: templates/my-account/team-access.php:167
+msgid "Email address of the person to invite"
+msgstr "Adresse e-mail de la personne à inviter"
+
+#. translators: %d: number of days.
+#: templates/my-account/team-access.php:178
+#, php-format
+msgid "The invitation link is valid for %d day. A pending invitation reserves a seat."
+msgid_plural "The invitation link is valid for %d days. A pending invitation reserves a seat."
+msgstr[0] "Le lien d’invitation est valable %d jour. Une invitation en attente réserve une place."
+msgstr[1] "Le lien d’invitation est valable %d jours. Une invitation en attente réserve une place."
+
+#: templates/my-account/team-access.php:186
+msgid "All the seats of your subscription are used. Remove or replace a guest to invite someone else."
+msgstr "Toutes les places de votre abonnement sont utilisées. Retirez ou remplacez un invité pour inviter quelqu’un d’autre."
+
+#: templates/my-account/team-access.php:191
+msgid "Previous guests and invitations"
+msgstr "Anciens invités et invitations"
