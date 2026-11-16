@@ -47,13 +47,15 @@ final class GrantRepository {
 		}
 		$args[] = $now;
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $table is the plugin table name, $end_placeholder is either the NULL literal or %s.
 		$wpdb->query(
 			$wpdb->prepare(
 				"INSERT INTO {$table} (seat_id, subscription_id, user_id, plan_id, state, end_at, updated_at) VALUES (%d, %d, %d, %d, %s, {$end_placeholder}, %s)
-				ON DUPLICATE KEY UPDATE subscription_id = VALUES(subscription_id), user_id = VALUES(user_id), state = VALUES(state), end_at = VALUES(end_at), updated_at = VALUES(updated_at)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				ON DUPLICATE KEY UPDATE subscription_id = VALUES(subscription_id), user_id = VALUES(user_id), state = VALUES(state), end_at = VALUES(end_at), updated_at = VALUES(updated_at)",
 				$args
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 	}
 
 	/**

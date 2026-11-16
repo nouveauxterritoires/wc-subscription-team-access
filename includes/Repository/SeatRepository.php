@@ -289,9 +289,11 @@ final class SeatRepository {
 		global $wpdb;
 		return (int) $wpdb->query(
 			$wpdb->prepare(
-				'UPDATE ' . self::table() . " SET email = CONCAT('anonymized-', id, '@invalid'), updated_at = %s WHERE live IS NULL AND ended_at IS NOT NULL AND ended_at < %s AND email NOT LIKE 'anonymized-%%'", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"UPDATE %i SET email = CONCAT('anonymized-', id, '@invalid'), updated_at = %s WHERE live IS NULL AND ended_at IS NOT NULL AND ended_at < %s AND email NOT LIKE %s",
+				self::table(),
 				Dates::now(),
-				Dates::to_mysql( $older_than )
+				Dates::to_mysql( $older_than ),
+				$wpdb->esc_like( 'anonymized-' ) . '%'
 			)
 		);
 	}

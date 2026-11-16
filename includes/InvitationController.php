@@ -182,11 +182,13 @@ final class InvitationController {
 			exit;
 		}
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- routing only; each handler checks its own nonce.
 		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || empty( $_POST['wcsta_invitation_action'] ) ) {
 			return;
 		}
 
 		$action = sanitize_key( wp_unslash( $_POST['wcsta_invitation_action'] ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		$token  = $this->token();
 
 		if ( 'accept' === $action ) {
