@@ -98,6 +98,13 @@ final class Emails {
 			$owner = get_userdata( (int) $subscription->get_customer_id() );
 			$name  = $owner ? (string) $owner->display_name : '';
 		}
+		// Nom saisi librement par le client : on retire balises, liens et caractères de contrôle
+		// pour qu'il ne puisse pas servir à glisser un message ou une adresse dans l'invitation.
+		$name = wp_strip_all_tags( $name );
+		$name = (string) preg_replace( '#(?:https?://|www\.)\S*#i', '', $name );
+		$name = (string) preg_replace( '/[\x00-\x1F\x7F]/u', '', $name );
+		$name = trim( mb_substr( $name, 0, 80 ) );
+
 		return '' !== $name ? $name : (string) get_bloginfo( 'name' );
 	}
 

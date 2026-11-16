@@ -9,8 +9,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-16T10:34:23+00:00\n"
-"PO-Revision-Date: 2026-11-16 10:35+0000\n"
+"POT-Creation-Date: 2026-11-16T10:41:03+00:00\n"
+"PO-Revision-Date: 2026-11-16 10:41+0000\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wc-subscription-team-access\n"
 "Language: fr_FR\n"
@@ -47,6 +47,7 @@ msgid "My guests"
 msgstr "Mes invités"
 
 #: includes/AccountEndpoint.php:135
+#: includes/InvitationController.php:291
 msgid "Your session has expired. Please try again."
 msgstr "Votre session a expiré. Veuillez réessayer."
 
@@ -546,27 +547,27 @@ msgstr "Vous êtes invité"
 msgid "If you were not expecting this invitation, you can ignore this email: nothing will happen without your action."
 msgstr "Si vous n’attendiez pas cette invitation, vous pouvez ignorer cet e-mail : rien ne se passera sans action de votre part."
 
-#: includes/InvitationController.php:79
-#: includes/InvitationController.php:159
+#: includes/InvitationController.php:81
+#: includes/InvitationController.php:161
 #: templates/invitation/accept.php:24
 msgid "Invitation"
 msgstr "Invitation"
 
 #. translators: %d: minimum number of characters.
-#: includes/InvitationController.php:342
+#: includes/InvitationController.php:349
 #, php-format
 msgid "Your password must contain at least %d characters."
 msgstr "Votre mot de passe doit contenir au moins %d caractères."
 
-#: includes/InvitationController.php:345
+#: includes/InvitationController.php:352
 msgid "The two passwords do not match."
 msgstr "Les deux mots de passe ne correspondent pas."
 
-#: includes/InvitationController.php:348
+#: includes/InvitationController.php:355
 msgid "An account may already exist for this email address: please log in to accept the invitation."
 msgstr "Un compte existe peut-être déjà pour cette adresse e-mail : connectez-vous pour accepter l’invitation."
 
-#: includes/InvitationController.php:392
+#: includes/InvitationController.php:399
 msgid "Welcome! Your invitation is accepted: you now have access to the premium content."
 msgstr "Bienvenue ! Votre invitation est acceptée : vous avez désormais accès aux contenus premium."
 
@@ -674,84 +675,84 @@ msgstr "Abonnement n°%s"
 msgid "Another operation is in progress on this subscription. Please try again in a moment."
 msgstr "Une autre opération est en cours sur cet abonnement. Veuillez réessayer dans un instant."
 
-#: includes/TeamManager.php:495
+#: includes/TeamManager.php:500
 msgid "This guest could not be found."
 msgstr "Cet invité est introuvable."
 
-#: includes/TeamManager.php:496
+#: includes/TeamManager.php:501
 msgid "You are not allowed to manage the guests of this subscription."
 msgstr "Vous n’êtes pas autorisé à gérer les invités de cet abonnement."
 
-#: includes/TeamManager.php:497
+#: includes/TeamManager.php:502
 msgid "This subscription does not allow inviting guests."
 msgstr "Cet abonnement ne permet pas d’inviter des personnes."
 
-#: includes/TeamManager.php:498
+#: includes/TeamManager.php:503
 msgid "The subscription that shares this access is not active."
 msgstr "L’abonnement qui partage cet accès n’est pas actif."
 
-#: includes/TeamManager.php:499
+#: includes/TeamManager.php:504
 msgid "Please enter a valid email address."
 msgstr "Veuillez saisir une adresse e-mail valide."
 
-#: includes/TeamManager.php:500
+#: includes/TeamManager.php:505
 msgid "The subscription holder already has access and cannot be invited."
 msgstr "Le titulaire de l’abonnement a déjà accès et ne peut pas être invité."
 
-#: includes/TeamManager.php:501
+#: includes/TeamManager.php:506
 msgid "This email address has already been invited to this subscription."
 msgstr "Cette adresse e-mail a déjà été invitée sur cet abonnement."
 
-#: includes/TeamManager.php:502
+#: includes/TeamManager.php:507
 msgid "This person already has access through this subscription."
 msgstr "Cette personne a déjà accès grâce à cet abonnement."
 
-#: includes/TeamManager.php:503
+#: includes/TeamManager.php:508
 msgid "No guest seat is available on this subscription."
 msgstr "Aucune place d’invité n’est disponible sur cet abonnement."
 
-#: includes/TeamManager.php:504
+#: includes/TeamManager.php:509
 msgid "The number of guests exceeds the quota of this subscription. Remove guests before inviting new ones."
 msgstr "Le nombre d’invités dépasse le quota de cet abonnement. Retirez des invités avant d’en inviter de nouveaux."
 
-#: includes/TeamManager.php:505
+#: includes/TeamManager.php:510
 msgid "Too many invitations have been sent recently. Please try again later."
 msgstr "Trop d’invitations ont été envoyées récemment. Veuillez réessayer plus tard."
 
-#: includes/TeamManager.php:506
+#: includes/TeamManager.php:511
 msgid "This invitation was sent a few minutes ago. Please wait before sending it again."
 msgstr "Cette invitation a été envoyée il y a quelques minutes. Patientez avant de la renvoyer."
 
-#: includes/TeamManager.php:507
+#: includes/TeamManager.php:512
 msgid "This invitation has been sent too many times."
 msgstr "Cette invitation a été envoyée trop de fois."
 
-#: includes/TeamManager.php:508
+#: includes/TeamManager.php:513
 msgid "Only pending or expired invitations can be sent again."
 msgstr "Seules les invitations en attente ou expirées peuvent être renvoyées."
 
-#: includes/TeamManager.php:509
+#: includes/TeamManager.php:514
 msgid "This invitation link is no longer valid: it may have already been used, cancelled or replaced by a more recent invitation."
 msgstr "Ce lien d’invitation n’est plus valide : il a peut-être déjà été utilisé, annulé ou remplacé par une invitation plus récente."
 
-#: includes/TeamManager.php:510
+#: includes/TeamManager.php:515
 msgid "This invitation has expired. Ask the person who invited you to send it again."
 msgstr "Cette invitation a expiré. Demandez à la personne qui vous a invité de vous la renvoyer."
 
-#: includes/TeamManager.php:511
+#: includes/TeamManager.php:516
 msgid "This invitation was sent to a different email address than the one of your account."
 msgstr "Cette invitation a été envoyée à une autre adresse e-mail que celle de votre compte."
 
-#: includes/TeamManager.php:512
+#: includes/TeamManager.php:517
 msgid "Please log in to accept this invitation."
 msgstr "Connectez-vous pour accepter cette invitation."
 
-#: includes/TeamManager.php:513
+#: includes/TeamManager.php:518
 msgid "The invitation was saved but the email could not be sent. Use \"Resend\" to try again."
 msgstr "L’invitation a été enregistrée mais l’e-mail n’a pas pu être envoyé. Utilisez « Renvoyer » pour réessayer."
 
-#: includes/TeamManager.php:516
-#: includes/TeamManager.php:644
+#: includes/TeamManager.php:521
+#: includes/TeamManager.php:649
 msgid "An error occurred."
 msgstr "Une erreur est survenue."
 

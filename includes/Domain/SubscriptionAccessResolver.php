@@ -13,7 +13,7 @@ namespace WCSubscriptionTeamAccess\Domain;
  * Règles (documentées dans le README) :
  *
  * - active          : accès actif, sans date de fin ;
- * - pending-cancel  : accès actif jusqu'à la date de fin de la période payée ;
+ * - pending-cancel  : accès actif jusqu'à la date de fin de la période payée, nul ensuite ;
  * - on-hold         : accès suspendu ;
  * - cancelled       : accès actif tant que la date de fin réelle n'est pas atteinte, nul ensuite ;
  * - autres (expired, pending, failed, switched, trash…) : aucun accès.
@@ -35,7 +35,12 @@ final class SubscriptionAccessResolver {
 				return AccessState::active();
 
 			case 'pending-cancel':
-				return AccessState::active( $end_ts > $now ? $end_ts : null );
+				// Fin de période payée dépassée : l'accès cesse, sans attendre le passage en « cancelled ».
+				// Sans date de fin connue (cas anormal), l'accès suit celui du titulaire, encore actif.
+				if ( $end_ts > 0 && $end_ts <= $now ) {
+					return AccessState::none();
+				}
+				return AccessState::active( $end_ts > 0 ? $end_ts : null );
 
 			case 'on-hold':
 				return AccessState::paused();

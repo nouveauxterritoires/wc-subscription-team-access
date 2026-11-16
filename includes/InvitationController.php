@@ -31,8 +31,10 @@ final class InvitationController {
 	public const COOKIE    = 'wcsta_invitation';
 
 	private const MIN_PASSWORD_LENGTH = 8;
-	private const BAD_TOKEN_LIMIT     = 30;
-	private const REGISTER_LIMIT      = 10;
+	// Les jetons (256 bits) ne se devinent pas : ces limites protègent la base et le formulaire
+	// d'inscription sans bloquer les invités d'une même entreprise (NAT, proxy).
+	private const BAD_TOKEN_LIMIT     = 100;
+	private const REGISTER_LIMIT      = 30;
 
 	/** Gestionnaire d'équipe (injecté après construction : dépendance circulaire avec les e-mails). */
 	private ?TeamManager $team = null;
@@ -280,8 +282,13 @@ final class InvitationController {
 	 * @param string $token Jeton.
 	 */
 	private function handle_accept( string $token ): void {
-		if ( ! is_user_logged_in() || ! $this->verify_nonce( 'wcsta_accept' ) ) {
+		if ( ! is_user_logged_in() ) {
 			self::notice( TeamManager::error( 'not_logged_in' )->get_error_message(), 'error' );
+			wp_safe_redirect( self::url() );
+			exit;
+		}
+		if ( ! $this->verify_nonce( 'wcsta_accept' ) ) {
+			self::notice( __( 'Your session has expired. Please try again.', 'wc-subscription-team-access' ), 'error' );
 			wp_safe_redirect( self::url() );
 			exit;
 		}

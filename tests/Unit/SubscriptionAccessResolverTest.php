@@ -35,6 +35,16 @@ final class SubscriptionAccessResolverTest extends TestCase {
 		$this->assertSame( $end, $state->end_ts );
 	}
 
+	public function test_pending_cancel_after_end_of_paid_period_removes_access(): void {
+		$this->assertTrue( SubscriptionAccessResolver::resolve( 'pending-cancel', self::NOW - 1, self::NOW )->is_none() );
+	}
+
+	public function test_pending_cancel_without_end_date_keeps_access(): void {
+		$state = SubscriptionAccessResolver::resolve( 'pending-cancel', 0, self::NOW );
+		$this->assertTrue( $state->is_active() );
+		$this->assertNull( $state->end_ts );
+	}
+
 	public function test_cancelled_with_future_end_date_keeps_access_until_that_date(): void {
 		$end   = self::NOW + 3600;
 		$state = SubscriptionAccessResolver::resolve( 'cancelled', $end, self::NOW );

@@ -247,7 +247,7 @@ final class TeamManager {
 	 */
 	public function resend( int $seat_id, int $actor_id ): array|\WP_Error {
 		$seat = $this->seats->find( $seat_id );
-		if ( ! $seat || ! in_array( $seat->status, array( SeatStatus::PENDING, SeatStatus::EXPIRED ), true ) ) {
+		if ( ! $seat || ! in_array( $seat->status, array( SeatStatus::PENDING, SeatStatus::EXPIRED ), true ) || ! is_email( $seat->email ) || str_starts_with( $seat->email, 'anonymized-' ) ) {
 			return self::error( 'not_resendable' );
 		}
 
@@ -388,10 +388,15 @@ final class TeamManager {
 
 		$result = Lock::run(
 			"subscription_{$subscription->get_id()}",
-			function () use ( $seat, $subscription, $user_id ) {
-				$current = $this->seats->find( $seat->id );
-				if ( ! $current || ! $current->is_pending() || $current->is_token_expired( time() ) ) {
+			function () use ( $seat, $subscription, $user_id, $token ) {
+				// Revalidation complète sous verrou : un renvoi concurrent a pu changer le jeton,
+				// et l'abonnement a pu devenir inactif depuis la première vérification.
+				$current = $this->seats->find_by_token_hash( Token::hash( $token ) );
+				if ( ! $current || $current->id !== $seat->id || ! $current->is_pending() || $current->is_token_expired( time() ) ) {
 					return self::error( 'invalid_token' );
+				}
+				if ( $this->subscriptions->effective_access( $subscription )->is_none() ) {
+					return self::error( 'subscription_inactive' );
 				}
 				if ( $this->seats->accepted_for_user( $subscription->get_id(), $user_id ) ) {
 					return self::error( 'already_member' );
@@ -677,7 +682,18 @@ final class TeamManager {
 					return self::error( 'not_found' );
 				}
 				$this->mark_ended( $current, $new_state );
-				$this->reconciler->sync_subscription( $current->subscription_id, $new_state );
+				$sync = $this->reconciler->sync_subscription( $current->subscription_id, $new_state );
+				if ( is_wp_error( $sync ) ) {
+					// La place est bien terminée ; le retrait des droits est rejoué en tâche de fond.
+					$this->logger->warning(
+						'seat_end_sync_deferred',
+						'Seat ended but synchronization failed; a retry has been scheduled.',
+						array(
+							'subscription_id' => $current->subscription_id,
+							'seat_id'         => $current->id,
+						)
+					);
+				}
 				return $this->seats->find( $seat_id );
 			}
 		);

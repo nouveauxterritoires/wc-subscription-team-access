@@ -26,6 +26,9 @@ use WCSubscriptionTeamAccess\Support\Lock;
  */
 final class Reconciler {
 
+	/** Déclencheurs qui sont déjà des reprises : pas de nouvelle mise en file en cas d'échec. */
+	private const RETRY_TRIGGERS = array( 'async', 'catch_up' );
+
 	/**
 	 * Constructeur.
 	 *
@@ -72,7 +75,9 @@ final class Reconciler {
 			}
 		);
 
-		if ( $result instanceof \WP_Error && 'wcsta_busy' === $result->get_error_code() ) {
+		// Toute synchronisation en échec est rejouée en tâche de fond (une seule fois par
+		// déclenchement : un échec persistant est ensuite repris par le rattrapage quotidien).
+		if ( $result instanceof \WP_Error && ! in_array( $trigger, self::RETRY_TRIGGERS, true ) ) {
 			Scheduler::enqueue_subscription( $subscription_id );
 		}
 
@@ -196,7 +201,12 @@ final class Reconciler {
 			if ( isset( $done[ $key ] ) ) {
 				continue;
 			}
+			// Chaque couple est isolé : un échec n'empêche pas de traiter les autres invités,
+			// et il est rejoué en tâche de fond.
 			$done[ $key ] = $this->memberships->reconcile( $user_id, $plan_id );
+			if ( MembershipManager::RESULT_ERROR === $done[ $key ] ) {
+				Scheduler::enqueue_user_plan( $user_id, $plan_id );
+			}
 		}
 
 		return array(

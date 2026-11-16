@@ -111,7 +111,7 @@ Memberships ne connaît qu'**une adhésion « logique » par utilisateur et par 
 - **Pas de lien natif `_subscription_id`** entre l'adhésion de l'invité et l'abonnement du titulaire. Ce lien ne permettrait qu'une seule source. Il afficherait aussi dans l'espace membre de l'invité l'abonnement du titulaire (prix, actions). Le rattachement passe par le registre, et la méta `_wcsta_sources` mémorise les abonnements sources pour l'affichage.
 - **Suppression plutôt qu'annulation** d'une adhésion gérée devenue inutile. Une adhésion annulée plus récente masquerait, dans `wc_memberships_is_user_active_member()`, une adhésion personnelle active plus ancienne. Avant la suppression, l'adhésion est annulée via `cancel_membership()` pour que Memberships recalcule le **rôle** du membre (option « attribuer des rôles aux membres »). L'historique reste consultable dans le journal de l'extension.
 - **Ancienneté** : l'adhésion gérée commence à la date d'acceptation. Les contenus programmés (« drip ») se calculent donc depuis cette date, et non depuis l'achat du titulaire.
-- **Rôles** : si Memberships attribue un rôle aux membres actifs (c'est le cas sur Marcelle : `membre` / `subscriber`), les invités reçoivent et perdent ce rôle exactement comme les autres membres.
+- **Rôles** : si Memberships attribue un rôle aux membres actifs (par exemple `membre` pour les membres actifs et `subscriber` pour les inactifs), les invités reçoivent et perdent ce rôle exactement comme les autres membres.
 - Les **e-mails natifs de Memberships** (activation, fin prochaine, fin, rappel de renouvellement) sont désactivés pour les adhésions gérées (réglage). Les actions « Annuler » et « Renouveler » sont retirées de l'espace membre de l'invité.
 
 ## Synchronisation avec les abonnements
@@ -122,7 +122,7 @@ L'accès des invités suit le statut de l'abonnement du titulaire, lu via les AP
 |---|---|
 | `active` | Actif |
 | `on-hold` (y compris renouvellement échoué) | Suspendu (adhésion en pause) |
-| `pending-cancel` | Actif jusqu'à la fin de la période payée (date de fin reportée sur l'adhésion) |
+| `pending-cancel` | Actif jusqu'à la fin de la période payée (date de fin reportée sur l'adhésion), révoqué dès qu'elle est dépassée |
 | `cancelled` | Actif tant que la date de fin réelle est future, révoqué ensuite |
 | `expired`, `trash`, supprimé | Révoqué |
 | Réactivation | Restauré pour les invités toujours dans le quota |
@@ -190,7 +190,7 @@ Exemple de recette manuelle :
 ```bash
 wp team-access invite 1234 jeanne@example.org --as=56
 wp team-access status 1234
-wp eval 'var_dump( wc_memberships_is_user_active_member( get_user_by( "email", "jeanne@example.org" )->ID, 23169 ) );'
+wp eval 'var_dump( wc_memberships_is_user_active_member( get_user_by( "email", "jeanne@example.org" )->ID, <plan_id> ) );'
 wp team-access revoke 78
 ```
 
@@ -203,7 +203,7 @@ composer install
 composer test
 ```
 
-44 tests couvrent la traduction des statuts d'abonnement en droits, l'agrégation multi-sources, la règle de dépassement, le calcul du quota, les jetons et les adresses.
+46 tests couvrent la traduction des statuts d'abonnement en droits, l'agrégation multi-sources, la règle de dépassement, le calcul du quota, les jetons et les adresses.
 
 ### Suite d'intégration (WordPress, WooCommerce, Subscriptions et Memberships réels)
 
@@ -217,7 +217,7 @@ WP="wp" bash /chemin/vers/wc-subscription-team-access/tests/integration/run.sh
 
 Scénarios couverts : abonnement sans place, abonnement à 5 places et quota figé, invitation d'un nouvel utilisateur et d'un utilisateur existant, adresse différente, invitation expirée puis relancée, invitation déjà utilisée ou remplacée par un renvoi, critères 1 à 6 (5 invités puis sixième refusée), place réservée par une invitation en attente, révocation (avec retrait du rôle), remplacement, suspension et réactivation, renouvellement échoué puis réussi, annulation avec période payée restante, expiration, changement de formule (baisse puis hausse du quota, variation héritant du parent), quota imposé, adhésion personnelle préexistante (préservée, relais, non-doublon), invité achetant ensuite son propre abonnement, invité de plusieurs abonnements, tentative sur l'abonnement d'autrui, exécution répétée d'un même événement, rattrapage après adhésion supprimée ou modifiée à la main, limitation des envois, validation des adresses, espace Mon compte, RGPD, e-mails Memberships désactivés, et **invitations concurrentes** (8 processus pour 1 place).
 
-Résultat sur dev.marcelle.media (16/11/2026) : 28 scénarios sur 28 et test de concurrence OK.
+Dernier résultat sur le site de recette (16/11/2026, WooCommerce 11.3, Subscriptions 9.3, Memberships 1.26.10) : 28 scénarios sur 28 et test de concurrence OK.
 
 ### Traductions
 
@@ -237,6 +237,7 @@ msgfmt -o languages/wc-subscription-team-access-fr_FR.mo languages/wc-subscripti
 | `wcsta_subscription_plan_ids` | filtre | Plans partagés avec les invités (`$plan_ids, $subscription`) |
 | `wcsta_subscription_effective_access` | filtre | Droit effectif conféré par un abonnement (`AccessState $state, $subscription`) |
 | `wcsta_after_accept_redirect` | filtre | Page de destination après acceptation (`$url, Seat $seat`) |
+| `wcsta_client_ip` | filtre | Adresse IP du client pour la limitation de débit, à fournir derrière un proxy inverse ou un CDN (`$ip`) |
 
 Gabarits surchargeables dans le thème : `wc-subscription-team-access/my-account/team-access.php`, `wc-subscription-team-access/invitation/accept.php`, et les e-mails dans `woocommerce/emails/`.
 

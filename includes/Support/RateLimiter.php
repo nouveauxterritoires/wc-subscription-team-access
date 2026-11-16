@@ -76,9 +76,21 @@ final class RateLimiter {
 		return 'wcsta_rl_' . md5( $key );
 	}
 
-	/** Identifiant anonymisé du client (adresse IP hachée, jamais stockée en clair). */
+	/**
+	 * Identifiant anonymisé du client (adresse IP hachée, jamais stockée en clair).
+	 *
+	 * Derrière un proxy inverse ou un CDN, REMOTE_ADDR est celle du proxy : le filtre
+	 * « wcsta_client_ip » permet de fournir l'adresse réelle issue d'un en-tête de confiance.
+	 */
 	public static function client_fingerprint(): string {
 		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+
+		/**
+		 * Filtre l'adresse IP du client utilisée pour la limitation de débit.
+		 *
+		 * @param string $ip Adresse (REMOTE_ADDR par défaut).
+		 */
+		$ip = (string) apply_filters( 'wcsta_client_ip', $ip );
 		return hash_hmac( 'sha256', $ip, wp_salt( 'nonce' ) );
 	}
 }
