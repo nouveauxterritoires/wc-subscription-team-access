@@ -1,9 +1,9 @@
 <?php
 /**
- * Crée les fixtures durables de la suite d'intégration : plan Memberships et produits de test.
- * (Exécuté dans un processus séparé : Memberships met en cache la liste des plans.)
+ * Creates the durable fixtures of the integration suite: Memberships plan and test products.
+ * (Run in a separate process: Memberships caches the plan list.)
  *
- * Usage : wp eval-file tests/integration/setup.php <fichier-fixtures.json>
+ * Usage: wp eval-file tests/integration/setup.php <fixtures-file.json>
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -13,13 +13,13 @@ defined( 'WP_CLI' ) && WP_CLI || exit( 1 );
 
 $file = $args[0] ?? '';
 if ( '' === $file ) {
-	WP_CLI::error( 'Fichier de fixtures manquant.' );
+	WP_CLI::error( 'Missing fixtures file.' );
 }
 
 /**
- * Produit d'abonnement simple.
+ * Simple subscription product.
  *
- * @param string      $name   Nom.
+ * @param string      $name   Name.
  * @param string|null $guests Quota.
  */
 $make_simple = static function ( string $name, ?string $guests ): int {
@@ -39,14 +39,14 @@ $make_simple = static function ( string $name, ?string $guests ): int {
 	return $product->save();
 };
 
-$p0 = $make_simple( 'Individuel (0 invité)', '0' );
-$p5 = $make_simple( 'Equipe (5 invités)', '5' );
+$p0 = $make_simple( 'Individual (0 guests)', '0' );
+$p5 = $make_simple( 'Team (5 guests)', '5' );
 
-// Abonnement variable : parent = 10 invités ; variation A = 2 ; variation B hérite du parent.
+// Variable subscription: parent = 10 guests; variation A = 2; variation B inherits from the parent.
 $parent    = new WC_Product_Variable_Subscription();
 $attribute = new WC_Product_Attribute();
-$attribute->set_name( 'Formule' );
-$attribute->set_options( array( 'Petite', 'Grande' ) );
+$attribute->set_name( 'Plan' );
+$attribute->set_options( array( 'Small', 'Large' ) );
 $attribute->set_visible( true );
 $attribute->set_variation( true );
 $parent->set_name( 'WCSTA IT Variable' );
@@ -59,7 +59,7 @@ $pv = $parent->save();
 $make_variation = static function ( int $parent_id, string $option, ?string $guests ): int {
 	$variation = new WC_Product_Subscription_Variation();
 	$variation->set_parent_id( $parent_id );
-	$variation->set_attributes( array( 'formule' => $option ) );
+	$variation->set_attributes( array( 'plan' => $option ) );
 	$variation->set_regular_price( '20' );
 	$variation->set_virtual( true );
 	$variation->set_status( 'publish' );
@@ -72,8 +72,8 @@ $make_variation = static function ( int $parent_id, string $option, ?string $gue
 	}
 	return $variation->save();
 };
-$va = $make_variation( $pv, 'Petite', '2' );
-$vb = $make_variation( $pv, 'Grande', null );
+$va = $make_variation( $pv, 'Small', '2' );
+$vb = $make_variation( $pv, 'Large', null );
 WC_Product_Variable::sync( $pv );
 
 $plan_id = wp_insert_post(
@@ -108,4 +108,4 @@ $fixtures = array(
 );
 
 file_put_contents( $file, (string) wp_json_encode( $fixtures, JSON_PRETTY_PRINT ) );
-WP_CLI::success( 'Fixtures : ' . wp_json_encode( $fixtures ) );
+WP_CLI::success( 'Fixtures: ' . wp_json_encode( $fixtures ) );

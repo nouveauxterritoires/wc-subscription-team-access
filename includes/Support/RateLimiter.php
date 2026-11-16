@@ -1,6 +1,6 @@
 <?php
 /**
- * Limitation de débit simple à fenêtre fixe, stockée en transients.
+ * Simple fixed-window rate limiting, stored in transients.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,16 +10,16 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess\Support;
 
 /**
- * Compte les tentatives par clé sur une fenêtre de temps.
+ * Counts attempts per key over a time window.
  */
 final class RateLimiter {
 
 	/**
-	 * Enregistre une tentative et indique si elle est autorisée.
+	 * Records an attempt and tells whether it is allowed.
 	 *
-	 * @param string $key    Clé (action + acteur).
-	 * @param int    $limit  Nombre maximal de tentatives par fenêtre.
-	 * @param int    $window Durée de la fenêtre en secondes.
+	 * @param string $key    Key (action + actor).
+	 * @param int    $limit  Maximum number of attempts per window.
+	 * @param int    $window Window length in seconds.
 	 */
 	public static function hit( string $key, int $limit, int $window ): bool {
 		$transient = self::transient( $key );
@@ -44,11 +44,11 @@ final class RateLimiter {
 	}
 
 	/**
-	 * Indique si la limite est atteinte, sans consommer de tentative.
+	 * Tells whether the limit is reached, without consuming an attempt.
 	 *
-	 * @param string $key    Clé.
-	 * @param int    $limit  Limite.
-	 * @param int    $window Fenêtre.
+	 * @param string $key    Key.
+	 * @param int    $limit  Limit.
+	 * @param int    $window Window.
 	 */
 	public static function exceeded( string $key, int $limit, int $window ): bool {
 		$data = get_transient( self::transient( $key ) );
@@ -59,36 +59,36 @@ final class RateLimiter {
 	}
 
 	/**
-	 * Remet un compteur à zéro.
+	 * Resets a counter to zero.
 	 *
-	 * @param string $key Clé.
+	 * @param string $key Key.
 	 */
 	public static function reset( string $key ): void {
 		delete_transient( self::transient( $key ) );
 	}
 
 	/**
-	 * Clé de transient (longueur bornée).
+	 * Transient key (bounded length).
 	 *
-	 * @param string $key Clé.
+	 * @param string $key Key.
 	 */
 	private static function transient( string $key ): string {
 		return 'wcsta_rl_' . md5( $key );
 	}
 
 	/**
-	 * Identifiant anonymisé du client (adresse IP hachée, jamais stockée en clair).
+	 * Anonymized client identifier (hashed IP address, never stored in clear text).
 	 *
-	 * Derrière un proxy inverse ou un CDN, REMOTE_ADDR est celle du proxy : le filtre
-	 * « wcsta_client_ip » permet de fournir l'adresse réelle issue d'un en-tête de confiance.
+	 * Behind a reverse proxy or a CDN, REMOTE_ADDR is the proxy's: the
+	 * "wcsta_client_ip" filter lets you supply the real address taken from a trusted header.
 	 */
 	public static function client_fingerprint(): string {
 		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
 
 		/**
-		 * Filtre l'adresse IP du client utilisée pour la limitation de débit.
+		 * Filters the client IP address used for rate limiting.
 		 *
-		 * @param string $ip Adresse (REMOTE_ADDR par défaut).
+		 * @param string $ip Address (REMOTE_ADDR by default).
 		 */
 		$ip = (string) apply_filters( 'wcsta_client_ip', $ip );
 		return hash_hmac( 'sha256', $ip, wp_salt( 'nonce' ) );

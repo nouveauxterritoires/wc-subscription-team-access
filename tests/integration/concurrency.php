@@ -1,8 +1,8 @@
 <?php
 /**
- * Une tentative d'invitation (lancée en parallèle par run.sh pour tester la concurrence).
+ * A single invitation attempt (launched in parallel by run.sh to test concurrency).
  *
- * Usage : wp eval-file tests/integration/concurrency.php <fichier-fixtures.json> <n>
+ * Usage: wp eval-file tests/integration/concurrency.php <fixtures-file.json> <n>
  *
  * @package WCSubscriptionTeamAccess
  */

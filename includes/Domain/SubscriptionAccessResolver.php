@@ -1,6 +1,6 @@
 <?php
 /**
- * Traduit le statut d'un abonnement WooCommerce Subscriptions en droit d'accès effectif.
+ * Translates a WooCommerce Subscriptions subscription status into an effective access entitlement.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,22 +10,22 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess\Domain;
 
 /**
- * Règles (documentées dans le README) :
+ * Rules (documented in the README):
  *
- * - active          : accès actif, sans date de fin ;
- * - pending-cancel  : accès actif jusqu'à la date de fin de la période payée, nul ensuite ;
- * - on-hold         : accès suspendu ;
- * - cancelled       : accès actif tant que la date de fin réelle n'est pas atteinte, nul ensuite ;
- * - autres (expired, pending, failed, switched, trash…) : aucun accès.
+ * - active          : active access, no end date;
+ * - pending-cancel  : active access until the end of the paid period, none afterwards;
+ * - on-hold         : suspended access;
+ * - cancelled       : active access until the actual end date is reached, none afterwards;
+ * - others (expired, pending, failed, switched, trash…) : no access.
  */
 final class SubscriptionAccessResolver {
 
 	/**
-	 * Calcule l'accès effectif.
+	 * Computes the effective access.
 	 *
-	 * @param string $status Statut de l'abonnement, sans préfixe « wc- ».
-	 * @param int    $end_ts Date de fin (horodatage UTC), 0 si aucune.
-	 * @param int    $now    Instant de référence (horodatage UTC).
+	 * @param string $status Subscription status, without the "wc-" prefix.
+	 * @param int    $end_ts End date (UTC timestamp), 0 if none.
+	 * @param int    $now    Reference time (UTC timestamp).
 	 */
 	public static function resolve( string $status, int $end_ts, int $now ): AccessState {
 		$status = str_starts_with( $status, 'wc-' ) ? substr( $status, 3 ) : $status;
@@ -35,8 +35,8 @@ final class SubscriptionAccessResolver {
 				return AccessState::active();
 
 			case 'pending-cancel':
-				// Fin de période payée dépassée : l'accès cesse, sans attendre le passage en « cancelled ».
-				// Sans date de fin connue (cas anormal), l'accès suit celui du titulaire, encore actif.
+				// Paid period end passed: access stops, without waiting for the switch to "cancelled".
+				// With no known end date (abnormal case), access follows the owner's, which is still active.
 				if ( $end_ts > 0 && $end_ts <= $now ) {
 					return AccessState::none();
 				}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Pilotage des adhésions WooCommerce Memberships des invités, via les API publiques.
+ * Management of guests' WooCommerce Memberships memberships, through the public APIs.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -16,18 +16,18 @@ use WCSubscriptionTeamAccess\Repository\Logger;
 use WCSubscriptionTeamAccess\Support\Lock;
 
 /**
- * Modèle d'attribution (voir README, « Modèle des droits ») :
+ * Assignment model (see README, "Rights model"):
  *
- * - Memberships ne connaît qu'une adhésion « logique » par (utilisateur, plan) : la plus récente
- *   (wc_memberships_get_user_membership / is_user_active_member) ; un achat ultérieur la réutilise.
- * - L'extension crée donc au plus UNE adhésion « gérée » par (invité, plan), marquée par la méta
- *   _wcsta_managed, sans commande ni abonnement liés. Son état est l'agrégat de toutes les sources
- *   de droits (places acceptées) enregistrées dans la table wcsta_grants.
- * - Une adhésion indépendante (achetée, offerte par un administrateur…) n'est jamais modifiée.
- *   Si elle est active, l'adhésion gérée est supprimée : elle ne doit jamais masquer une adhésion
- *   personnelle plus ancienne.
- * - Si Memberships réutilise l'adhésion gérée pour un achat de l'invité (commande ou abonnement
- *   liés), elle devient indépendante : l'extension la « libère » et n'y touche plus.
+ * - Memberships only knows one "logical" membership per (user, plan): the most recent one
+ *   (wc_memberships_get_user_membership / is_user_active_member); a later purchase reuses it.
+ * - The plugin therefore creates at most ONE "managed" membership per (guest, plan), flagged by the
+ *   _wcsta_managed meta, with no linked order or subscription. Its state is the aggregate of all
+ *   rights sources (accepted seats) stored in the wcsta_grants table.
+ * - An independent membership (purchased, granted by an administrator...) is never modified.
+ *   If it is active, the managed membership is deleted: it must never hide an older personal
+ *   membership.
+ * - If Memberships reuses the managed membership for a purchase by the guest (linked order or
+ *   subscription), it becomes independent: the plugin "releases" it and no longer touches it.
  */
 final class MembershipManager {
 
@@ -44,7 +44,7 @@ final class MembershipManager {
 	public const RESULT_SKIPPED   = 'skipped';
 	public const RESULT_ERROR     = 'error';
 
-	/** E-mails natifs de Memberships à ne pas envoyer pour une adhésion gérée. */
+	/** Native Memberships emails that must not be sent for a managed membership. */
 	private const EMAIL_IDS = array(
 		'WC_Memberships_User_Membership_Activated_Email',
 		'WC_Memberships_User_Membership_Ended_Email',
@@ -52,24 +52,24 @@ final class MembershipManager {
 		'WC_Memberships_User_Membership_Renewal_Reminder_Email',
 	);
 
-	/** Profondeur des opérations en cours (les événements que nous déclenchons sont ignorés). */
+	/** Depth of operations in progress (events we trigger ourselves are ignored). */
 	private static int $applying = 0;
 
-	/** Création d'adhésion gérée en cours (la méta n'est pas encore posée). */
+	/** Managed membership creation in progress (the meta is not set yet). */
 	private static bool $creating = false;
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param GrantRepository $grants Sources de droits.
-	 * @param Logger          $logger Journal.
+	 * @param GrantRepository $grants Rights sources.
+	 * @param Logger          $logger Logger.
 	 */
 	public function __construct(
 		private readonly GrantRepository $grants,
 		private readonly Logger $logger
 	) {}
 
-	/** Branche les crochets Memberships. */
+	/** Registers the Memberships hooks. */
 	public function register(): void {
 		foreach ( self::EMAIL_IDS as $email_id ) {
 			add_filter( 'woocommerce_email_enabled_' . $email_id, array( $this, 'filter_email_enabled' ), 99, 2 );
@@ -84,12 +84,12 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Rapproche l'adhésion gérée d'un invité de l'agrégat de ses sources de droits.
-	 * Idempotent : un second appel sans changement de sources ne modifie rien.
+	 * Reconciles a guest's managed membership with the aggregate of their rights sources.
+	 * Idempotent: a second call with no change in sources modifies nothing.
 	 *
-	 * @param int $user_id Invité.
+	 * @param int $user_id Guest.
 	 * @param int $plan_id Plan.
-	 * @return string Résultat (constantes RESULT_*).
+	 * @return string Result (RESULT_* constants).
 	 */
 	public function reconcile( int $user_id, int $plan_id ): string {
 		if ( ! function_exists( 'wc_memberships_get_membership_plan' ) || $user_id <= 0 || $plan_id <= 0 ) {
@@ -135,10 +135,10 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Adhésions d'un utilisateur pour un plan, de la plus récente à la plus ancienne
-	 * (même ordre que Memberships).
+	 * Memberships of a user for a plan, from most recent to oldest
+	 * (same order as Memberships).
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 * @param int $plan_id Plan.
 	 * @return \WC_Memberships_User_Membership[]
 	 */
@@ -167,9 +167,9 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Adhésion gérée d'un invité pour un plan, s'il y en a une.
+	 * Managed membership of a guest for a plan, if there is one.
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 * @param int $plan_id Plan.
 	 */
 	public function managed_membership( int $user_id, int $plan_id ): ?\WC_Memberships_User_Membership {
@@ -182,19 +182,19 @@ final class MembershipManager {
 	}
 
 	/**
-	 * L'adhésion est gérée par l'extension.
+	 * The membership is managed by the plugin.
 	 *
-	 * @param \WC_Memberships_User_Membership $membership Adhésion.
+	 * @param \WC_Memberships_User_Membership $membership Membership.
 	 */
 	public function is_managed( \WC_Memberships_User_Membership $membership ): bool {
 		return '1' === (string) get_post_meta( $membership->get_id(), self::META_MANAGED, true );
 	}
 
 	/**
-	 * Filtre : désactive les e-mails natifs de Memberships pour les adhésions gérées.
+	 * Filter: disables the native Memberships emails for managed memberships.
 	 *
-	 * @param bool  $enabled E-mail actif.
-	 * @param mixed $object  Objet de l'e-mail.
+	 * @param bool  $enabled Whether the email is enabled.
+	 * @param mixed $object  Email object.
 	 */
 	public function filter_email_enabled( $enabled, $object = null ) {
 		if ( ! $enabled || 'yes' !== Settings::get( 'suppress_membership_emails' ) ) {
@@ -210,10 +210,10 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Filtre : retire « Annuler » et « Renouveler » de l'espace membre pour une adhésion gérée.
+	 * Filter: removes "Cancel" and "Renew" from the member area for a managed membership.
 	 *
 	 * @param array<string, mixed>            $actions    Actions.
-	 * @param \WC_Memberships_User_Membership $membership Adhésion.
+	 * @param \WC_Memberships_User_Membership $membership Membership.
 	 * @return array<string, mixed>
 	 */
 	public function filter_member_actions( $actions, $membership ) {
@@ -224,10 +224,10 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Un achat de l'invité a réutilisé l'adhésion gérée : elle devient personnelle.
+	 * A purchase by the guest reused the managed membership: it becomes personal.
 	 *
 	 * @param \WC_Memberships_Membership_Plan $plan Plan.
-	 * @param array<string, mixed>            $args Arguments (user_membership_id…).
+	 * @param array<string, mixed>            $args Arguments (user_membership_id...).
 	 */
 	public function on_granted_from_purchase( $plan, $args ): void {
 		$membership_id = (int) ( $args['user_membership_id'] ?? 0 );
@@ -241,10 +241,10 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Une adhésion indépendante vient d'être créée : réévaluer immédiatement.
+	 * An independent membership has just been created: re-evaluate immediately.
 	 *
 	 * @param \WC_Memberships_Membership_Plan $plan Plan.
-	 * @param array<string, mixed>            $args Arguments (user_id, user_membership_id…).
+	 * @param array<string, mixed>            $args Arguments (user_id, user_membership_id...).
 	 */
 	public function on_membership_created( $plan, $args ): void {
 		if ( self::$applying > 0 || ! $plan instanceof \WC_Memberships_Membership_Plan ) {
@@ -257,16 +257,16 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Changement de statut d'une adhésion fait par un tiers.
+	 * Status change of a membership made by a third party.
 	 *
-	 * - adhésion indépendante : réévaluation immédiate (elle peut désormais couvrir l'invité,
-	 *   ou ne plus le couvrir) ;
-	 * - adhésion gérée modifiée à la main : l'extension fait autorité, la réévaluation est
-	 *   planifiée en tâche de fond (évite toute boucle).
+	 * - independent membership: immediate re-evaluation (it may now cover the guest,
+	 *   or no longer cover them);
+	 * - managed membership edited by hand: the plugin is authoritative, and the re-evaluation is
+	 *   scheduled as a background task (avoids any loop).
 	 *
-	 * @param \WC_Memberships_User_Membership $membership Adhésion.
-	 * @param string                          $old_status Ancien statut.
-	 * @param string                          $new_status Nouveau statut.
+	 * @param \WC_Memberships_User_Membership $membership Membership.
+	 * @param string                          $old_status Old status.
+	 * @param string                          $new_status New status.
 	 */
 	public function on_status_changed( $membership, $old_status, $new_status ): void {
 		unset( $old_status, $new_status );
@@ -287,10 +287,10 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Suppression d'une adhésion par un tiers : réévaluation en tâche de fond.
+	 * Deletion of a membership by a third party: background re-evaluation.
 	 *
-	 * @param int           $post_id Identifiant.
-	 * @param \WP_Post|null $post    Contenu supprimé.
+	 * @param int           $post_id Identifier.
+	 * @param \WP_Post|null $post    Deleted post.
 	 */
 	public function on_deleted_post( $post_id, $post = null ): void {
 		if ( self::$applying > 0 || ! $post instanceof \WP_Post || 'wc_user_membership' !== $post->post_type ) {
@@ -302,9 +302,9 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Cœur du rapprochement (appelé sous verrou).
+	 * Core of the reconciliation (called under lock).
 	 *
-	 * @param int $user_id Invité.
+	 * @param int $user_id Guest.
 	 * @param int $plan_id Plan.
 	 */
 	private function apply( int $user_id, int $plan_id ): string {
@@ -346,13 +346,13 @@ final class MembershipManager {
 			return $managed ? self::RESULT_DELETED : self::RESULT_NONE;
 		}
 
-		// Doublons éventuels : on garde la plus récente.
+		// Possible duplicates: keep the most recent one.
 		$membership = array_shift( $managed );
 		foreach ( $managed as $duplicate ) {
 			$this->delete( $duplicate, 'duplicate' );
 		}
 
-		// Une adhésion indépendante plus récente (inactive) masquerait la nôtre : on la recrée.
+		// A more recent (inactive) independent membership would hide ours: recreate it.
 		if ( $membership && $this->is_shadowed( $membership, $user_id, $plan_id ) ) {
 			$this->delete( $membership, 'shadowed' );
 			$membership = null;
@@ -374,15 +374,15 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Crée l'adhésion gérée.
+	 * Creates the managed membership.
 	 *
-	 * @param int $user_id Invité.
+	 * @param int $user_id Guest.
 	 * @param int $plan_id Plan.
-	 * @throws \RuntimeException Si Memberships refuse la création.
+	 * @throws \RuntimeException If Memberships refuses the creation.
 	 */
 	private function create( int $user_id, int $plan_id ): \WC_Memberships_User_Membership {
-		// Memberships retient l'adhésion de date la plus récente : à la seconde près, deux
-		// adhésions seraient départagées arbitrairement. La nôtre est datée strictement après.
+		// Memberships picks the membership with the most recent date: to the second, two
+		// memberships would be tie-broken arbitrarily. Ours is dated strictly later.
 		$latest = 0;
 		foreach ( $this->memberships_for( $user_id, $plan_id ) as $existing ) {
 			$latest = max( $latest, (int) strtotime( (string) get_post_field( 'post_date_gmt', $existing->get_id() ) . ' UTC' ) );
@@ -429,11 +429,11 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Aligne statut et date de fin de l'adhésion gérée sur l'état souhaité.
+	 * Aligns the status and end date of the managed membership with the desired state.
 	 *
-	 * @param \WC_Memberships_User_Membership $membership Adhésion gérée.
-	 * @param AccessState                     $desired    État souhaité (actif ou en pause).
-	 * @return bool Modification effectuée.
+	 * @param \WC_Memberships_User_Membership $membership Managed membership.
+	 * @param AccessState                     $desired    Desired state (active or paused).
+	 * @return bool Whether a change was made.
 	 */
 	private function apply_state( \WC_Memberships_User_Membership $membership, AccessState $desired ): bool {
 		$changed = false;
@@ -441,7 +441,7 @@ final class MembershipManager {
 		$current_end = $membership->get_end_date( 'timestamp', false );
 		$current_end = $current_end ? (int) $current_end : null;
 
-		// La date de fin est posée avant l'activation : une date passée ferait expirer l'adhésion.
+		// The end date is set before activation: a past date would make the membership expire.
 		if ( $desired->is_active() && $current_end !== $desired->end_ts ) {
 			$membership->set_end_date( null === $desired->end_ts ? '' : gmdate( 'Y-m-d H:i:s', $desired->end_ts ) );
 			$changed = true;
@@ -461,19 +461,19 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Supprime une adhésion gérée.
+	 * Deletes a managed membership.
 	 *
-	 * @param \WC_Memberships_User_Membership $membership Adhésion.
-	 * @param string                          $reason     Motif.
+	 * @param \WC_Memberships_User_Membership $membership Membership.
+	 * @param string                          $reason     Reason.
 	 */
 	private function delete( \WC_Memberships_User_Membership $membership, string $reason ): void {
 		$id      = $membership->get_id();
 		$user_id = (int) $membership->get_user_id();
 		$plan_id = (int) $membership->get_plan_id();
 
-		// L'annulation passe par la transition de statut native : Memberships y recalcule le rôle
-		// du membre (option « attribuer des rôles aux membres ») en tenant compte de ses autres
-		// adhésions actives. Une suppression directe laisserait le rôle de membre actif en place.
+		// Cancellation goes through the native status transition: Memberships recalculates the
+		// member's role there (the "assign roles to members" option), taking their other active
+		// memberships into account. A direct deletion would leave the member role in place.
 		if ( ! in_array( (string) $membership->get_status(), array( 'cancelled', 'expired' ), true ) ) {
 			$membership->cancel_membership( __( 'Guest access ended: no active sharing subscription for this member.', 'wc-subscription-team-access' ) );
 		}
@@ -491,9 +491,9 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Libère une adhésion gérée réutilisée par un achat : elle devient indépendante.
+	 * Releases a managed membership reused by a purchase: it becomes independent.
 	 *
-	 * @param \WC_Memberships_User_Membership $membership Adhésion.
+	 * @param \WC_Memberships_User_Membership $membership Membership.
 	 */
 	private function release( \WC_Memberships_User_Membership $membership ): void {
 		delete_post_meta( $membership->get_id(), self::META_MANAGED );
@@ -518,9 +518,9 @@ final class MembershipManager {
 	}
 
 	/**
-	 * L'adhésion gérée a été reprise par un achat (commande, produit ou abonnement liés).
+	 * The managed membership has been taken over by a purchase (linked order, product or subscription).
 	 *
-	 * @param \WC_Memberships_User_Membership $membership Adhésion.
+	 * @param \WC_Memberships_User_Membership $membership Membership.
 	 */
 	private function is_claimed_by_purchase( \WC_Memberships_User_Membership $membership ): bool {
 		if ( (int) $membership->get_order_id() > 0 || (int) $membership->get_product_id() > 0 ) {
@@ -531,10 +531,10 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Une autre adhésion est plus récente que l'adhésion gérée : Memberships ne verrait pas la nôtre.
+	 * Another membership is more recent than the managed one: Memberships would not see ours.
 	 *
-	 * @param \WC_Memberships_User_Membership $membership Adhésion gérée.
-	 * @param int                             $user_id    Utilisateur.
+	 * @param \WC_Memberships_User_Membership $membership Managed membership.
+	 * @param int                             $user_id    User.
 	 * @param int                             $plan_id    Plan.
 	 */
 	private function is_shadowed( \WC_Memberships_User_Membership $membership, int $user_id, int $plan_id ): bool {
@@ -553,9 +553,9 @@ final class MembershipManager {
 	}
 
 	/**
-	 * Mémorise les abonnements sources sur l'adhésion (affichage administrateur).
+	 * Stores the source subscriptions on the membership (administrator display).
 	 *
-	 * @param \WC_Memberships_User_Membership                                  $membership Adhésion.
+	 * @param \WC_Memberships_User_Membership                                  $membership Membership.
 	 * @param array<int, array{seat_id:int, subscription_id:int, state:AccessState}> $sources    Sources.
 	 */
 	private function update_sources( \WC_Memberships_User_Membership $membership, array $sources ): void {

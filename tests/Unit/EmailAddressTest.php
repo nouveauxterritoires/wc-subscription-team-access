@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WCSubscriptionTeamAccess\Domain\EmailAddress;
 
 /**
- * Comparaison et masquage des adresses.
+ * Email address comparison and masking.
  */
 final class EmailAddressTest extends TestCase {
 

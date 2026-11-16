@@ -1,6 +1,6 @@
 <?php
 /**
- * Libellés traduits des statuts (espace client et administration).
+ * Translated status labels (customer area and admin).
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -13,15 +13,15 @@ use WCSubscriptionTeamAccess\Domain\SeatStatus;
 use WCSubscriptionTeamAccess\Repository\Seat;
 
 /**
- * Statut affiché d'une place : l'un des quatre statuts du cahier des charges
- * (en attente, acceptée, suspendue, révoquée), plus l'historique (annulée, expirée).
+ * Displayed seat status: one of the four statuses from the specification
+ * (pending, accepted, suspended, revoked), plus the history (cancelled, expired).
  */
 final class Labels {
 
 	/**
-	 * Clé de statut affiché.
+	 * Displayed status key.
 	 *
-	 * @param Seat $seat Place.
+	 * @param Seat $seat Seat.
 	 */
 	public static function display_status( Seat $seat ): string {
 		if ( $seat->is_accepted() ) {
@@ -31,9 +31,9 @@ final class Labels {
 	}
 
 	/**
-	 * Libellé du statut affiché.
+	 * Label of the displayed status.
 	 *
-	 * @param Seat $seat Place.
+	 * @param Seat $seat Seat.
 	 */
 	public static function status( Seat $seat ): string {
 		$labels = array(
@@ -49,9 +49,9 @@ final class Labels {
 	}
 
 	/**
-	 * Explication d'une suspension.
+	 * Explanation of a suspension.
 	 *
-	 * @param Seat $seat Place.
+	 * @param Seat $seat Seat.
 	 */
 	public static function reason( Seat $seat ): string {
 		if ( ! $seat->is_accepted() || SeatStatus::ACCESS_ACTIVE === $seat->access ) {

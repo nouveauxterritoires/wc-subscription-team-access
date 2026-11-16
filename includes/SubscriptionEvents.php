@@ -1,6 +1,6 @@
 <?php
 /**
- * Écoute les événements publics de WooCommerce Subscriptions et déclenche la synchronisation.
+ * Listens to the public WooCommerce Subscriptions events and triggers synchronization.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -12,19 +12,19 @@ namespace WCSubscriptionTeamAccess;
 use WCSubscriptionTeamAccess\Repository\SeatRepository;
 
 /**
- * Transitions gérées : active, on-hold, pending-cancel, cancelled, expired, trash, suppression,
- * changement de dates, renouvellement réussi ou échoué (via le statut) et changement de formule.
- * Chaque événement relance une synchronisation complète et idempotente de l'abonnement.
+ * Handled transitions: active, on-hold, pending-cancel, cancelled, expired, trash, deletion,
+ * date changes, successful or failed renewal (via the status) and plan switch.
+ * Each event triggers a full, idempotent synchronization of the subscription.
  */
 final class SubscriptionEvents {
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param Reconciler          $reconciler    Synchronisation.
+	 * @param Reconciler          $reconciler    Synchronization.
 	 * @param QuotaManager        $quotas        Quotas.
-	 * @param SeatRepository      $seats         Places.
-	 * @param SubscriptionManager $subscriptions Abonnements.
+	 * @param SeatRepository      $seats         Seats.
+	 * @param SubscriptionManager $subscriptions Subscriptions.
 	 */
 	public function __construct(
 		private readonly Reconciler $reconciler,
@@ -33,7 +33,7 @@ final class SubscriptionEvents {
 		private readonly SubscriptionManager $subscriptions
 	) {}
 
-	/** Branche les crochets. */
+	/** Registers the hooks. */
 	public function register(): void {
 		add_action( 'woocommerce_subscription_status_updated', array( $this, 'on_status_updated' ), 20, 3 );
 		add_action( 'woocommerce_subscription_date_updated', array( $this, 'on_date_changed' ), 20, 2 );
@@ -48,11 +48,11 @@ final class SubscriptionEvents {
 	}
 
 	/**
-	 * Changement de statut.
+	 * Status change.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param string           $new_status   Nouveau statut.
-	 * @param string           $old_status   Ancien statut.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param string           $new_status   New status.
+	 * @param string           $old_status   Old status.
 	 */
 	public function on_status_updated( $subscription, $new_status, $old_status ): void {
 		unset( $new_status, $old_status );
@@ -62,10 +62,10 @@ final class SubscriptionEvents {
 	}
 
 	/**
-	 * Changement de la date de fin (fin de période payée, prolongation…).
+	 * End date change (end of paid period, extension...).
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param string           $date_type    Type de date.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param string           $date_type    Date type.
 	 */
 	public function on_date_changed( $subscription, $date_type ): void {
 		if ( $subscription instanceof \WC_Subscription && 'end' === $date_type && $this->is_concerned( $subscription->get_id() ) ) {
@@ -74,9 +74,9 @@ final class SubscriptionEvents {
 	}
 
 	/**
-	 * Changement de formule terminé : nouvel instantané du quota, puis réévaluation des plans.
+	 * Plan switch completed: new quota snapshot, then re-evaluation of the plans.
 	 *
-	 * @param \WC_Order $order Commande de changement de formule.
+	 * @param \WC_Order $order Plan switch order.
 	 */
 	public function on_switch_completed( $order ): void {
 		if ( ! function_exists( 'wcs_get_subscriptions_for_switch_order' ) ) {
@@ -92,9 +92,9 @@ final class SubscriptionEvents {
 	}
 
 	/**
-	 * Mise à la corbeille, restauration ou suppression d'un abonnement.
+	 * Trashing, restoring or deleting a subscription.
 	 *
-	 * @param int $post_id Identifiant.
+	 * @param int $post_id Identifier.
 	 */
 	public function on_post_changed( $post_id ): void {
 		$post_id = (int) $post_id;
@@ -104,21 +104,21 @@ final class SubscriptionEvents {
 	}
 
 	/**
-	 * L'abonnement a (ou a eu) des invités.
+	 * The subscription has (or has had) guests.
 	 *
-	 * @param int $subscription_id Abonnement.
+	 * @param int $subscription_id Subscription.
 	 */
 	private function is_concerned( int $subscription_id ): bool {
 		return array() !== $this->seats->for_subscription( $subscription_id );
 	}
 
 	/**
-	 * L'identifiant est (ou était) celui d'un abonnement.
+	 * The identifier is (or was) that of a subscription.
 	 *
-	 * @param int $id Identifiant.
+	 * @param int $id Identifier.
 	 */
 	private function is_subscription_id( int $id ): bool {
-		// Une fois supprimé, l'abonnement n'est plus lisible : la présence de places suffit.
+		// Once deleted, the subscription can no longer be read: the presence of seats is enough.
 		$subscription = $this->subscriptions->get( $id );
 		return null === $subscription || $subscription instanceof \WC_Subscription;
 	}

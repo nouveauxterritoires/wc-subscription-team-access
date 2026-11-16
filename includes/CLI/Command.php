@@ -1,6 +1,6 @@
 <?php
 /**
- * Commandes WP-CLI : wp team-access …
+ * WP-CLI commands: wp team-access …
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -19,18 +19,18 @@ use WCSubscriptionTeamAccess\Support\Dates;
 use WCSubscriptionTeamAccess\TeamManager;
 
 /**
- * Consulte et pilote les accès partagés des abonnements.
+ * Inspects and manages the shared access of subscriptions.
  */
 final class Command {
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param TeamManager         $team          Opérations.
-	 * @param Reconciler          $reconciler    Synchronisation.
-	 * @param SubscriptionManager $subscriptions Abonnements.
+	 * @param TeamManager         $team          Operations.
+	 * @param Reconciler          $reconciler    Synchronization.
+	 * @param SubscriptionManager $subscriptions Subscriptions.
 	 * @param QuotaManager        $quotas        Quotas.
-	 * @param SeatRepository      $seats         Places.
+	 * @param SeatRepository      $seats         Seats.
 	 */
 	public function __construct(
 		private readonly TeamManager $team,
@@ -41,15 +41,15 @@ final class Command {
 	) {}
 
 	/**
-	 * Affiche l'état d'un abonnement : quota, places, droits et plans partagés.
+	 * Shows a subscription's state: quota, seats, access and shared plans.
 	 *
 	 * ## OPTIONS
 	 *
 	 * <subscription_id>
-	 * : Identifiant de l'abonnement.
+	 * : Subscription ID.
 	 *
 	 * [--format=<format>]
-	 * : table, json ou csv.
+	 * : table, json or csv.
 	 * ---
 	 * default: table
 	 * ---
@@ -103,18 +103,18 @@ final class Command {
 	}
 
 	/**
-	 * Invite une adresse sur un abonnement (en tant qu'administrateur).
+	 * Invites an email address to a subscription (as an administrator).
 	 *
 	 * ## OPTIONS
 	 *
 	 * <subscription_id>
-	 * : Abonnement.
+	 * : Subscription.
 	 *
 	 * <email>
-	 * : Adresse invitée.
+	 * : Invited email address.
 	 *
 	 * [--as=<user_id>]
-	 * : Agir en tant que cet utilisateur (par défaut : premier administrateur).
+	 * : Act as this user (default: first administrator).
 	 *
 	 * ## EXAMPLES
 	 *
@@ -132,15 +132,15 @@ final class Command {
 	}
 
 	/**
-	 * Annule une invitation ou révoque un accès.
+	 * Cancels an invitation or revokes access.
 	 *
 	 * ## OPTIONS
 	 *
 	 * <seat_id>
-	 * : Place.
+	 * : Seat.
 	 *
 	 * [--as=<user_id>]
-	 * : Agir en tant que cet utilisateur.
+	 * : Act as this user.
 	 *
 	 * @param array<int, string>    $args       Arguments.
 	 * @param array<string, string> $assoc_args Options.
@@ -154,15 +154,15 @@ final class Command {
 	}
 
 	/**
-	 * Renvoie une invitation.
+	 * Resends an invitation.
 	 *
 	 * ## OPTIONS
 	 *
 	 * <seat_id>
-	 * : Place.
+	 * : Seat.
 	 *
 	 * [--as=<user_id>]
-	 * : Agir en tant que cet utilisateur.
+	 * : Act as this user.
 	 *
 	 * @param array<int, string>    $args       Arguments.
 	 * @param array<string, string> $assoc_args Options.
@@ -176,12 +176,12 @@ final class Command {
 	}
 
 	/**
-	 * Resynchronise un abonnement, ou tous les abonnements partagés.
+	 * Resynchronizes a subscription, or all shared subscriptions.
 	 *
 	 * ## OPTIONS
 	 *
 	 * [<subscription_id>]
-	 * : Abonnement. Sans argument : tous, de façon synchrone.
+	 * : Subscription. Without an argument: all of them, synchronously.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -212,7 +212,7 @@ final class Command {
 	}
 
 	/**
-	 * Lance la maintenance quotidienne (expirations, anonymisation, purge du journal).
+	 * Runs the daily maintenance (expirations, anonymization, log purge).
 	 */
 	public function maintenance(): void {
 		$this->reconciler->maintenance();
@@ -220,12 +220,12 @@ final class Command {
 	}
 
 	/**
-	 * Recalcule l'instantané du quota depuis le catalogue actuel (à utiliser avec précaution).
+	 * Recomputes the quota snapshot from the current catalog (use with caution).
 	 *
 	 * ## OPTIONS
 	 *
 	 * <subscription_id>
-	 * : Abonnement.
+	 * : Subscription.
 	 *
 	 * @param array<int, string> $args Arguments.
 	 */
@@ -237,7 +237,7 @@ final class Command {
 	}
 
 	/**
-	 * Planifie la synchronisation complète en tâche de fond.
+	 * Schedules the full synchronization as a background task.
 	 */
 	public function schedule(): void {
 		( new Scheduler( $this->reconciler ) )->enqueue_batch( 0 );
@@ -245,9 +245,9 @@ final class Command {
 	}
 
 	/**
-	 * Charge un abonnement ou arrête la commande.
+	 * Loads a subscription or aborts the command.
 	 *
-	 * @param int $id Identifiant.
+	 * @param int $id ID.
 	 */
 	private function subscription( int $id ): \WC_Subscription {
 		$subscription = $this->subscriptions->get( $id );
@@ -258,7 +258,7 @@ final class Command {
 	}
 
 	/**
-	 * Acteur des opérations.
+	 * Actor performing the operations.
 	 *
 	 * @param array<string, string> $assoc_args Options.
 	 */
@@ -277,9 +277,9 @@ final class Command {
 	}
 
 	/**
-	 * Affiche le résultat d'une synchronisation.
+	 * Prints the result of a synchronization.
 	 *
-	 * @param array<string, mixed>|\WP_Error $result Résultat.
+	 * @param array<string, mixed>|\WP_Error $result Result.
 	 */
 	private function print_sync( array|\WP_Error $result ): void {
 		if ( is_wp_error( $result ) ) {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Administration : WooCommerce > Accès équipe.
+ * Admin: WooCommerce > Team access.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -24,8 +24,8 @@ use WCSubscriptionTeamAccess\Support\Dates;
 use WCSubscriptionTeamAccess\TeamManager;
 
 /**
- * Consultation des abonnements partagés, actions d'administration, journal et réglages.
- * Toutes les actions exigent la capacité « manage_woocommerce » et un nonce.
+ * Browsing of shared subscriptions, admin actions, log and settings.
+ * All actions require the "manage_woocommerce" capability and a nonce.
  */
 final class AdminPage {
 
@@ -34,16 +34,16 @@ final class AdminPage {
 	private const PER_PAGE  = 20;
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param TeamManager         $team          Opérations.
-	 * @param Reconciler          $reconciler    Synchronisation.
-	 * @param SubscriptionManager $subscriptions Abonnements.
+	 * @param TeamManager         $team          Operations.
+	 * @param Reconciler          $reconciler    Synchronization.
+	 * @param SubscriptionManager $subscriptions Subscriptions.
 	 * @param QuotaManager        $quotas        Quotas.
-	 * @param SeatRepository      $seats         Places.
-	 * @param GrantRepository     $grants        Sources de droits.
-	 * @param MembershipManager   $memberships   Adhésions.
-	 * @param Logger              $logger        Journal.
+	 * @param SeatRepository      $seats         Seats.
+	 * @param GrantRepository     $grants        Access grant sources.
+	 * @param MembershipManager   $memberships   Memberships.
+	 * @param Logger              $logger        Log.
 	 */
 	public function __construct(
 		private readonly TeamManager $team,
@@ -56,14 +56,14 @@ final class AdminPage {
 		private readonly Logger $logger
 	) {}
 
-	/** Branche les crochets. */
+	/** Hooks into WordPress. */
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'add_menu' ), 60 );
 		add_action( 'admin_post_wcsta_admin', array( $this, 'handle_action' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 	}
 
-	/** Ajoute le sous-menu WooCommerce. */
+	/** Adds the WooCommerce submenu. */
 	public function add_menu(): void {
 		add_submenu_page(
 			'woocommerce',
@@ -76,9 +76,9 @@ final class AdminPage {
 	}
 
 	/**
-	 * Feuille de style de la page.
+	 * Page stylesheet.
 	 *
-	 * @param string $hook Écran.
+	 * @param string $hook Screen.
 	 */
 	public function enqueue( $hook ): void {
 		if ( ! is_string( $hook ) || ! str_contains( $hook, self::SLUG ) ) {
@@ -89,7 +89,7 @@ final class AdminPage {
 	}
 
 	/**
-	 * URL d'un onglet.
+	 * Tab URL.
 	 *
 	 * @param array<string, scalar> $args Arguments.
 	 */
@@ -97,13 +97,13 @@ final class AdminPage {
 		return add_query_arg( array_merge( array( 'page' => self::SLUG ), $args ), admin_url( 'admin.php' ) );
 	}
 
-	/** Affiche la page. */
+	/** Renders the page. */
 	public function render(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
 			wp_die( esc_html__( 'You are not allowed to access this page.', 'wc-subscription-team-access' ) );
 		}
 
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- lecture seule.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only.
 		$tab             = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'subscriptions';
 		$subscription_id = isset( $_GET['subscription'] ) ? absint( wp_unslash( $_GET['subscription'] ) ) : 0;
 		// phpcs:enable
@@ -144,7 +144,7 @@ final class AdminPage {
 		echo '</div>';
 	}
 
-	/** Traite les actions (admin-post.php). */
+	/** Handles actions (admin-post.php). */
 	public function handle_action(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
 			wp_die( esc_html__( 'You are not allowed to access this page.', 'wc-subscription-team-access' ), 403 );
@@ -192,7 +192,7 @@ final class AdminPage {
 		exit;
 	}
 
-	/** Liste des abonnements ayant des invités. */
+	/** List of subscriptions that have guests. */
 	private function render_list(): void {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
@@ -267,9 +267,9 @@ final class AdminPage {
 	}
 
 	/**
-	 * Détail d'un abonnement.
+	 * Subscription detail.
 	 *
-	 * @param int $subscription_id Abonnement.
+	 * @param int $subscription_id Subscription.
 	 */
 	private function render_subscription( int $subscription_id ): void {
 		$subscription = $this->subscriptions->get( $subscription_id );
@@ -382,9 +382,9 @@ final class AdminPage {
 	}
 
 	/**
-	 * Formulaire de quota imposé.
+	 * Enforced quota form.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	private function render_quota_form( \WC_Subscription $subscription ): void {
 		$override = $this->quotas->override( $subscription );
@@ -405,7 +405,7 @@ final class AdminPage {
 		echo '</form>';
 	}
 
-	/** Onglet journal. */
+	/** Log tab. */
 	private function render_logs(): void {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		$level = isset( $_GET['level'] ) ? sanitize_key( wp_unslash( $_GET['level'] ) ) : 'problems';
@@ -426,7 +426,7 @@ final class AdminPage {
 				esc_html( $label )
 			);
 		}
-		echo implode( ' | ', $links ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- éléments échappés ci-dessus.
+		echo implode( ' | ', $links ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- items escaped above.
 		echo '</ul><br class="clear">';
 
 		$result = $this->logger->query( 'all' === $level ? '' : $level, self::PER_PAGE, ( $paged - 1 ) * self::PER_PAGE );
@@ -435,10 +435,10 @@ final class AdminPage {
 	}
 
 	/**
-	 * Table d'entrées du journal.
+	 * Log entries table.
 	 *
-	 * @param array<int, array<string, mixed>> $rows  Entrées.
-	 * @param string                           $title Titre.
+	 * @param array<int, array<string, mixed>> $rows  Entries.
+	 * @param string                           $title Title.
 	 */
 	private function render_log_table( array $rows, string $title ): void {
 		if ( '' !== $title ) {
@@ -477,10 +477,10 @@ final class AdminPage {
 	}
 
 	/**
-	 * Enregistre le quota imposé.
+	 * Saves the enforced quota.
 	 *
-	 * @param int $subscription_id Abonnement.
-	 * @param int $actor           Administrateur.
+	 * @param int $subscription_id Subscription.
+	 * @param int $actor           Administrator.
 	 */
 	private function handle_override( int $subscription_id, int $actor ): void {
 		$subscription = $this->subscriptions->get( $subscription_id );
@@ -497,9 +497,9 @@ final class AdminPage {
 	}
 
 	/**
-	 * Adhésions d'une place (liens vers l'écran Memberships).
+	 * Memberships of a seat (links to the Memberships screen).
 	 *
-	 * @param Seat $seat Place.
+	 * @param Seat $seat Seat.
 	 */
 	private function seat_memberships( Seat $seat ): string {
 		if ( $seat->user_id <= 0 ) {
@@ -521,9 +521,9 @@ final class AdminPage {
 	}
 
 	/**
-	 * Lien vers un compte.
+	 * Link to an account.
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 */
 	private function user_link( int $user_id ): string {
 		$user = get_userdata( $user_id );
@@ -534,7 +534,7 @@ final class AdminPage {
 	}
 
 	/**
-	 * Liens vers les plans.
+	 * Links to the plans.
 	 *
 	 * @param int[] $plan_ids Plans.
 	 */
@@ -551,10 +551,10 @@ final class AdminPage {
 	}
 
 	/**
-	 * Libellé d'un droit d'accès.
+	 * Label of an access entitlement.
 	 *
-	 * @param string   $state  État.
-	 * @param int|null $end_ts Fin.
+	 * @param string   $state  State.
+	 * @param int|null $end_ts End.
 	 */
 	private function access_label( string $state, ?int $end_ts ): string {
 		if ( 'active' === $state ) {
@@ -567,24 +567,24 @@ final class AdminPage {
 	}
 
 	/**
-	 * Ligne d'informations.
+	 * Information row.
 	 *
-	 * @param string $label Libellé.
-	 * @param string $html  Valeur (HTML déjà échappé).
+	 * @param string $label Label.
+	 * @param string $html  Value (already-escaped HTML).
 	 */
 	private function fact( string $label, string $html ): void {
 		echo '<tr><th scope="row">' . esc_html( $label ) . '</th><td>' . wp_kses_post( $html ) . '</td></tr>';
 	}
 
 	/**
-	 * Bouton d'action (formulaire POST avec nonce).
+	 * Action button (POST form with nonce).
 	 *
-	 * @param string $op              Opération.
-	 * @param string $label           Libellé.
-	 * @param int    $subscription_id Abonnement.
-	 * @param int    $seat_id         Place.
-	 * @param string $class           Classes CSS.
-	 * @param string $confirm         Message de confirmation.
+	 * @param string $op              Operation.
+	 * @param string $label           Label.
+	 * @param int    $subscription_id Subscription.
+	 * @param int    $seat_id         Seat.
+	 * @param string $class           CSS classes.
+	 * @param string $confirm         Confirmation message.
 	 */
 	private function action_button( string $op, string $label, int $subscription_id, int $seat_id = 0, string $class = 'button button-small', string $confirm = '' ): void {
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="wcsta-inline-form"' . ( '' !== $confirm ? ' data-wcsta-confirm="' . esc_attr( $confirm ) . '"' : '' ) . '>';
@@ -594,11 +594,11 @@ final class AdminPage {
 	}
 
 	/**
-	 * Champs cachés communs.
+	 * Common hidden fields.
 	 *
-	 * @param string $op              Opération.
-	 * @param int    $subscription_id Abonnement.
-	 * @param int    $seat_id         Place.
+	 * @param string $op              Operation.
+	 * @param int    $subscription_id Subscription.
+	 * @param int    $seat_id         Seat.
 	 */
 	private function hidden_fields( string $op, int $subscription_id, int $seat_id = 0 ): void {
 		wp_nonce_field( 'wcsta_admin' );
@@ -614,8 +614,8 @@ final class AdminPage {
 	 * Pagination.
 	 *
 	 * @param int                   $total Total.
-	 * @param int                   $paged Page courante.
-	 * @param array<string, scalar> $args  Arguments conservés.
+	 * @param int                   $paged Current page.
+	 * @param array<string, scalar> $args  Preserved arguments.
 	 */
 	private function pagination( int $total, int $paged, array $args ): void {
 		$pages = (int) ceil( $total / self::PER_PAGE );
@@ -637,10 +637,10 @@ final class AdminPage {
 	}
 
 	/**
-	 * Message après une opération.
+	 * Message after an operation.
 	 *
-	 * @param mixed  $result  Résultat (WP_Error en cas d'échec).
-	 * @param string $success Message de succès.
+	 * @param mixed  $result  Result (WP_Error on failure).
+	 * @param string $success Success message.
 	 */
 	private function notice_result( mixed $result, string $success ): void {
 		if ( is_wp_error( $result ) ) {
@@ -655,7 +655,7 @@ final class AdminPage {
 	}
 
 	/**
-	 * Mémorise un message pour l'affichage suivant.
+	 * Stores a message for the next display.
 	 *
 	 * @param string $message Message.
 	 * @param string $type    success|error|warning.
@@ -671,7 +671,7 @@ final class AdminPage {
 		);
 	}
 
-	/** Affiche le message mémorisé. */
+	/** Displays the stored message. */
 	private function print_notice(): void {
 		$key    = 'wcsta_admin_notice_' . get_current_user_id();
 		$notice = get_transient( $key );
@@ -686,7 +686,7 @@ final class AdminPage {
 		);
 	}
 
-	/** Bandeau si des erreurs de synchronisation ont eu lieu récemment. */
+	/** Banner shown if synchronization errors occurred recently. */
 	private function print_error_banner(): void {
 		$count = $this->logger->count_errors_since( time() - 7 * DAY_IN_SECONDS );
 		if ( $count <= 0 ) {

@@ -1,248 +1,254 @@
 # WC Subscription Team Access
 
-Extension WordPress qui permet au titulaire d'un abonnement **WooCommerce Subscriptions** de partager les accès premium accordés par **WooCommerce Memberships** avec des invités, chacun disposant de son propre compte WordPress. Les invités ne sont pas facturés.
+> *Version française : [README.fr.md](README.fr.md).*
 
-- Slug et text domain : `wc-subscription-team-access`
-- Prérequis : WordPress 6.4+, PHP 8.1+, WooCommerce 8+, WooCommerce Subscriptions, WooCommerce Memberships
-- Testé avec : WooCommerce 11.3, Subscriptions 9.3, Memberships 1.26.10, PHP 8.2 et 8.4
-- Compatible HPOS, aucune dépendance externe en production
+WordPress plugin that lets the holder of a **WooCommerce Subscriptions** subscription share the premium access granted by **WooCommerce Memberships** with guests, each using their own WordPress account. Guests are not billed.
 
-## Sommaire
+- Slug and text domain: `wc-subscription-team-access`
+- Requirements: WordPress 6.4+, PHP 8.1+, WooCommerce 8+, WooCommerce Subscriptions, WooCommerce Memberships
+- Tested with: WooCommerce 11.3, Subscriptions 9.3, Memberships 1.26.10, PHP 8.2 and 8.4
+- Languages: English, French (`languages/`)
+- HPOS compatible, no external dependency in production
+
+The documentation is also available in the WordPress admin, in the **Help** tab (top right) of WooCommerce > Team access, WooCommerce > Settings > Team access, and the product and subscription edit screens.
+
+## Contents
 
 1. [Installation](#installation)
 2. [Configuration](#configuration)
-3. [Utilisation](#utilisation)
-4. [Modèle des droits (Memberships)](#modèle-des-droits-memberships)
-5. [Synchronisation avec les abonnements](#synchronisation-avec-les-abonnements)
+3. [Usage](#usage)
+4. [Access rights model (Memberships)](#access-rights-model-memberships)
+5. [Synchronization with subscriptions](#synchronization-with-subscriptions)
 6. [Quotas](#quotas)
-7. [Invitations et sécurité](#invitations-et-sécurité)
+7. [Invitations and security](#invitations-and-security)
 8. [Administration](#administration)
 9. [WP-CLI](#wp-cli)
 10. [Tests](#tests)
-11. [Crochets pour les développeurs](#crochets-pour-les-développeurs)
-12. [Limites connues](#limites-connues)
+11. [Developer hooks](#developer-hooks)
+12. [Known limitations](#known-limitations)
 
 ## Installation
 
-1. Copier le dossier `wc-subscription-team-access` dans `wp-content/plugins/` (ou téléverser le zip d'une release).
-2. Activer l'extension. Les tables `{prefix}wcsta_seats`, `{prefix}wcsta_grants` et `{prefix}wcsta_log` sont créées, et les règles de réécriture sont régénérées au chargement suivant.
-3. Si WooCommerce, Subscriptions ou Memberships manque, l'extension reste inactive et affiche un avertissement dans l'administration.
+1. Copy the `wc-subscription-team-access` folder into `wp-content/plugins/` (or upload the zip of a release).
+2. Activate the plugin. The tables `{prefix}wcsta_seats`, `{prefix}wcsta_grants` and `{prefix}wcsta_log` are created, and rewrite rules are flushed on the next page load.
+3. If WooCommerce, Subscriptions or Memberships is missing, the plugin stays inactive and shows a notice in the admin.
 
-Le dossier `tests/` n'est pas nécessaire en production. Ne le déployez pas dans un dossier accessible par le web : la suite d'intégration crée et supprime des comptes.
+The `tests/` folder is not needed in production. Do not deploy it in a web-accessible folder: the integration suite creates and deletes accounts.
 
 ## Configuration
 
-### Sur les produits
+### On products
 
-Dans l'onglet **Général** d'un produit d'abonnement, champ **Nombre maximal d'invités** :
+In the **General** tab of a subscription product, field **Maximum number of guests**:
 
-| Valeur | Effet |
+| Value | Effect |
 |---|---|
-| vide ou `0` | Fonctionnalité désactivée |
-| `5` | L'acheteur peut inviter 5 personnes en plus de lui-même (6 accès au total) |
+| empty or `0` | Feature disabled |
+| `5` | The buyer can invite 5 people in addition to themselves (6 accesses in total) |
 
-Pour un **abonnement variable**, le champ du produit sert de valeur par défaut, et chaque variation a son propre champ. Une variation laissée vide hérite du produit ; `0` désactive explicitement la fonctionnalité pour cette variation.
+For a **variable subscription**, the product field is the default value and each variation has its own field. An empty variation field uses the product value; `0` explicitly disables the feature for that variation.
 
-Le produit doit aussi accorder un plan WooCommerce Memberships (plan « à l'achat » contenant ce produit). C'est ce plan, et lui seul, qui est partagé avec les invités.
+The product must also grant a WooCommerce Memberships plan (a "product purchase" plan containing this product). This plan, and only this plan, is shared with guests.
 
-### Réglages
+### Settings
 
-**WooCommerce > Réglages > Accès équipe** :
+**WooCommerce > Settings > Team access**:
 
-| Réglage | Défaut |
+| Setting | Default |
 |---|---|
-| Validité des invitations (jours) | 7 |
-| E-mails d'invitation par titulaire et par heure | 20 |
-| Délai minimal entre deux envois d'une invitation (minutes) | 5 |
-| Nombre maximal de renvois par invitation | 5 |
-| Prévenir le titulaire lorsqu'un invité accepte | oui |
-| Quand le quota diminue | suspendre les invités les plus récents |
-| Ne pas envoyer les e-mails Memberships aux invités | oui |
-| Anonymiser l'e-mail des invitations terminées après (jours) | 90 |
-| Slug de la page d'invitation | `invitation-equipe` |
-| Slug de l'onglet Mon compte | `mes-invites` |
+| Invitation validity (days) | 7 |
+| Invitation emails per holder per hour | 20 |
+| Minimum delay between two sends of an invitation (minutes) | 5 |
+| Maximum number of resends per invitation | 5 |
+| Notify the holder when a guest accepts | yes |
+| When the quota decreases | suspend the most recent guests |
+| Do not send the Memberships emails to guests | yes |
+| Anonymize the email of ended invitations after (days) | 90 |
+| Invitation page slug | `invitation-equipe` |
+| My account endpoint slug | `mes-invites` |
 
-Les e-mails **Invitation accès équipe** et **Invitation accès équipe acceptée** se configurent dans **WooCommerce > Réglages > E-mails**. Leurs gabarits peuvent être surchargés dans le thème (`woocommerce/emails/wcsta-team-invitation.php`, etc.).
+The **Team access invitation** and **Team access invitation accepted** emails are configured in **WooCommerce > Settings > Emails**. Their templates can be overridden in the theme (`woocommerce/emails/wcsta-team-invitation.php`, etc.).
 
-## Utilisation
+## Usage
 
-### Titulaire : Mon compte > Mes invités
+### Holder: My account > My guests
 
-Pour chaque abonnement partageable : nom, statut, nombre maximal d'invités, places utilisées et disponibles, liste des invités avec leur statut, et actions :
+For each shareable subscription: name, status, maximum number of guests, used and available seats, list of guests with their status, and actions:
 
-- **Inviter un utilisateur** (par e-mail) ;
-- **Renvoyer** une invitation (un nouveau lien est généré, l'ancien cesse de fonctionner) ;
-- **Annuler** une invitation en attente ;
-- **Remplacer** un invité ou une invitation (la place est réattribuée) ;
-- **Supprimer** un invité (il perd immédiatement l'accès partagé).
+- **Invite a user** (by email);
+- **Resend** an invitation (a new link is generated, the previous one stops working);
+- **Cancel** a pending invitation;
+- **Replace** a guest or an invitation (the seat is reassigned);
+- **Remove** a guest (they immediately lose the shared access).
 
-Statuts affichés : *Invitation en attente*, *Invitation acceptée*, *Accès suspendu* (avec la raison), *Accès révoqué*. L'historique liste aussi les invitations annulées et expirées.
+Displayed statuses: *Invitation pending*, *Invitation accepted*, *Access suspended* (with the reason), *Access revoked*. The history also lists cancelled and expired invitations.
 
-### Invité : page d'invitation
+### Guest: invitation page
 
-Le lien reçu par e-mail ouvre `/invitation-equipe/`. Le jeton est aussitôt retiré de l'URL et conservé dans un cookie `HttpOnly`.
+The link received by email opens `/invitation-equipe/`. The token is immediately removed from the URL and kept in an `HttpOnly` cookie.
 
-- **Sans compte** : l'invité choisit un mot de passe. L'adresse e-mail est imposée par l'invitation. Le compte est créé, connecté, et l'invitation acceptée. Cette création fonctionne même si l'inscription depuis Mon compte est désactivée sur le site : l'invitation vaut autorisation.
-- **Avec un compte** : il se connecte (formulaire WooCommerce). L'adresse du compte doit être celle de l'invitation. Il clique ensuite sur « Accepter l'invitation ».
-- **Connecté avec un autre compte** : refus, avec une invitation à se déconnecter.
+- **Without an account**: the guest chooses a password. The email address is the one of the invitation. The account is created, logged in, and the invitation accepted. This works even if registration from My account is disabled on the site: the invitation is the authorization.
+- **With an account**: the guest logs in (WooCommerce form). The account email must match the invitation, then they click "Accept the invitation".
+- **Logged in with another account**: refused, with an invitation to log out.
 
-Aucun mot de passe n'est jamais envoyé par e-mail. Un compte existant ne peut jamais recevoir de mot de passe via une invitation : un lien transféré ne permet donc pas de prendre la main sur un compte.
+No password is ever sent by email. An existing account can never receive a password through an invitation, so a forwarded link cannot be used to take over an account.
 
-Si l'extension **Restricted Site Access** est active, la page d'invitation reste accessible aux personnes déconnectées qui présentent un jeton. Rien d'autre n'est ouvert.
+If the **Restricted Site Access** plugin is active, the invitation page stays reachable for logged-out visitors who present a token. Nothing else is opened.
 
-## Modèle des droits (Memberships)
+## Access rights model (Memberships)
 
-L'extension réutilise exclusivement le moteur de WooCommerce Memberships : elle ne restreint aucun contenu elle-même.
+The plugin relies exclusively on the WooCommerce Memberships engine: it does not restrict any content itself.
 
-### Contrainte de Memberships
+### Memberships constraint
 
-Memberships ne connaît qu'**une adhésion « logique » par utilisateur et par plan** : `wc_memberships_get_user_membership()` et `wc_memberships_is_user_active_member()` ne lisent que l'adhésion **la plus récente**. Un achat ultérieur réutilise (renouvelle) cette même adhésion. Plusieurs sources de droits ne peuvent donc pas être isolées en créant plusieurs adhésions sur le même plan.
+Memberships only knows **one "logical" membership per user and plan**: `wc_memberships_get_user_membership()` and `wc_memberships_is_user_active_member()` only read the **most recent** membership. A later purchase reuses (renews) that same membership. Several access sources therefore cannot be isolated by creating several memberships on the same plan.
 
-### Architecture retenue
+### Chosen architecture
 
-- Un **registre des sources** (`wcsta_grants`) contient une ligne par place acceptée et par plan partagé, avec l'état conféré (actif avec date de fin éventuelle, ou suspendu).
-- L'extension crée **au plus une adhésion « gérée »** par invité et par plan, marquée par la méta `_wcsta_managed`, sans commande ni abonnement liés. Son état est l'agrégat de toutes ses sources : actif l'emporte sur suspendu ; entre deux sources actives, la fin la plus tardive l'emporte, et une source sans fin rend l'accès illimité.
-- Une adhésion **indépendante** (achetée, offerte par un administrateur, importée) n'est **jamais** créée, modifiée ni supprimée par l'extension. Si l'invité en a une active sur le plan, aucune adhésion gérée n'existe. Si elle s'interrompt (abonnement personnel suspendu, par exemple), l'adhésion gérée prend le relais. Quand elle redevient active, l'adhésion gérée est retirée.
-- Si un invité **achète lui-même** un abonnement donnant le plan, Memberships réutilise nativement l'adhésion gérée et la lie à son achat. L'extension la « libère » : elle devient personnelle et n'est plus jamais touchée.
-- La révocation d'une invitation retire uniquement la source correspondante. L'adhésion gérée n'est supprimée que s'il ne reste aucune source.
+- A **grant registry** (`wcsta_grants`) stores one row per accepted seat and shared plan, with the state it grants (active with an optional end date, or suspended).
+- The plugin creates **at most one "managed" membership** per guest and plan, flagged with the `_wcsta_managed` meta, without linked order or subscription. Its state aggregates all its sources: active wins over suspended; between two active sources, the latest end wins, and a source without an end makes the access unlimited.
+- An **independent** membership (bought, granted by an administrator, imported) is **never** created, modified or deleted by the plugin. If the guest has an active one on the plan, no managed membership exists. If it stops (personal subscription on hold, for example), the managed membership takes over. When it becomes active again, the managed membership is removed.
+- If a guest **buys** a subscription granting the plan, Memberships natively reuses the managed membership and links it to their purchase. The plugin "releases" it: it becomes a personal membership and is never touched again.
+- Revoking an invitation only removes the matching source. The managed membership is deleted only when no source remains.
 
-### Compromis documentés
+### Documented trade-offs
 
-- **Pas de lien natif `_subscription_id`** entre l'adhésion de l'invité et l'abonnement du titulaire. Ce lien ne permettrait qu'une seule source. Il afficherait aussi dans l'espace membre de l'invité l'abonnement du titulaire (prix, actions). Le rattachement passe par le registre, et la méta `_wcsta_sources` mémorise les abonnements sources pour l'affichage.
-- **Suppression plutôt qu'annulation** d'une adhésion gérée devenue inutile. Une adhésion annulée plus récente masquerait, dans `wc_memberships_is_user_active_member()`, une adhésion personnelle active plus ancienne. Avant la suppression, l'adhésion est annulée via `cancel_membership()` pour que Memberships recalcule le **rôle** du membre (option « attribuer des rôles aux membres »). L'historique reste consultable dans le journal de l'extension.
-- **Ancienneté** : l'adhésion gérée commence à la date d'acceptation. Les contenus programmés (« drip ») se calculent donc depuis cette date, et non depuis l'achat du titulaire.
-- **Rôles** : si Memberships attribue un rôle aux membres actifs (par exemple `membre` pour les membres actifs et `subscriber` pour les inactifs), les invités reçoivent et perdent ce rôle exactement comme les autres membres.
-- Les **e-mails natifs de Memberships** (activation, fin prochaine, fin, rappel de renouvellement) sont désactivés pour les adhésions gérées (réglage). Les actions « Annuler » et « Renouveler » sont retirées de l'espace membre de l'invité.
+- **No native `_subscription_id` link** between the guest membership and the holder's subscription. Such a link would allow a single source only. It would also show the holder's subscription (price, actions) in the guest's members area. The link goes through the registry, and the `_wcsta_sources` meta stores the source subscriptions for display.
+- **Deletion rather than cancellation** of a managed membership that is no longer needed. A more recent cancelled membership would hide, in `wc_memberships_is_user_active_member()`, an older active personal membership. Before deletion, the membership is cancelled through `cancel_membership()` so that Memberships recalculates the member **role** ("assign roles to members" option). The history stays available in the plugin log.
+- **Seniority**: the managed membership starts on the acceptance date. Dripped content is therefore scheduled from that date, not from the holder's purchase.
+- **Roles**: if Memberships assigns a role to active members (for example `membre` for active members and `subscriber` for inactive ones), guests get and lose that role exactly like other members.
+- The **native Memberships emails** (activated, ending soon, ended, renewal reminder) are disabled for managed memberships (setting). The "Cancel" and "Renew" actions are hidden from the guest's members area.
 
-## Synchronisation avec les abonnements
+## Synchronization with subscriptions
 
-L'accès des invités suit le statut de l'abonnement du titulaire, lu via les API publiques de Subscriptions :
+The guests' access follows the status of the holder's subscription, read through the public Subscriptions API:
 
-| Statut de l'abonnement | Accès des invités |
+| Subscription status | Guest access |
 |---|---|
-| `active` | Actif |
-| `on-hold` (y compris renouvellement échoué) | Suspendu (adhésion en pause) |
-| `pending-cancel` | Actif jusqu'à la fin de la période payée (date de fin reportée sur l'adhésion), révoqué dès qu'elle est dépassée |
-| `cancelled` | Actif tant que la date de fin réelle est future, révoqué ensuite |
-| `expired`, `trash`, supprimé | Révoqué |
-| Réactivation | Restauré pour les invités toujours dans le quota |
-| Changement de formule | Nouveau quota et réévaluation des plans |
+| `active` | Active |
+| `on-hold` (including a failed renewal) | Suspended (paused membership) |
+| `pending-cancel` | Active until the end of the paid period (end date copied to the membership), removed once it is past |
+| `cancelled` | Active while the real end date is in the future, removed afterwards |
+| `expired`, `trash`, deleted | Removed |
+| Reactivation | Restored for guests still within the quota |
+| Plan switch | New quota and plans re-evaluated |
 
-Chaque événement (`woocommerce_subscription_status_updated`, changement de date de fin, `woocommerce_subscriptions_switch_completed`, mise à la corbeille ou suppression, changement de statut ou suppression d'une adhésion indépendante) déclenche une **synchronisation complète et idempotente** de l'abonnement. Elle recalcule l'état cible à partir de l'état courant : rejouer un événement ne crée ni doublon ni droit supplémentaire.
+Each event (`woocommerce_subscription_status_updated`, end date change, `woocommerce_subscriptions_switch_completed`, trash or deletion, status change or deletion of an independent membership) triggers a **complete and idempotent synchronization** of the subscription. It recomputes the target state from the current state: replaying an event creates neither duplicates nor extra rights. A failed synchronization is retried in the background.
 
-Une **synchronisation de rattrapage** quotidienne (Action Scheduler, groupe `wc-subscription-team-access`) traite tous les abonnements partagés par lots de 100. Elle expire les invitations périmées, anonymise les anciennes invitations, purge le journal et corrige les adhésions gérées orphelines ou modifiées à la main. L'extension fait autorité sur les adhésions gérées : passez par ses écrans pour les modifier.
+A daily **catch-up synchronization** (Action Scheduler, group `wc-subscription-team-access`) processes all shared subscriptions in batches of 100. It expires outdated invitations, anonymizes old invitations, prunes the log, and fixes orphaned or manually modified managed memberships. The plugin is authoritative over managed memberships: use its screens to change them.
 
 ## Quotas
 
-- Le quota est **figé dans l'abonnement à l'achat** (méta `_wcsta_quota`). Modifier ensuite le produit n'a aucun effet rétroactif.
-- Calcul : somme, pour chaque ligne, du quota du produit ou de la variation multiplié par la quantité.
-- Il est **recalculé uniquement lors d'un changement de formule** (switch). Un administrateur peut aussi **imposer** un quota par abonnement. Chaque changement est historisé.
-- Le titulaire ne consomme pas de place. Les invitations **en attente** et les invités **acceptés** en consomment une. Annuler, supprimer ou laisser expirer libère la place.
-- **Atomicité** : inviter, remplacer, renvoyer une invitation expirée et accepter s'exécutent sous un verrou MySQL (`GET_LOCK`) propre à l'abonnement. Une clé unique empêche en plus deux invitations vivantes pour la même adresse. Testé avec 8 invitations simultanées pour 1 place : 1 acceptée, 7 refusées.
+- The quota is **recorded in the subscription at purchase** (`_wcsta_quota` meta). Changing the product later has no retroactive effect.
+- Calculation: sum, for each line, of the product or variation quota multiplied by the quantity.
+- It is **recalculated only on a plan switch**. An administrator can also **force** a quota per subscription. Every change is kept in a history.
+- The holder does not use a seat. **Pending** invitations and **accepted** guests use one each. Cancelling, removing or letting an invitation expire frees the seat.
+- **Atomicity**: inviting, replacing, resending an expired invitation and accepting run under a MySQL lock (`GET_LOCK`) per subscription. A unique key also prevents two live invitations for the same address. Tested with 8 simultaneous invitations for 1 seat: 1 accepted, 7 refused.
 
-### Diminution du quota (règle déterministe)
+### When the quota decreases (deterministic rule)
 
-Les places sont classées ainsi :
+Seats are ranked as follows:
 
-1. les invités acceptés, du plus ancien au plus récent (date d'acceptation) ;
-2. puis les invitations en attente, de la plus ancienne à la plus récente ;
-3. à date égale, l'identifiant le plus petit l'emporte.
+1. accepted guests, from the oldest to the most recent acceptance;
+2. then pending invitations, from the oldest to the most recent;
+3. on a tie, the smallest identifier wins.
 
-Les `quota` premières places restent actives. Les suivantes passent en **accès suspendu (dépassement)**, sans suppression, et leurs invitations en attente ne peuvent plus être acceptées. Les nouvelles invitations sont bloquées tant que le quota est dépassé. Dès qu'une place se libère ou que le quota remonte, les invités suspendus retrouvent automatiquement leur accès.
+The first `quota` seats stay active. The others become **access suspended (over quota)**, without deletion, and their pending invitations can no longer be accepted. New invitations are blocked while the quota is exceeded. As soon as a seat is freed or the quota increases, suspended guests automatically regain access.
 
-Le réglage « Conserver tous les invités » ne suspend personne : il signale seulement le dépassement et bloque les nouvelles invitations.
+The "Keep all guests" setting suspends nobody: it only reports the overage and blocks new invitations.
 
-## Invitations et sécurité
+## Invitations and security
 
-- **Jetons** : 32 octets issus de `random_bytes()`, seul leur SHA-256 est stocké. Ils sont à usage unique (effacés à l'acceptation, remplacés à chaque renvoi) et expirent après 7 jours par défaut.
-- **Vérifications avant envoi** : propriété de l'abonnement (ou capacité `manage_woocommerce`), quota positif, abonnement actif, adresse valide différente de celle du titulaire, adresse non déjà invitée ni membre, place disponible.
-- **Limitation des envois** : e-mails par titulaire et par heure, délai minimal et nombre maximal de renvois, tentatives de jeton invalide et créations de compte limitées par adresse IP (hachée).
-- **Formulaires** : nonces partout, validation et nettoyage des entrées, échappement des sorties, requêtes SQL préparées.
-- **Confidentialité** : un abonnement inexistant et un abonnement d'autrui renvoient le même message. L'adresse invitée est masquée sur la page d'invitation, sauf pour pré-remplir le formulaire de création de compte du porteur du lien. La page n'est pas indexable (`noindex`, `Referrer-Policy: no-referrer`).
-- **RGPD** : exportateur et effaceur WordPress (*Outils > Exporter / Effacer les données personnelles*), texte suggéré pour la politique de confidentialité, anonymisation automatique des adresses des invitations terminées. Seules l'adresse invitée, le compte invité et les dates sont conservés.
+- **Tokens**: 32 bytes from `random_bytes()`, only their SHA-256 is stored. They are single use (cleared on acceptance, replaced on each resend) and expire after 7 days by default.
+- **Checks before sending**: ownership of the subscription (or `manage_woocommerce` capability), positive quota, active subscription, valid address different from the holder's, address not already invited nor member, available seat.
+- **Rate limiting**: emails per holder per hour, minimum delay and maximum number of resends, invalid token attempts and account creations limited per (hashed) IP address. Behind a reverse proxy, use the `wcsta_client_ip` filter.
+- **Forms**: nonces everywhere, input validation and sanitization, output escaping, prepared SQL queries.
+- **Privacy**: a non-existent subscription and someone else's subscription return the same message. The invited address is masked on the invitation page, except to prefill the account creation form for the link holder. The page is not indexable (`noindex`, `Referrer-Policy: no-referrer`).
+- **GDPR**: WordPress exporter and eraser (*Tools > Export / Erase Personal Data*), suggested privacy policy text, automatic anonymization of the addresses of ended invitations. Only the invited address, the guest account and the dates are kept.
 
 ## Administration
 
-**WooCommerce > Accès équipe** (capacité `manage_woocommerce`) :
+**WooCommerce > Team access** (`manage_woocommerce` capability):
 
-- liste des abonnements partagés : titulaire, statut, quota (imposé ou non), places utilisées et disponibles, dépassement ;
-- détail d'un abonnement : droits effectifs, plans partagés, invités et adhésions Memberships associées (liens), quota imposé, invitation pour le compte du titulaire, révocation, renvoi, resynchronisation, événements récents ;
-- journal : erreurs de synchronisation et événements, avec un bandeau en cas d'erreur récente ;
-- resynchronisation complète en tâche de fond.
+- shared subscriptions: holder, status, quota (forced or not), used and available seats, overage;
+- subscription detail: effective rights, shared plans, guests and linked Memberships memberships, forced quota, invitation on behalf of the holder, revoke, resend, resynchronize, recent events;
+- log: synchronization errors and events, with a banner when an error occurred recently;
+- full background resynchronization;
+- **Help** tab with the documentation.
 
-Un encadré **Accès équipe** apparaît aussi sur l'écran d'édition de chaque abonnement.
+A **Team access** box is also shown on each subscription edit screen.
 
 ## WP-CLI
 
 ```bash
-wp team-access status <subscription_id>      # quota, droits, plans, places
+wp team-access status <subscription_id>      # quota, rights, plans, seats
 wp team-access invite <subscription_id> <email> [--as=<user_id>]
 wp team-access revoke <seat_id> [--as=<user_id>]
 wp team-access resend <seat_id> [--as=<user_id>]
-wp team-access sync [<subscription_id>]      # tous les abonnements partagés si aucun identifiant
-wp team-access schedule                      # resynchronisation complète en tâche de fond
-wp team-access maintenance                   # expirations, anonymisation, purge du journal
-wp team-access snapshot <subscription_id>    # recalcule le quota depuis le catalogue (à utiliser avec précaution)
+wp team-access sync [<subscription_id>]      # every shared subscription when no id is given
+wp team-access schedule                      # full background resynchronization
+wp team-access maintenance                   # expirations, anonymization, log pruning
+wp team-access snapshot <subscription_id>    # recompute the quota from the catalog (use with care)
 ```
 
-Exemple de recette manuelle :
+Manual check example:
 
 ```bash
-wp team-access invite 1234 jeanne@example.org --as=56
+wp team-access invite 1234 jane@example.org --as=56
 wp team-access status 1234
-wp eval 'var_dump( wc_memberships_is_user_active_member( get_user_by( "email", "jeanne@example.org" )->ID, <plan_id> ) );'
+wp eval 'var_dump( wc_memberships_is_user_active_member( get_user_by( "email", "jane@example.org" )->ID, <plan_id> ) );'
 wp team-access revoke 78
 ```
 
 ## Tests
 
-### Tests unitaires (logique métier, sans WordPress)
+### Unit tests (business logic, without WordPress)
 
 ```bash
 composer install
 composer test
 ```
 
-46 tests couvrent la traduction des statuts d'abonnement en droits, l'agrégation multi-sources, la règle de dépassement, le calcul du quota, les jetons et les adresses.
+46 tests cover the mapping of subscription statuses to rights, multi-source aggregation, the overage rule, quota calculation, tokens and email addresses.
 
-### Suite d'intégration (WordPress, WooCommerce, Subscriptions et Memberships réels)
+### Integration suite (real WordPress, WooCommerce, Subscriptions and Memberships)
 
-Elle s'exécute sur un site de recette où l'extension est active. Elle crée un plan, des produits, des comptes et des abonnements de test (préfixe `wcsta-it-`), capture les e-mails (aucun n'est envoyé), puis nettoie tout.
+It runs on a staging site where the plugin is active. It creates a plan, products, accounts and test subscriptions (prefix `wcsta-it-`), captures emails (none is sent), then cleans everything up.
 
 ```bash
-# depuis la racine WordPress du site de recette
-WP="wp" bash /chemin/vers/wc-subscription-team-access/tests/integration/run.sh
-# KEEP=1 pour conserver les données de test
+# from the WordPress root of the staging site
+WP="wp" bash /path/to/wc-subscription-team-access/tests/integration/run.sh
+# KEEP=1 to keep the test data
 ```
 
-Scénarios couverts : abonnement sans place, abonnement à 5 places et quota figé, invitation d'un nouvel utilisateur et d'un utilisateur existant, adresse différente, invitation expirée puis relancée, invitation déjà utilisée ou remplacée par un renvoi, critères 1 à 6 (5 invités puis sixième refusée), place réservée par une invitation en attente, révocation (avec retrait du rôle), remplacement, suspension et réactivation, renouvellement échoué puis réussi, annulation avec période payée restante, expiration, changement de formule (baisse puis hausse du quota, variation héritant du parent), quota imposé, adhésion personnelle préexistante (préservée, relais, non-doublon), invité achetant ensuite son propre abonnement, invité de plusieurs abonnements, tentative sur l'abonnement d'autrui, exécution répétée d'un même événement, rattrapage après adhésion supprimée ou modifiée à la main, limitation des envois, validation des adresses, espace Mon compte, RGPD, e-mails Memberships désactivés, et **invitations concurrentes** (8 processus pour 1 place).
+Covered scenarios: subscription without seats, 5-seat subscription and frozen quota, invitation of a new user and of an existing user, different address, expired invitation then resent, invitation already used or replaced by a resend, 5 guests then sixth refused, seat reserved by a pending invitation, revocation (with role removal), replacement, suspension and reactivation, failed then successful renewal, cancellation with remaining paid period, expiration, plan switch (quota decrease then increase, variation inheriting the parent), forced quota, pre-existing personal membership (preserved, takeover, no duplicate), guest later buying their own subscription, guest of several subscriptions, attempt on someone else's subscription, repeated execution of the same event, catch-up after a deleted or manually modified membership, rate limiting, address validation, My account screen, GDPR, Memberships emails disabled, and **concurrent invitations** (8 processes for 1 seat).
 
-Dernier résultat sur le site de recette (16/11/2026, WooCommerce 11.3, Subscriptions 9.3, Memberships 1.26.10) : 28 scénarios sur 28 et test de concurrence OK.
+Last result on the staging site (2026-11-16, WooCommerce 11.3, Subscriptions 9.3, Memberships 1.26.10): 28 scenarios out of 28 and the concurrency test pass.
 
-### Traductions
+### Translations
 
-Les chaînes sources sont en anglais. Le catalogue français se génère avec :
+Source strings are in English. The French catalogue is built with:
 
 ```bash
 wp i18n make-pot . languages/wc-subscription-team-access.pot --exclude=vendor,tests,node_modules
-python3 bin/build-fr.py   # échoue si une chaîne n'est pas traduite
+python3 bin/build-fr.py   # fails if a string is not translated
 msgfmt -o languages/wc-subscription-team-access-fr_FR.mo languages/wc-subscription-team-access-fr_FR.po
 ```
 
-## Crochets pour les développeurs
+## Developer hooks
 
-| Crochet | Type | Usage |
+| Hook | Type | Usage |
 |---|---|---|
-| `wcsta_computed_quota` | filtre | Modifier le quota calculé d'un abonnement (`$quota, $subscription`) |
-| `wcsta_subscription_plan_ids` | filtre | Plans partagés avec les invités (`$plan_ids, $subscription`) |
-| `wcsta_subscription_effective_access` | filtre | Droit effectif conféré par un abonnement (`AccessState $state, $subscription`) |
-| `wcsta_after_accept_redirect` | filtre | Page de destination après acceptation (`$url, Seat $seat`) |
-| `wcsta_client_ip` | filtre | Adresse IP du client pour la limitation de débit, à fournir derrière un proxy inverse ou un CDN (`$ip`) |
+| `wcsta_computed_quota` | filter | Change the computed quota of a subscription (`$quota, $subscription`) |
+| `wcsta_subscription_plan_ids` | filter | Plans shared with guests (`$plan_ids, $subscription`) |
+| `wcsta_subscription_effective_access` | filter | Effective right granted by a subscription (`AccessState $state, $subscription`) |
+| `wcsta_after_accept_redirect` | filter | Destination page after acceptance (`$url, Seat $seat`) |
+| `wcsta_client_ip` | filter | Client IP address used for rate limiting, to provide behind a reverse proxy or CDN (`$ip`) |
 
-Gabarits surchargeables dans le thème : `wc-subscription-team-access/my-account/team-access.php`, `wc-subscription-team-access/invitation/accept.php`, et les e-mails dans `woocommerce/emails/`.
+Templates that can be overridden in the theme: `wc-subscription-team-access/my-account/team-access.php`, `wc-subscription-team-access/invitation/accept.php`, and the emails in `woocommerce/emails/`.
 
-## Limites connues
+## Known limitations
 
-- Changement de formule : les places restent sur l'abonnement modifié. Si Subscriptions crée un *nouvel* abonnement lors d'un changement (abonnement à plusieurs lignes avec cycles différents), les invités de l'ancien abonnement ne sont pas transférés automatiquement. Un administrateur peut les réinviter.
-- L'extension fait autorité sur les adhésions gérées : une modification manuelle dans l'écran Memberships est corrigée à la synchronisation suivante.
-- La page d'invitation utilise l'en-tête et le pied de page du thème (thèmes classiques et thèmes blocs).
+- Plan switch: seats stay on the modified subscription. If Subscriptions creates a *new* subscription during a switch (multi-line subscription with different billing cycles), the guests of the former subscription are not transferred automatically. An administrator can invite them again.
+- The plugin is authoritative over managed memberships: a manual change in the Memberships screen is reverted at the next synchronization.
+- The invitation page uses the theme header and footer (classic and block themes).

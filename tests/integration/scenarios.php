@@ -1,8 +1,8 @@
 <?php
 /**
- * Scénarios d'intégration (cahier des charges §11 et critères d'acceptation §13).
+ * Integration scenarios (spec §11 and acceptance criteria §13).
  *
- * Usage : wp eval-file tests/integration/scenarios.php <fichier-fixtures.json>
+ * Usage: wp eval-file tests/integration/scenarios.php <fixtures-file.json>
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -22,98 +22,98 @@ $t    = new WCSTA_IT( (string) ( $args[0] ?? '' ) );
 $team = $t->plugin()->team();
 $sync = $t->plugin()->reconciler();
 
-WP_CLI::log( 'WC Subscription Team Access — scénarios d\'intégration' );
+WP_CLI::log( 'WC Subscription Team Access — integration scenarios' );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Abonnement sans places invitées : invitation refusée, pas de menu « Mes invités »',
+	'Subscription without guest seats: invitation refused, no "My guests" menu',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'owner0' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p0'] );
 		$t->same( 0, $t->plugin()->quotas()->quota( $sub ), 'Quota' );
 		$t->error( $team->invite( $sub->get_id(), 'someone@example.test', $owner ), 'not_eligible' );
-		$t->same( array(), $t->plugin()->subscriptions()->team_subscriptions_for( $owner ), 'Abonnements partageables' );
-		$t->ok( $t->is_member( $owner ), 'Le titulaire garde son adhésion' );
+		$t->same( array(), $t->plugin()->subscriptions()->team_subscriptions_for( $owner ), 'Shareable subscriptions' );
+		$t->ok( $t->is_member( $owner ), 'The holder keeps their membership' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Abonnement avec 5 places : quota figé à l\'achat (catalogue modifié ensuite)',
+	'Subscription with 5 seats: quota frozen at purchase (catalog changed afterwards)',
 	function ( WCSTA_IT $t ) {
 		$owner = $t->user( 'owner5' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
-		$t->same( 5, $t->plugin()->quotas()->quota( $sub ), 'Quota à l\'achat' );
+		$t->same( 5, $t->plugin()->quotas()->quota( $sub ), 'Quota at purchase' );
 
 		$product = wc_get_product( $t->fixtures['p5'] );
 		$product->update_meta_data( '_wcsta_max_guests', '9' );
 		$product->save();
 		try {
-			$t->same( 5, $t->plugin()->quotas()->quota( $t->reload( $sub->get_id() ) ), 'Le quota ne suit pas le catalogue' );
+			$t->same( 5, $t->plugin()->quotas()->quota( $t->reload( $sub->get_id() ) ), 'The quota does not follow the catalog' );
 		} finally {
 			$product->update_meta_data( '_wcsta_max_guests', '5' );
 			$product->save();
 		}
-		$t->ok( in_array( $t->plan(), $t->plugin()->subscriptions()->plan_ids( $sub ), true ), 'Plan partagé identifié' );
+		$t->ok( in_array( $t->plan(), $t->plugin()->subscriptions()->plan_ids( $sub ), true ), 'Shared plan identified' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Invitation d\'un nouvel utilisateur : e-mail sans mot de passe, compte créé, accès premium',
+	'Inviting a new user: email without password, account created, premium access',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerN' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
 		$email = WCSTA_IT::PREFIX . 'new-' . strtolower( wp_generate_password( 6, false ) ) . '@example.test';
 
 		$seat = $t->invite( $sub, $email );
-		$t->same( SeatStatus::PENDING, $seat->status, 'Statut initial' );
+		$t->same( SeatStatus::PENDING, $seat->status, 'Initial status' );
 
 		$mail = end( $t->mails );
-		$t->ok( str_contains( (string) $mail['message'], 'token=' ), 'Lien d\'acceptation dans l\'e-mail' );
-		$t->ok( ! preg_match( '/mot de passe\s*:|password\s*:/i', (string) $mail['message'] ), 'Aucun mot de passe dans l\'e-mail' );
+		$t->ok( str_contains( (string) $mail['message'], 'token=' ), 'Acceptance link in the email' );
+		$t->ok( ! preg_match( '/mot de passe\s*:|password\s*:/i', (string) $mail['message'] ), 'No password in the email' );
 
 		$token = $t->token_for( $email );
-		$t->ok( null === $t->plugin()->seats()->find_by_token_hash( $token ), 'Le jeton n\'est pas stocké en clair' );
-		$t->ok( null !== $t->plugin()->seats()->find_by_token_hash( Token::hash( $token ) ), 'Seul son hachage est stocké' );
+		$t->ok( null === $t->plugin()->seats()->find_by_token_hash( $token ), 'The token is not stored in clear text' );
+		$t->ok( null !== $t->plugin()->seats()->find_by_token_hash( Token::hash( $token ) ), 'Only its hash is stored' );
 
-		// Création du compte comme le fait la page d'invitation (adresse imposée par l'invitation).
+		// Account creation as done by the invitation page (email address imposed by the invitation).
 		$user_id = wc_create_new_customer( $email, '', wp_generate_password( 16 ) );
-		$t->ok( ! is_wp_error( $user_id ), 'Compte créé' );
+		$t->ok( ! is_wp_error( $user_id ), 'Account created' );
 		$t->created_users[] = (int) $user_id;
 
-		$t->ok( ! $t->is_member( (int) $user_id ), 'Pas d\'accès avant acceptation' );
-		$accepted = $t->success( $team->accept( $token, (int) $user_id ), 'Acceptation' );
-		$t->same( SeatStatus::ACCEPTED, $accepted->status, 'Statut accepté' );
-		$t->same( SeatStatus::ACCESS_ACTIVE, $accepted->access, 'Accès actif' );
-		$t->ok( $t->is_member( (int) $user_id ), 'Membre actif du plan (Memberships)' );
-		$t->ok( $t->sees_restricted_content( (int) $user_id ), 'Voit le contenu [wcm_restrict]' );
-		$t->same( 1, $t->managed_count( (int) $user_id ), 'Une seule adhésion gérée' );
+		$t->ok( ! $t->is_member( (int) $user_id ), 'No access before acceptance' );
+		$accepted = $t->success( $team->accept( $token, (int) $user_id ), 'Acceptance' );
+		$t->same( SeatStatus::ACCEPTED, $accepted->status, 'Accepted status' );
+		$t->same( SeatStatus::ACCESS_ACTIVE, $accepted->access, 'Active access' );
+		$t->ok( $t->is_member( (int) $user_id ), 'Active plan member (Memberships)' );
+		$t->ok( $t->sees_restricted_content( (int) $user_id ), 'Sees the [wcm_restrict] content' );
+		$t->same( 1, $t->managed_count( (int) $user_id ), 'A single managed membership' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Invitation d\'un utilisateur existant et notification du titulaire',
+	'Inviting an existing user and notifying the holder',
 	function ( WCSTA_IT $t ) {
 		$owner = $t->user( 'ownerE' );
 		$guest = $t->user( 'existing' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
-		$t->ok( ! $t->sees_restricted_content( $guest ), 'Pas d\'accès avant' );
+		$t->ok( ! $t->sees_restricted_content( $guest ), 'No access before' );
 
 		$before = count( $t->mails );
 		$t->invite_and_accept( $sub, $guest );
-		$t->ok( $t->is_member( $guest ), 'Accès accordé' );
-		$t->ok( $t->sees_restricted_content( $guest ), 'Contenu restreint visible' );
+		$t->ok( $t->is_member( $guest ), 'Access granted' );
+		$t->ok( $t->sees_restricted_content( $guest ), 'Restricted content visible' );
 
 		$to_owner = array_filter( array_slice( $t->mails, $before ), static fn( $m ) => $t->mail_is_for( $m, $t->email( $owner ) ) );
-		$t->ok( count( $to_owner ) >= 1, 'Le titulaire est prévenu de l\'acceptation' );
+		$t->ok( count( $to_owner ) >= 1, 'The holder is notified of the acceptance' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Adresse du compte différente de l\'invitation : refus',
+	'Account email different from the invitation: refused',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerM' );
 		$other = $t->user( 'other' );
@@ -121,13 +121,13 @@ $t->test(
 		$email = WCSTA_IT::PREFIX . 'target-' . strtolower( wp_generate_password( 6, false ) ) . '@example.test';
 		$t->invite( $sub, $email );
 		$t->error( $team->accept( $t->token_for( $email ), $other ), 'email_mismatch' );
-		$t->ok( ! $t->is_member( $other ), 'Aucun accès accordé' );
+		$t->ok( ! $t->is_member( $other ), 'No access granted' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Acceptation d\'une invitation expirée : refus et place libérée',
+	'Accepting an expired invitation: refused and seat released',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerX' );
 		$guest = $t->user( 'late' );
@@ -142,41 +142,41 @@ $t->test(
 		);
 
 		$t->error( $team->accept( $t->token_for( $t->email( $guest ) ), $guest ), 'expired_token' );
-		$t->same( SeatStatus::EXPIRED, $t->seat( $seat->id )->status, 'Invitation expirée' );
-		$t->same( 0, $team->summary( $t->reload( $sub->get_id() ) )['used'], 'La place est libérée' );
+		$t->same( SeatStatus::EXPIRED, $t->seat( $seat->id )->status, 'Invitation expired' );
+		$t->same( 0, $team->summary( $t->reload( $sub->get_id() ) )['used'], 'The seat is released' );
 
-		// Une invitation expirée peut être relancée.
-		$t->success( $team->resend( $seat->id, $owner ), 'Relance' );
-		$t->success( $team->accept( $t->token_for( $t->email( $guest ) ), $guest ), 'Acceptation après relance' );
-		$t->ok( $t->is_member( $guest ), 'Accès après relance' );
+		// An expired invitation can be resent.
+		$t->success( $team->resend( $seat->id, $owner ), 'Resend' );
+		$t->success( $team->accept( $t->token_for( $t->email( $guest ) ), $guest ), 'Acceptance after resend' );
+		$t->ok( $t->is_member( $guest ), 'Access after resend' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Invitation déjà utilisée ou remplacée par un renvoi : lien invalide',
+	'Invitation already used or replaced by a resend: invalid link',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerU' );
 		$guest = $t->user( 'used' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
 		$t->invite( $sub, $t->email( $guest ) );
 		$token = $t->token_for( $t->email( $guest ) );
-		$t->success( $team->accept( $token, $guest ), 'Première acceptation' );
+		$t->success( $team->accept( $token, $guest ), 'First acceptance' );
 		$t->error( $team->accept( $token, $guest ), 'invalid_token' );
 
 		$guest2 = $t->user( 'resent' );
 		$seat   = $t->invite( $sub, $t->email( $guest2 ) );
 		$old    = $t->token_for( $t->email( $guest2 ) );
 		$t->plugin()->seats()->update( $seat->id, array( 'last_sent_at' => Dates::to_mysql( time() - 3600 ) ) );
-		$t->success( $team->resend( $seat->id, $owner ), 'Renvoi' );
+		$t->success( $team->resend( $seat->id, $owner ), 'Resend' );
 		$t->error( $team->accept( $old, $guest2 ), 'invalid_token' );
-		$t->success( $team->accept( $t->token_for( $t->email( $guest2 ) ), $guest2 ), 'Le nouveau lien fonctionne' );
+		$t->success( $team->accept( $t->token_for( $t->email( $guest2 ) ), $guest2 ), 'The new link works' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Critères 1 à 6 : 5 invités acceptés, accès premium, sixième invitation refusée',
+	'Criteria 1 to 6: 5 guests accepted, premium access, sixth invitation refused',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner  = $t->user( 'ownerA' );
 		$sub    = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -186,19 +186,19 @@ $t->test(
 			$t->invite_and_accept( $sub, $guest );
 		}
 		foreach ( $guests as $guest ) {
-			$t->ok( $t->is_member( $guest ), "Invité {$guest} actif" );
+			$t->ok( $t->is_member( $guest ), "Guest {$guest} active" );
 		}
 		$summary = $team->summary( $t->reload( $sub->get_id() ) );
-		$t->same( 5, $summary['used'], 'Places utilisées' );
-		$t->same( 0, $summary['available'], 'Places disponibles' );
+		$t->same( 5, $summary['used'], 'Seats used' );
+		$t->same( 0, $summary['available'], 'Seats available' );
 		$t->error( $team->invite( $sub->get_id(), 'sixth@example.test', $owner ), 'no_seat' );
-		$t->ok( $t->is_member( $owner ), 'Le titulaire ne consomme pas de place et garde son accès' );
+		$t->ok( $t->is_member( $owner ), 'The holder does not use a seat and keeps their access' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Une invitation en attente réserve une place',
+	'A pending invitation reserves a seat',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerP' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -212,7 +212,7 @@ $t->test(
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Révocation d\'un invité : seuls ses droits disparaissent, la place est libérée',
+	'Revoking a guest: only their access disappears, the seat is released',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerR' );
 		$a     = $t->user( 'keep' );
@@ -221,21 +221,21 @@ $t->test(
 		$t->invite_and_accept( $sub, $a );
 		$seat_b = $t->invite_and_accept( $sub, $b );
 
-		$result = $t->success( $team->remove( $seat_b->id, $owner ), 'Suppression' );
-		$t->same( SeatStatus::REVOKED, $result->status, 'Statut révoqué' );
-		$t->ok( ! $t->is_member( $b ), 'L\'invité révoqué perd l\'accès' );
-		$t->ok( ! $t->has_active_member_role( $b, false ), 'Rôle de membre actif retiré (transition native de Memberships)' );
-		$t->ok( ! $t->sees_restricted_content( $b ), 'Contenu restreint masqué' );
-		$t->same( 0, $t->managed_count( $b ), 'Adhésion gérée supprimée' );
-		$t->ok( $t->is_member( $a ), 'Les autres invités gardent l\'accès' );
-		$t->ok( $t->is_member( $owner ), 'Le titulaire garde l\'accès' );
-		$t->same( 1, $team->summary( $t->reload( $sub->get_id() ) )['used'], 'Place libérée' );
+		$result = $t->success( $team->remove( $seat_b->id, $owner ), 'Removal' );
+		$t->same( SeatStatus::REVOKED, $result->status, 'Revoked status' );
+		$t->ok( ! $t->is_member( $b ), 'The revoked guest loses access' );
+		$t->ok( ! $t->has_active_member_role( $b, false ), 'Active member role removed (native Memberships transition)' );
+		$t->ok( ! $t->sees_restricted_content( $b ), 'Restricted content hidden' );
+		$t->same( 0, $t->managed_count( $b ), 'Managed membership deleted' );
+		$t->ok( $t->is_member( $a ), 'The other guests keep their access' );
+		$t->ok( $t->is_member( $owner ), 'The holder keeps access' );
+		$t->same( 1, $team->summary( $t->reload( $sub->get_id() ) )['used'], 'Seat released' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Critère 7 : remplacement d\'un invité et réattribution de sa place',
+	'Criterion 7: replacing a guest and reassigning their seat',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerRe' );
 		$old   = $t->user( 'replaced' );
@@ -245,21 +245,21 @@ $t->test(
 			$t->invite( $sub, "filler{$i}-" . $sub->get_id() . '@example.test' );
 		}
 		$seat = $t->invite_and_accept( $sub, $old );
-		$t->same( 5, $team->summary( $t->reload( $sub->get_id() ) )['used'], 'Quota plein' );
+		$t->same( 5, $team->summary( $t->reload( $sub->get_id() ) )['used'], 'Quota full' );
 
-		$result = $t->success( $team->replace( $seat->id, $t->email( $new ), $owner ), 'Remplacement' );
-		$t->same( SeatStatus::REVOKED, $t->seat( $seat->id )->status, 'Ancien invité révoqué' );
-		$t->same( $seat->id, $result['seat']->replaced_seat_id, 'Lien de remplacement' );
-		$t->ok( ! $t->is_member( $old ), 'L\'ancien invité perd l\'accès' );
-		$t->same( 5, $team->summary( $t->reload( $sub->get_id() ) )['used'], 'La place est réattribuée' );
-		$t->success( $team->accept( $t->token_for( $t->email( $new ) ), $new ), 'Acceptation du remplaçant' );
-		$t->ok( $t->is_member( $new ), 'Le remplaçant a l\'accès' );
+		$result = $t->success( $team->replace( $seat->id, $t->email( $new ), $owner ), 'Replacement' );
+		$t->same( SeatStatus::REVOKED, $t->seat( $seat->id )->status, 'Former guest revoked' );
+		$t->same( $seat->id, $result['seat']->replaced_seat_id, 'Replacement link' );
+		$t->ok( ! $t->is_member( $old ), 'The former guest loses access' );
+		$t->same( 5, $team->summary( $t->reload( $sub->get_id() ) )['used'], 'The seat is reassigned' );
+		$t->success( $team->accept( $t->token_for( $t->email( $new ) ), $new ), 'Acceptance by the replacement' );
+		$t->ok( $t->is_member( $new ), 'The replacement has access' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Critères 8 et 9 : suspension (on-hold) puis réactivation de l\'abonnement',
+	'Criteria 8 and 9: suspension (on-hold) then reactivation of the subscription',
 	function ( WCSTA_IT $t ) {
 		$owner = $t->user( 'ownerH' );
 		$guest = $t->user( 'held' );
@@ -267,21 +267,21 @@ $t->test(
 		$seat  = $t->invite_and_accept( $sub, $guest );
 
 		$t->reload( $sub->get_id() )->update_status( 'on-hold' );
-		$t->ok( ! $t->is_member( $guest ), 'Accès invité suspendu' );
-		$t->same( 'paused', $t->managed( $guest )->get_status(), 'Adhésion gérée en pause' );
-		$t->same( SeatStatus::ACCESS_SUSPENDED, $t->seat( $seat->id )->access, 'Place affichée « accès suspendu »' );
-		$t->same( SeatStatus::REASON_SUBSCRIPTION_PAUSED, $t->seat( $seat->id )->access_reason, 'Raison' );
+		$t->ok( ! $t->is_member( $guest ), 'Guest access suspended' );
+		$t->same( 'paused', $t->managed( $guest )->get_status(), 'Managed membership paused' );
+		$t->same( SeatStatus::ACCESS_SUSPENDED, $t->seat( $seat->id )->access, 'Seat displayed as "access suspended"' );
+		$t->same( SeatStatus::REASON_SUBSCRIPTION_PAUSED, $t->seat( $seat->id )->access_reason, 'Reason' );
 
 		$t->reload( $sub->get_id() )->update_status( 'active' );
-		$t->ok( $t->is_member( $guest ), 'Accès invité restauré' );
-		$t->same( 'active', $t->managed( $guest )->get_status(), 'Adhésion gérée active' );
-		$t->same( 1, $t->managed_count( $guest ), 'Pas de doublon après réactivation' );
+		$t->ok( $t->is_member( $guest ), 'Guest access restored' );
+		$t->same( 'active', $t->managed( $guest )->get_status(), 'Managed membership active' );
+		$t->same( 1, $t->managed_count( $guest ), 'No duplicate after reactivation' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Renouvellement échoué puis réussi',
+	'Failed then successful renewal',
 	function ( WCSTA_IT $t ) {
 		$owner = $t->user( 'ownerRn' );
 		$guest = $t->user( 'renew' );
@@ -291,19 +291,19 @@ $t->test(
 		$renewal = wcs_create_renewal_order( $t->reload( $sub->get_id() ) );
 		$t->created_orders[] = $renewal->get_id();
 		$t->reload( $sub->get_id() )->payment_failed();
-		$t->same( 'on-hold', $t->reload( $sub->get_id() )->get_status(), 'Abonnement suspendu après échec' );
-		$t->ok( ! $t->is_member( $guest ), 'Accès suspendu après échec' );
+		$t->same( 'on-hold', $t->reload( $sub->get_id() )->get_status(), 'Subscription suspended after failure' );
+		$t->ok( ! $t->is_member( $guest ), 'Access suspended after failure' );
 
 		$renewal = wc_get_order( $renewal->get_id() );
 		$renewal->payment_complete();
-		$t->same( 'active', $t->reload( $sub->get_id() )->get_status(), 'Abonnement réactivé' );
-		$t->ok( $t->is_member( $guest ), 'Accès restauré après paiement' );
+		$t->same( 'active', $t->reload( $sub->get_id() )->get_status(), 'Subscription reactivated' );
+		$t->ok( $t->is_member( $guest ), 'Access restored after payment' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Critère 10 : résiliation avec période payée restante, révocation à la fin seulement',
+	'Criterion 10: cancellation with paid period remaining, revocation only at the end',
 	function ( WCSTA_IT $t ) {
 		$owner = $t->user( 'ownerC' );
 		$guest = $t->user( 'cancel' );
@@ -312,48 +312,48 @@ $t->test(
 
 		$t->reload( $sub->get_id() )->cancel_order();
 		$sub = $t->reload( $sub->get_id() );
-		$t->same( 'pending-cancel', $sub->get_status(), 'Abonnement en annulation programmée' );
+		$t->same( 'pending-cancel', $sub->get_status(), 'Subscription pending cancellation' );
 		$end = (int) $sub->get_time( 'end' );
-		$t->ok( $end > time(), 'Date de fin future' );
-		$t->ok( $t->is_member( $guest ), 'L\'invité garde l\'accès pendant la période payée' );
-		$t->same( $end, (int) $t->managed( $guest )->get_end_date( 'timestamp', false ), 'Fin de l\'adhésion invitée = fin de période payée' );
-		$t->same( $t->is_member( $owner ), $t->is_member( $guest ), 'Même droit que le titulaire' );
+		$t->ok( $end > time(), 'Future end date' );
+		$t->ok( $t->is_member( $guest ), 'The guest keeps access during the paid period' );
+		$t->same( $end, (int) $t->managed( $guest )->get_end_date( 'timestamp', false ), 'Guest membership end = end of paid period' );
+		$t->same( $t->is_member( $owner ), $t->is_member( $guest ), 'Same access as the holder' );
 
-		// Fin de période : Subscriptions passe l'abonnement en « cancelled ».
+		// End of period: Subscriptions moves the subscription to "cancelled".
 		$sub->update_status( 'cancelled' );
-		$t->ok( ! $t->is_member( $guest ), 'Accès révoqué à la fin de la période' );
-		$t->same( 0, $t->managed_count( $guest ), 'Adhésion gérée supprimée' );
+		$t->ok( ! $t->is_member( $guest ), 'Access revoked at the end of the period' );
+		$t->same( 0, $t->managed_count( $guest ), 'Managed membership deleted' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Expiration de l\'abonnement',
+	'Subscription expiration',
 	function ( WCSTA_IT $t ) {
 		$owner = $t->user( 'ownerEx' );
 		$guest = $t->user( 'expire' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
 		$seat  = $t->invite_and_accept( $sub, $guest );
 		$t->reload( $sub->get_id() )->update_status( 'expired' );
-		$t->ok( ! $t->is_member( $guest ), 'Accès révoqué' );
-		$t->same( SeatStatus::REASON_SUBSCRIPTION_INACTIVE, $t->seat( $seat->id )->access_reason, 'Raison' );
+		$t->ok( ! $t->is_member( $guest ), 'Access revoked' );
+		$t->same( SeatStatus::REASON_SUBSCRIPTION_INACTIVE, $t->seat( $seat->id )->access_reason, 'Reason' );
 		$t->error( $t->plugin()->team()->invite( $sub->get_id(), 'after@example.test', $owner ), 'subscription_inactive' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Changement de formule : baisse du quota (suspension déterministe) puis hausse (restauration)',
+	'Plan switch: quota decrease (deterministic suspension) then increase (restoration)',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerS' );
 		$sub   = $t->purchase( $owner, $t->fixtures['vb'] );
-		$t->same( 10, $t->plugin()->quotas()->quota( $sub ), 'Variation sans valeur : quota hérité du parent' );
+		$t->same( 10, $t->plugin()->quotas()->quota( $sub ), 'Variation without a value: quota inherited from the parent' );
 
 		$seats = array();
 		foreach ( array( 's1', 's2', 's3', 's4' ) as $label ) {
 			$guest   = $t->user( $label );
 			$seats[] = array( $guest, $t->invite_and_accept( $sub, $guest ) );
-			sleep( 1 ); // Dates d'acceptation distinctes.
+			sleep( 1 ); // Distinct acceptance dates.
 		}
 
 		$switch = function ( int $variation_id ) use ( $t, $sub ) {
@@ -369,101 +369,101 @@ $t->test(
 			do_action( 'woocommerce_subscriptions_switch_completed', $order );
 		};
 
-		$switch( $t->fixtures['va'] ); // 2 invités.
+		$switch( $t->fixtures['va'] ); // 2 guests.
 		$s = $t->reload( $sub->get_id() );
-		$t->same( 2, $t->plugin()->quotas()->quota( $s ), 'Nouveau quota' );
+		$t->same( 2, $t->plugin()->quotas()->quota( $s ), 'New quota' );
 		$summary = $team->summary( $s );
-		$t->same( 2, $summary['over'], 'Dépassement signalé' );
-		$t->ok( $t->is_member( $seats[0][0] ) && $t->is_member( $seats[1][0] ), 'Les deux premières acceptations gardent l\'accès' );
-		$t->ok( ! $t->is_member( $seats[2][0] ) && ! $t->is_member( $seats[3][0] ), 'Les deux plus récentes sont suspendues' );
-		$t->same( SeatStatus::REASON_OVER_QUOTA, $t->seat( $seats[3][1]->id )->access_reason, 'Raison : dépassement' );
+		$t->same( 2, $summary['over'], 'Overflow reported' );
+		$t->ok( $t->is_member( $seats[0][0] ) && $t->is_member( $seats[1][0] ), 'The first two acceptances keep their access' );
+		$t->ok( ! $t->is_member( $seats[2][0] ) && ! $t->is_member( $seats[3][0] ), 'The two most recent are suspended' );
+		$t->same( SeatStatus::REASON_OVER_QUOTA, $t->seat( $seats[3][1]->id )->access_reason, 'Reason: over quota' );
 		$t->error( $team->invite( $sub->get_id(), 'blocked@example.test', $owner ), 'over_quota' );
-		$t->same( 4, $summary['used'], 'Personne n\'est supprimé' );
+		$t->same( 4, $summary['used'], 'Nobody is removed' );
 
-		$switch( $t->fixtures['vb'] ); // 10 invités.
+		$switch( $t->fixtures['vb'] ); // 10 guests.
 		$s = $t->reload( $sub->get_id() );
-		$t->same( 10, $t->plugin()->quotas()->quota( $s ), 'Quota rétabli' );
+		$t->same( 10, $t->plugin()->quotas()->quota( $s ), 'Quota restored' );
 		foreach ( $seats as [ $guest ] ) {
-			$t->ok( $t->is_member( $guest ), "Invité {$guest} restauré" );
+			$t->ok( $t->is_member( $guest ), "Guest {$guest} restored" );
 		}
 		$history = $t->plugin()->quotas()->history( $s );
-		$t->ok( count( $history ) >= 3, 'Historique des changements de quota' );
+		$t->ok( count( $history ) >= 3, 'Quota change history' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Quota imposé par un administrateur',
+	'Quota enforced by an administrator',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerO' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p0'] );
 		$t->plugin()->quotas()->set_override( $sub, 1, (int) $t->fixtures['admin_id'] );
-		$t->same( 1, $t->plugin()->quotas()->quota( $t->reload( $sub->get_id() ) ), 'Quota imposé' );
+		$t->same( 1, $t->plugin()->quotas()->quota( $t->reload( $sub->get_id() ) ), 'Enforced quota' );
 		$t->invite( $t->reload( $sub->get_id() ), 'forced-' . $sub->get_id() . '@example.test' );
 		$t->plugin()->quotas()->set_override( $t->reload( $sub->get_id() ), null, (int) $t->fixtures['admin_id'] );
-		$t->same( 0, $t->plugin()->quotas()->quota( $t->reload( $sub->get_id() ) ), 'Retour à l\'instantané' );
+		$t->same( 0, $t->plugin()->quotas()->quota( $t->reload( $sub->get_id() ) ), 'Back to the snapshot' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Critère 11 : invité possédant déjà une adhésion personnelle (préservée, jamais modifiée)',
+	'Criterion 11: guest who already has a personal membership (preserved, never modified)',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner    = $t->user( 'ownerPe' );
 		$guest    = $t->user( 'personal' );
 		$own_sub  = $t->purchase( $guest, $t->fixtures['p0'] );
 		$personal = wc_memberships_get_user_membership( $guest, $t->plan() );
-		$t->ok( $personal && $personal->is_active(), 'Adhésion personnelle active' );
+		$t->ok( $personal && $personal->is_active(), 'Personal membership active' );
 		$personal_id = $personal->get_id();
 
 		$sub  = $t->purchase( $owner, $t->fixtures['p5'] );
 		$seat = $t->invite_and_accept( $sub, $guest );
-		$t->same( 0, $t->managed_count( $guest ), 'Aucune adhésion gérée créée (pas de doublon)' );
-		$t->ok( $t->is_member( $guest ), 'Toujours membre' );
+		$t->same( 0, $t->managed_count( $guest ), 'No managed membership created (no duplicate)' );
+		$t->ok( $t->is_member( $guest ), 'Still a member' );
 
-		// L'adhésion personnelle s'interrompt : l'invitation prend le relais.
+		// The personal membership is interrupted: the invitation takes over.
 		$t->reload( $own_sub->get_id() )->update_status( 'on-hold' );
-		$t->ok( $t->is_member( $guest ), 'L\'invitation prend le relais quand l\'adhésion personnelle est suspendue' );
-		$t->same( 1, $t->managed_count( $guest ), 'Adhésion gérée créée' );
-		$t->same( 'paused', wc_memberships_get_user_membership( $personal_id )->get_status(), 'L\'adhésion personnelle n\'est pas modifiée' );
+		$t->ok( $t->is_member( $guest ), 'The invitation takes over when the personal membership is suspended' );
+		$t->same( 1, $t->managed_count( $guest ), 'Managed membership created' );
+		$t->same( 'paused', wc_memberships_get_user_membership( $personal_id )->get_status(), 'The personal membership is not modified' );
 
-		// L'adhésion personnelle reprend : l'adhésion gérée disparaît.
+		// The personal membership resumes: the managed membership disappears.
 		$t->reload( $own_sub->get_id() )->update_status( 'active' );
-		$t->same( 0, $t->managed_count( $guest ), 'Adhésion gérée retirée quand l\'adhésion personnelle redevient active' );
-		$t->ok( $t->is_member( $guest ), 'Membre via son adhésion personnelle' );
+		$t->same( 0, $t->managed_count( $guest ), 'Managed membership removed when the personal membership becomes active again' );
+		$t->ok( $t->is_member( $guest ), 'Member through their personal membership' );
 
-		// Révocation de l'invitation : l'adhésion personnelle est intacte.
-		$t->success( $team->remove( $seat->id, $owner ), 'Révocation' );
+		// Invitation revoked: the personal membership is intact.
+		$t->success( $team->remove( $seat->id, $owner ), 'Revocation' );
 		$personal = wc_memberships_get_user_membership( $personal_id );
-		$t->ok( $personal && 'active' === $personal->get_status(), 'Adhésion personnelle toujours active' );
-		$t->ok( $t->has_active_member_role( $guest, true ), 'Rôle de membre conservé grâce à l\'adhésion personnelle' );
-		$t->ok( $t->is_member( $guest ), 'Droit indépendant préservé' );
+		$t->ok( $personal && 'active' === $personal->get_status(), 'Personal membership still active' );
+		$t->ok( $t->has_active_member_role( $guest, true ), 'Member role kept thanks to the personal membership' );
+		$t->ok( $t->is_member( $guest ), 'Independent entitlement preserved' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Invité ayant acheté son propre abonnement après coup : adhésion reprise par l\'achat',
+	'Guest who bought their own subscription afterwards: membership taken over by the purchase',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerHo' );
 		$guest = $t->user( 'buyer' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
 		$seat  = $t->invite_and_accept( $sub, $guest );
-		$t->same( 1, $t->managed_count( $guest ), 'Adhésion gérée' );
+		$t->same( 1, $t->managed_count( $guest ), 'Managed membership' );
 
 		$t->purchase( $guest, $t->fixtures['p0'] );
-		$t->same( 0, $t->managed_count( $guest ), 'L\'adhésion n\'est plus gérée par l\'extension' );
-		$t->ok( $t->is_member( $guest ), 'Toujours membre' );
+		$t->same( 0, $t->managed_count( $guest ), 'The membership is no longer managed by the plugin' );
+		$t->ok( $t->is_member( $guest ), 'Still a member' );
 
-		$t->success( $team->remove( $seat->id, $owner ), 'Révocation de l\'invitation' );
-		$t->ok( $t->is_member( $guest ), 'Son achat personnel lui conserve l\'accès' );
-		$t->ok( $t->has_active_member_role( $guest, true ), 'Rôle de membre conservé' );
+		$t->success( $team->remove( $seat->id, $owner ), 'Invitation revocation' );
+		$t->ok( $t->is_member( $guest ), 'Their personal purchase keeps their access' );
+		$t->ok( $t->has_active_member_role( $guest, true ), 'Member role kept' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Utilisateur invité par plusieurs abonnements',
+	'User invited by several subscriptions',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner_a = $t->user( 'ownerMa' );
 		$owner_b = $t->user( 'ownerMb' );
@@ -472,26 +472,26 @@ $t->test(
 		$sub_b   = $t->purchase( $owner_b, $t->fixtures['p5'] );
 		$seat_a  = $t->invite_and_accept( $sub_a, $guest );
 		$seat_b  = $t->invite_and_accept( $sub_b, $guest );
-		$t->same( 1, $t->managed_count( $guest ), 'Une seule adhésion gérée pour deux sources' );
+		$t->same( 1, $t->managed_count( $guest ), 'A single managed membership for two sources' );
 
 		$t->reload( $sub_a->get_id() )->update_status( 'on-hold' );
-		$t->ok( $t->is_member( $guest ), 'B active suffit quand A est suspendu' );
+		$t->ok( $t->is_member( $guest ), 'Active B is enough when A is suspended' );
 
-		$t->success( $team->remove( $seat_b->id, $owner_b ), 'Révocation B' );
-		$t->ok( ! $t->is_member( $guest ), 'A suspendu et B révoqué : accès suspendu' );
-		$t->same( 'paused', $t->managed( $guest )->get_status(), 'Adhésion en pause (A en attente)' );
+		$t->success( $team->remove( $seat_b->id, $owner_b ), 'Revocation of B' );
+		$t->ok( ! $t->is_member( $guest ), 'A suspended and B revoked: access suspended' );
+		$t->same( 'paused', $t->managed( $guest )->get_status(), 'Membership paused (A on hold)' );
 
 		$t->reload( $sub_a->get_id() )->update_status( 'active' );
-		$t->ok( $t->is_member( $guest ), 'A réactivé' );
-		$t->success( $team->remove( $seat_a->id, $owner_a ), 'Révocation A' );
-		$t->ok( ! $t->is_member( $guest ), 'Plus aucune source : plus d\'accès' );
-		$t->same( 0, $t->managed_count( $guest ), 'Adhésion gérée supprimée' );
+		$t->ok( $t->is_member( $guest ), 'A reactivated' );
+		$t->success( $team->remove( $seat_a->id, $owner_a ), 'Revocation of A' );
+		$t->ok( ! $t->is_member( $guest ), 'No source left: no access' );
+		$t->same( 0, $t->managed_count( $guest ), 'Managed membership deleted' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Gestion d\'un abonnement appartenant à un autre utilisateur : refus',
+	'Managing a subscription belonging to another user: refused',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner    = $t->user( 'ownerV' );
 		$intruder = $t->user( 'intruder' );
@@ -505,17 +505,17 @@ $t->test(
 		$t->error( $team->replace( $seat->id, 'y@example.test', $intruder ), 'forbidden' );
 		$t->error( $team->resend( $pending->id, $intruder ), 'forbidden' );
 		$t->error( $team->invite( 999999999, 'x@example.test', $intruder ), 'forbidden' );
-		$t->ok( $t->is_member( $guest ), 'L\'invité n\'est pas affecté' );
+		$t->ok( $t->is_member( $guest ), 'The guest is not affected' );
 
-		// Un gestionnaire de la boutique peut agir.
-		$t->success( $team->remove( $seat->id, (int) $t->fixtures['admin_id'] ), 'Révocation par un administrateur' );
-		$t->ok( ! $t->is_member( $guest ), 'Accès révoqué par l\'administrateur' );
+		// A shop manager can act.
+		$t->success( $team->remove( $seat->id, (int) $t->fixtures['admin_id'] ), 'Revocation by an administrator' );
+		$t->ok( ! $t->is_member( $guest ), 'Access revoked by the administrator' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Exécution répétée d\'un même événement : idempotence',
+	'Repeated execution of the same event: idempotence',
 	function ( WCSTA_IT $t ) use ( $sync ) {
 		$owner = $t->user( 'ownerI' );
 		$guest = $t->user( 'idem' );
@@ -525,26 +525,26 @@ $t->test(
 
 		for ( $i = 0; $i < 3; $i++ ) {
 			$result = $sync->sync_subscription( $sub->get_id(), 'test' );
-			$t->same( 'unchanged', $result['memberships'][ $guest . ':' . $t->plan() ], 'Synchronisation sans effet' );
+			$t->same( 'unchanged', $result['memberships'][ $guest . ':' . $t->plan() ], 'Synchronization with no effect' );
 			do_action( 'woocommerce_subscription_status_updated', $t->reload( $sub->get_id() ), 'active', 'active' );
 		}
-		$t->same( 1, $t->managed_count( $guest ), 'Toujours une seule adhésion' );
-		$t->same( $membership_id, $t->managed( $guest )->get_id(), 'Même adhésion' );
-		$t->same( 1, count( $t->plugin()->grants()->for_user_plan( $guest, $t->plan() ) ), 'Une seule source de droits' );
+		$t->same( 1, $t->managed_count( $guest ), 'Still a single membership' );
+		$t->same( $membership_id, $t->managed( $guest )->get_id(), 'Same membership' );
+		$t->same( 1, count( $t->plugin()->grants()->for_user_plan( $guest, $t->plan() ) ), 'A single access source' );
 
-		// Double changement de statut rejoué.
+		// Double status change replayed.
 		$t->reload( $sub->get_id() )->update_status( 'on-hold' );
 		do_action( 'woocommerce_subscription_status_updated', $t->reload( $sub->get_id() ), 'on-hold', 'active' );
 		$t->reload( $sub->get_id() )->update_status( 'active' );
 		do_action( 'woocommerce_subscription_status_updated', $t->reload( $sub->get_id() ), 'active', 'on-hold' );
-		$t->same( 1, $t->managed_count( $guest ), 'Pas de doublon après rejeu' );
-		$t->ok( $t->is_member( $guest ), 'Accès cohérent' );
+		$t->same( 1, $t->managed_count( $guest ), 'No duplicate after replay' );
+		$t->ok( $t->is_member( $guest ), 'Consistent access' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Rattrapage : adhésion gérée supprimée ou modifiée à la main, puis resynchronisation',
+	'Catch-up: managed membership deleted or edited by hand, then resynchronization',
 	function ( WCSTA_IT $t ) use ( $sync ) {
 		$owner = $t->user( 'ownerCa' );
 		$guest = $t->user( 'catch' );
@@ -552,19 +552,19 @@ $t->test(
 		$t->invite_and_accept( $sub, $guest );
 
 		wp_delete_post( $t->managed( $guest )->get_id(), true );
-		$t->ok( ! $t->is_member( $guest ), 'Événement « manqué » : accès perdu' );
+		$t->ok( ! $t->is_member( $guest ), '"Missed" event: access lost' );
 		$sync->sync_subscription( $sub->get_id(), 'catch_up' );
-		$t->ok( $t->is_member( $guest ), 'La synchronisation de rattrapage restaure l\'accès' );
+		$t->ok( $t->is_member( $guest ), 'The catch-up synchronization restores access' );
 
 		$t->managed( $guest )->update_status( 'cancelled' );
 		$sync->sync_subscription( $sub->get_id(), 'catch_up' );
-		$t->ok( $t->is_member( $guest ), 'Statut modifié à la main corrigé' );
+		$t->ok( $t->is_member( $guest ), 'Manually changed status corrected' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Limitation des envois et des renvois',
+	'Rate limiting of sends and resends',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerL' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -583,7 +583,7 @@ $t->test(
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Validation des adresses et auto-invitation',
+	'Email validation and self-invitation',
 	function ( WCSTA_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerVa' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -597,7 +597,7 @@ $t->test(
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'Mon compte : menu et contenu « Mes invités » pour le titulaire uniquement',
+	'My Account: "My guests" menu and content for the holder only',
 	function ( WCSTA_IT $t ) {
 		$owner = $t->user( 'ownerUi' );
 		$guest = $t->user( 'uiguest' );
@@ -606,24 +606,24 @@ $t->test(
 
 		$endpoint = new AccountEndpoint( $t->plugin()->team(), $t->plugin()->subscriptions() );
 		wp_set_current_user( $owner );
-		$items = $endpoint->menu_items( array( 'dashboard' => 'Tableau de bord', 'customer-logout' => 'Déconnexion' ) );
-		$t->ok( isset( $items[ AccountEndpoint::KEY ] ), 'Entrée de menu pour le titulaire' );
+		$items = $endpoint->menu_items( array( 'dashboard' => 'Dashboard', 'customer-logout' => 'Logout' ) );
+		$t->ok( isset( $items[ AccountEndpoint::KEY ] ), 'Menu entry for the holder' );
 		ob_start();
 		$endpoint->render();
 		$html = (string) ob_get_clean();
-		$t->ok( str_contains( $html, $t->email( $guest ) ), 'Invité listé' );
-		$t->ok( str_contains( $html, 'wcsta-invite-form' ), 'Formulaire d\'invitation' );
+		$t->ok( str_contains( $html, $t->email( $guest ) ), 'Guest listed' );
+		$t->ok( str_contains( $html, 'wcsta-invite-form' ), 'Invitation form' );
 
 		wp_set_current_user( $guest );
-		$items = ( new AccountEndpoint( $t->plugin()->team(), $t->plugin()->subscriptions() ) )->menu_items( array( 'dashboard' => 'Tableau de bord' ) );
-		$t->ok( ! isset( $items[ AccountEndpoint::KEY ] ), 'Pas de menu pour un invité' );
+		$items = ( new AccountEndpoint( $t->plugin()->team(), $t->plugin()->subscriptions() ) )->menu_items( array( 'dashboard' => 'Dashboard' ) );
+		$t->ok( ! isset( $items[ AccountEndpoint::KEY ] ), 'No menu for a guest' );
 		wp_set_current_user( 0 );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'RGPD : export et effacement des données d\'un invité',
+	'GDPR: export and erasure of a guest\'s data',
 	function ( WCSTA_IT $t ) {
 		$owner = $t->user( 'ownerG' );
 		$guest = $t->user( 'gdpr' );
@@ -632,32 +632,32 @@ $t->test(
 
 		$privacy = new \WCSubscriptionTeamAccess\Privacy( $t->plugin()->seats(), $t->plugin()->team() );
 		$export  = $privacy->export( $t->email( $guest ) );
-		$t->same( 1, count( $export['data'] ), 'Une invitation exportée' );
+		$t->same( 1, count( $export['data'] ), 'One invitation exported' );
 
 		$erase = $privacy->erase( $t->email( $guest ) );
-		$t->ok( $erase['items_removed'], 'Données effacées' );
-		$t->ok( ! $t->is_member( $guest ), 'Accès retiré' );
-		$t->same( array(), $t->plugin()->seats()->for_user_or_email( 0, strtolower( $t->email( $guest ) ) ), 'Adresse anonymisée' );
+		$t->ok( $erase['items_removed'], 'Data erased' );
+		$t->ok( ! $t->is_member( $guest ), 'Access removed' );
+		$t->same( array(), $t->plugin()->seats()->for_user_or_email( 0, strtolower( $t->email( $guest ) ) ), 'Email address anonymized' );
 	}
 );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
-	'E-mails natifs Memberships désactivés pour les adhésions gérées',
+	'Native Memberships emails disabled for managed memberships',
 	function ( WCSTA_IT $t ) {
 		$owner = $t->user( 'ownerMl' );
 		$guest = $t->user( 'mailguest' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
 		$t->invite_and_accept( $sub, $guest );
 		$membership = $t->managed( $guest );
-		$t->ok( false === apply_filters( 'woocommerce_email_enabled_WC_Memberships_User_Membership_Ending_Soon_Email', true, $membership ), 'E-mail « bientôt expirée » désactivé' );
-		$t->ok( false === apply_filters( 'woocommerce_email_enabled_WC_Memberships_User_Membership_Renewal_Reminder_Email', true, $membership ), 'Rappel de renouvellement désactivé' );
+		$t->ok( false === apply_filters( 'woocommerce_email_enabled_WC_Memberships_User_Membership_Ending_Soon_Email', true, $membership ), '"Ending soon" email disabled' );
+		$t->ok( false === apply_filters( 'woocommerce_email_enabled_WC_Memberships_User_Membership_Renewal_Reminder_Email', true, $membership ), 'Renewal reminder disabled' );
 		$actions = apply_filters( 'wc_memberships_members_area_my-memberships_actions', array( 'cancel' => array(), 'renew' => array(), 'view' => array() ), $membership );
-		$t->ok( ! isset( $actions['cancel'] ) && ! isset( $actions['renew'] ) && isset( $actions['view'] ), 'Actions Annuler/Renouveler retirées de l\'espace membre' );
+		$t->ok( ! isset( $actions['cancel'] ) && ! isset( $actions['renew'] ) && isset( $actions['view'] ), 'Cancel/Renew actions removed from the members area' );
 	}
 );
 
-// Données pour le test de concurrence (lancé ensuite par run.sh) : 4 places prises sur 5.
+// Data for the concurrency test (run afterwards by run.sh): 4 seats taken out of 5.
 $concurrency_owner = $t->user( 'ownerCc' );
 $concurrency_sub   = $t->purchase( $concurrency_owner, $t->fixtures['p5'] );
 for ( $i = 1; $i <= 4; $i++ ) {

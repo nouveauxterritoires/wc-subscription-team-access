@@ -1,8 +1,8 @@
 <?php
 /**
- * Supprime toutes les données de la suite d'intégration.
+ * Deletes all data created by the integration suite.
  *
- * Usage : wp eval-file tests/integration/cleanup.php <fichier-fixtures.json>
+ * Usage: wp eval-file tests/integration/cleanup.php <fixtures-file.json>
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -21,11 +21,11 @@ $t                 = new WCSTA_IT();
 $t->created_users  = array_map( 'intval', (array) ( $fixtures['created_users'] ?? array() ) );
 $t->created_orders = array_map( 'intval', (array) ( $fixtures['created_orders'] ?? array() ) );
 
-// Comptes de test créés hors suivi (ex. acceptation avec création de compte, concurrence).
+// Test accounts created outside tracking (e.g. acceptance with account creation, concurrency).
 $extra = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->users} WHERE user_email LIKE %s", $wpdb->esc_like( WCSTA_IT::PREFIX ) . '%' ) ); // phpcs:ignore
 $t->created_users = array_merge( $t->created_users, array_map( 'intval', $extra ) );
 
-// Abonnements et commandes de ces comptes.
+// Subscriptions and orders of these accounts.
 foreach ( array_unique( $t->created_users ) as $user_id ) {
 	foreach ( wcs_get_users_subscriptions( $user_id ) as $subscription ) {
 		$t->created_orders[] = $subscription->get_id();
@@ -49,10 +49,10 @@ if ( ! empty( $fixtures['plan_id'] ) ) {
 	wp_delete_post( (int) $fixtures['plan_id'], true );
 }
 
-// Journal de la suite.
+// Suite log.
 $wpdb->query( "DELETE l FROM {$wpdb->prefix}wcsta_log l LEFT JOIN {$wpdb->prefix}wcsta_seats s ON s.subscription_id = l.subscription_id WHERE l.subscription_id > 0 AND s.id IS NULL" ); // phpcs:ignore
 
 if ( is_file( $file ) ) {
 	unlink( $file );
 }
-WP_CLI::success( sprintf( 'Nettoyage : %d compte(s), %d commande(s)/abonnement(s).', count( array_unique( $t->created_users ) ), count( array_unique( $t->created_orders ) ) ) );
+WP_CLI::success( sprintf( 'Cleanup: %d account(s), %d order(s)/subscription(s).', count( array_unique( $t->created_users ) ), count( array_unique( $t->created_orders ) ) ) );

@@ -1,6 +1,6 @@
 /**
- * WC Subscription Team Access — confirmations avant les actions destructrices.
- * Aucune dépendance : les formulaires fonctionnent aussi sans JavaScript.
+ * WC Subscription Team Access — confirmations before destructive actions.
+ * No dependencies: the forms also work without JavaScript.
  */
 ( function () {
 	'use strict';
@@ -15,7 +15,7 @@
 			event.preventDefault();
 			return;
 		}
-		// Évite les doubles envois (double clic) : le premier envoi désactive les boutons.
+		// Prevents double submissions (double click): the first submission disables the buttons.
 		var buttons = form.querySelectorAll( 'button[type="submit"]' );
 		window.setTimeout( function () {
 			buttons.forEach( function ( button ) {

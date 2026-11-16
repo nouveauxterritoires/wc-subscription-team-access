@@ -8,7 +8,7 @@ use WCSubscriptionTeamAccess\Domain\AccessState;
 use WCSubscriptionTeamAccess\Domain\SubscriptionAccessResolver;
 
 /**
- * Traduction des statuts WooCommerce Subscriptions en droits.
+ * Mapping of WooCommerce Subscriptions statuses to access entitlements.
  */
 final class SubscriptionAccessResolverTest extends TestCase {
 

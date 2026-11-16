@@ -8,7 +8,7 @@
     failOnWarning="true"
     failOnRisky="true">
     <testsuites>
-        <!-- Logique métier pure, sans WordPress. -->
+        <!-- Pure business logic, without WordPress. -->
         <testsuite name="unit">
             <directory suffix="Test.php">tests/Unit</directory>
         </testsuite>

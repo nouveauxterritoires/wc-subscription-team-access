@@ -1,6 +1,6 @@
 <?php
 /**
- * Tâches de fond via Action Scheduler (fourni par WooCommerce).
+ * Background jobs via Action Scheduler (bundled with WooCommerce).
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess;
 
 /**
- * Planifie la synchronisation de rattrapage et les traitements asynchrones.
+ * Schedules the catch-up sync and asynchronous jobs.
  */
 final class Scheduler {
 
@@ -22,13 +22,13 @@ final class Scheduler {
 	private const BATCH_SIZE        = 100;
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param Reconciler $reconciler Synchronisation.
+	 * @param Reconciler $reconciler Reconciler.
 	 */
 	public function __construct( private readonly Reconciler $reconciler ) {}
 
-	/** Branche les crochets. */
+	/** Registers the hooks. */
 	public function register(): void {
 		add_action( 'action_scheduler_init', array( $this, 'ensure_daily' ) );
 		add_action( self::DAILY_HOOK, array( $this, 'run_daily' ) );
@@ -37,7 +37,7 @@ final class Scheduler {
 		add_action( self::SYNC_USER_PLAN, array( $this, 'run_user_plan' ), 10, 2 );
 	}
 
-	/** Planifie la maintenance quotidienne si elle ne l'est pas. */
+	/** Schedules the daily maintenance if it is not already scheduled. */
 	public function ensure_daily(): void {
 		if ( ! function_exists( 'as_has_scheduled_action' ) || as_has_scheduled_action( self::DAILY_HOOK, array(), self::GROUP ) ) {
 			return;
@@ -45,16 +45,16 @@ final class Scheduler {
 		as_schedule_recurring_action( time() + HOUR_IN_SECONDS, DAY_IN_SECONDS, self::DAILY_HOOK, array(), self::GROUP );
 	}
 
-	/** Maintenance quotidienne : expirations, minimisation, purge, puis resynchronisation par lots. */
+	/** Daily maintenance: expirations, data minimization, purge, then batched resync. */
 	public function run_daily(): void {
 		$this->reconciler->maintenance();
 		$this->enqueue_batch( 0 );
 	}
 
 	/**
-	 * Synchronise un lot d'abonnements puis planifie le lot suivant.
+	 * Syncs a batch of subscriptions, then schedules the next batch.
 	 *
-	 * @param int $after_id Dernier abonnement traité.
+	 * @param int $after_id Last subscription processed.
 	 */
 	public function run_batch( $after_id = 0 ): void {
 		$ids = $this->reconciler->subscription_ids( (int) $after_id, self::BATCH_SIZE );
@@ -69,18 +69,18 @@ final class Scheduler {
 	}
 
 	/**
-	 * Synchronisation asynchrone d'un abonnement.
+	 * Asynchronous sync of a subscription.
 	 *
-	 * @param int $subscription_id Abonnement.
+	 * @param int $subscription_id Subscription.
 	 */
 	public function run_subscription( $subscription_id ): void {
 		$this->reconciler->sync_subscription( (int) $subscription_id, 'async' );
 	}
 
 	/**
-	 * Synchronisation asynchrone d'un couple utilisateur / plan.
+	 * Asynchronous sync of a user / plan pair.
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 * @param int $plan_id Plan.
 	 */
 	public function run_user_plan( $user_id, $plan_id ): void {
@@ -88,9 +88,9 @@ final class Scheduler {
 	}
 
 	/**
-	 * Planifie un lot.
+	 * Schedules a batch.
 	 *
-	 * @param int $after_id Point de départ.
+	 * @param int $after_id Starting point.
 	 */
 	public function enqueue_batch( int $after_id ): void {
 		if ( ! function_exists( 'as_enqueue_async_action' ) ) {
@@ -101,9 +101,9 @@ final class Scheduler {
 	}
 
 	/**
-	 * Planifie une synchronisation d'abonnement (dédoublonnée).
+	 * Schedules a subscription sync (deduplicated).
 	 *
-	 * @param int $subscription_id Abonnement.
+	 * @param int $subscription_id Subscription.
 	 */
 	public static function enqueue_subscription( int $subscription_id ): void {
 		if ( ! function_exists( 'as_enqueue_async_action' ) ) {
@@ -113,9 +113,9 @@ final class Scheduler {
 	}
 
 	/**
-	 * Planifie une synchronisation utilisateur / plan (dédoublonnée).
+	 * Schedules a user / plan sync (deduplicated).
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 * @param int $plan_id Plan.
 	 */
 	public static function enqueue_user_plan( int $user_id, int $plan_id ): void {

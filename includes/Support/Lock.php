@@ -1,6 +1,6 @@
 <?php
 /**
- * Verrous applicatifs MySQL/MariaDB (GET_LOCK) pour sérialiser les opérations concurrentes.
+ * MySQL/MariaDB application locks (GET_LOCK) to serialize concurrent operations.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,23 +10,23 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess\Support;
 
 /**
- * GET_LOCK est partagé par toutes les connexions au serveur de base de données : deux
- * requêtes PHP simultanées (deux onglets, deux serveurs web) ne peuvent pas détenir le
- * même verrou. Le verrou est libéré automatiquement si la connexion se termine.
+ * GET_LOCK is shared across all connections to the database server: two
+ * simultaneous PHP requests (two tabs, two web servers) cannot hold the
+ * same lock. The lock is released automatically when the connection ends.
  */
 final class Lock {
 
 	private const TIMEOUT = 10;
 
-	/** @var array<string, int> Verrous détenus par ce processus (réentrance). */
+	/** @var array<string, int> Locks held by this process (reentrancy). */
 	private static array $held = array();
 
 	/**
-	 * Exécute une fonction en détenant le verrou.
+	 * Runs a function while holding the lock.
 	 *
 	 * @template T
-	 * @param string             $key      Clé logique.
-	 * @param callable():T       $callback Traitement.
+	 * @param string             $key      Logical key.
+	 * @param callable():T       $callback Work to run.
 	 * @return T|\WP_Error
 	 */
 	public static function run( string $key, callable $callback ): mixed {
@@ -58,9 +58,9 @@ final class Lock {
 	}
 
 	/**
-	 * Nom du verrou, unique par base et par préfixe de tables (64 caractères max).
+	 * Lock name, unique per database and table prefix (64 characters max).
 	 *
-	 * @param string $key Clé logique.
+	 * @param string $key Logical key.
 	 */
 	private static function name( string $key ): string {
 		global $wpdb;
@@ -68,9 +68,9 @@ final class Lock {
 	}
 
 	/**
-	 * Acquiert le verrou.
+	 * Acquires the lock.
 	 *
-	 * @param string $name Nom.
+	 * @param string $name Name.
 	 */
 	private static function acquire( string $name ): bool {
 		global $wpdb;
@@ -78,9 +78,9 @@ final class Lock {
 	}
 
 	/**
-	 * Libère le verrou.
+	 * Releases the lock.
 	 *
-	 * @param string $name Nom.
+	 * @param string $name Name.
 	 */
 	private static function release( string $name ): void {
 		global $wpdb;

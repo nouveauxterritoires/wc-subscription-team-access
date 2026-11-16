@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WCSubscriptionTeamAccess\Domain\Token;
 
 /**
- * Jetons d'invitation.
+ * Invitation tokens.
  */
 final class TokenTest extends TestCase {
 

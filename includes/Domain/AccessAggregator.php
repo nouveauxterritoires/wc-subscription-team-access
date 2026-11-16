@@ -1,6 +1,6 @@
 <?php
 /**
- * Combine plusieurs sources de droits pour un même utilisateur et un même plan.
+ * Combines several entitlement sources for the same user and the same plan.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,16 +10,16 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess\Domain;
 
 /**
- * Règle : l'état le plus favorable l'emporte (actif > en pause > nul).
- * Entre plusieurs sources actives, la fin la plus tardive l'emporte, et une source
- * sans date de fin rend l'accès illimité.
+ * Rule: the most favourable state wins (active > paused > none).
+ * Among several active sources, the latest end wins, and a source
+ * with no end date makes access unlimited.
  */
 final class AccessAggregator {
 
 	/**
-	 * Agrège une liste d'états.
+	 * Aggregates a list of states.
 	 *
-	 * @param AccessState[] $states États issus de chaque source.
+	 * @param AccessState[] $states States from each source.
 	 */
 	public static function aggregate( array $states ): AccessState {
 		$has_paused = false;

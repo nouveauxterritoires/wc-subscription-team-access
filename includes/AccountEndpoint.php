@@ -1,6 +1,6 @@
 <?php
 /**
- * Espace client : endpoint WooCommerce « Mes invités » (/mon-compte/mes-invites/).
+ * Customer area: "My guests" WooCommerce endpoint (/mon-compte/mes-invites/).
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,27 +10,27 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess;
 
 /**
- * Affichage et traitement des formulaires (PRG : POST → message → redirection).
+ * Display and handling of the forms (PRG: POST -> message -> redirect).
  */
 final class AccountEndpoint {
 
 	public const KEY = 'team-access';
 
-	/** @var array<int, \WC_Subscription[]> Cache par requête. */
+	/** @var array<int, \WC_Subscription[]> Per-request cache. */
 	private array $cache = array();
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param TeamManager         $team          Opérations.
-	 * @param SubscriptionManager $subscriptions Abonnements.
+	 * @param TeamManager         $team          Operations.
+	 * @param SubscriptionManager $subscriptions Subscriptions.
 	 */
 	public function __construct(
 		private readonly TeamManager $team,
 		private readonly SubscriptionManager $subscriptions
 	) {}
 
-	/** Branche les crochets. */
+	/** Registers the hooks. */
 	public function register(): void {
 		add_filter( 'woocommerce_get_query_vars', array( $this, 'add_query_var' ) );
 		add_filter( 'woocommerce_account_menu_items', array( $this, 'menu_items' ), 20 );
@@ -40,13 +40,13 @@ final class AccountEndpoint {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
-	/** URL de l'endpoint. */
+	/** Endpoint URL. */
 	public static function url(): string {
 		return function_exists( 'wc_get_account_endpoint_url' ) ? wc_get_account_endpoint_url( self::KEY ) : home_url( '/' );
 	}
 
 	/**
-	 * Déclare l'endpoint auprès de WooCommerce (qui crée la règle de réécriture).
+	 * Registers the endpoint with WooCommerce (which creates the rewrite rule).
 	 *
 	 * @param array<string, string> $vars Variables.
 	 * @return array<string, string>
@@ -58,9 +58,9 @@ final class AccountEndpoint {
 	}
 
 	/**
-	 * Ajoute l'entrée de menu pour les titulaires d'un abonnement partageable.
+	 * Adds the menu entry for holders of a shareable subscription.
 	 *
-	 * @param array<string, string> $items Entrées.
+	 * @param array<string, string> $items Entries.
 	 * @return array<string, string>
 	 */
 	public function menu_items( $items ) {
@@ -81,12 +81,12 @@ final class AccountEndpoint {
 		return $added ? $result : $result + $entry;
 	}
 
-	/** Titre de la page. */
+	/** Page title. */
 	public function title(): string {
 		return __( 'My guests', 'wc-subscription-team-access' );
 	}
 
-	/** Contenu de l'endpoint. */
+	/** Endpoint content. */
 	public function render(): void {
 		$user_id = get_current_user_id();
 		$blocks  = array();
@@ -112,7 +112,7 @@ final class AccountEndpoint {
 		);
 	}
 
-	/** Charge la feuille de style et le script sur l'endpoint uniquement. */
+	/** Loads the stylesheet and script on the endpoint only. */
 	public function enqueue_assets(): void {
 		if ( ! function_exists( 'is_wc_endpoint_url' ) || ! is_wc_endpoint_url( self::KEY ) ) {
 			return;
@@ -121,7 +121,7 @@ final class AccountEndpoint {
 		wp_enqueue_script( 'wcsta-front', WCSTA_URL . 'assets/js/team-access.js', array(), WCSTA_VERSION, true );
 	}
 
-	/** Traite les formulaires de l'endpoint. */
+	/** Handles the endpoint's forms. */
 	public function handle_post(): void {
 		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || empty( $_POST['wcsta_action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return;
@@ -195,18 +195,18 @@ final class AccountEndpoint {
 	}
 
 	/**
-	 * Action de nonce par abonnement.
+	 * Nonce action per subscription.
 	 *
-	 * @param int $subscription_id Abonnement.
+	 * @param int $subscription_id Subscription.
 	 */
 	public static function nonce_action( int $subscription_id ): string {
 		return 'wcsta_team_' . $subscription_id;
 	}
 
 	/**
-	 * Abonnements partageables de l'utilisateur (mis en cache pour la requête).
+	 * The user's shareable subscriptions (cached for the request).
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 * @return \WC_Subscription[]
 	 */
 	private function team_subscriptions( int $user_id ): array {
@@ -220,10 +220,10 @@ final class AccountEndpoint {
 	}
 
 	/**
-	 * La place appartient bien à l'abonnement du formulaire.
+	 * The seat does belong to the form's subscription.
 	 *
-	 * @param int $seat_id         Place.
-	 * @param int $subscription_id Abonnement.
+	 * @param int $seat_id         Seat.
+	 * @param int $subscription_id Subscription.
 	 */
 	private function seat_belongs_to( int $seat_id, int $subscription_id ): bool {
 		$seat = Plugin::instance()->seats()->find( $seat_id );
@@ -231,10 +231,10 @@ final class AccountEndpoint {
 	}
 
 	/**
-	 * Message après une opération qui envoie un e-mail.
+	 * Message after an operation that sends an email.
 	 *
-	 * @param array{seat: \WCSubscriptionTeamAccess\Repository\Seat, mailed: bool}|\WP_Error $result  Résultat.
-	 * @param string                                                                         $success Message (%s : adresse).
+	 * @param array{seat: \WCSubscriptionTeamAccess\Repository\Seat, mailed: bool}|\WP_Error $result  Result.
+	 * @param string                                                                         $success Message (%s: address).
 	 */
 	private function notice_for_mail( array|\WP_Error $result, string $success ): void {
 		if ( is_wp_error( $result ) ) {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Encadré « Accès équipe » sur l'écran d'édition d'un abonnement (compatible HPOS).
+ * "Team access" meta box on the subscription edit screen (HPOS compatible).
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -14,14 +14,14 @@ use WCSubscriptionTeamAccess\QuotaManager;
 use WCSubscriptionTeamAccess\TeamManager;
 
 /**
- * Résumé des places et lien vers le détail.
+ * Seat summary and link to the detail.
  */
 final class SubscriptionMetaBox {
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param TeamManager  $team   Opérations.
+	 * @param TeamManager  $team   Operations.
 	 * @param QuotaManager $quotas Quotas.
 	 */
 	public function __construct(
@@ -29,12 +29,12 @@ final class SubscriptionMetaBox {
 		private readonly QuotaManager $quotas
 	) {}
 
-	/** Branche les crochets. */
+	/** Hooks into WordPress. */
 	public function register(): void {
 		add_action( 'add_meta_boxes', array( $this, 'add' ), 40 );
 	}
 
-	/** Déclare l'encadré pour l'écran des abonnements (CPT et HPOS). */
+	/** Registers the meta box for the subscriptions screen (CPT and HPOS). */
 	public function add(): void {
 		$screens = array( 'shop_subscription' );
 		if ( function_exists( 'wcs_get_page_screen_id' ) ) {
@@ -49,9 +49,9 @@ final class SubscriptionMetaBox {
 	}
 
 	/**
-	 * Contenu de l'encadré.
+	 * Meta box content.
 	 *
-	 * @param \WP_Post|\WC_Subscription $object Abonnement ou contenu.
+	 * @param \WP_Post|\WC_Subscription $object Subscription or post.
 	 */
 	public function render( $object ): void {
 		$subscription = $object instanceof \WC_Subscription ? $object : ( $object instanceof \WP_Post ? wcs_get_subscription( $object->ID ) : null );

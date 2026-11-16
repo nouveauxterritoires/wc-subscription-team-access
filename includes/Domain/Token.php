@@ -1,6 +1,6 @@
 <?php
 /**
- * Jetons d'invitation : aléatoires, opaques, stockés uniquement sous forme de hachage.
+ * Invitation tokens: random, opaque, stored only as a hash.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,33 +10,33 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess\Domain;
 
 /**
- * 32 octets issus de random_bytes(), encodés en base64url (43 caractères).
- * Seul le SHA-256 du jeton est conservé en base : une fuite de la table ne permet
- * pas d'accepter une invitation.
+ * 32 bytes from random_bytes(), base64url-encoded (43 characters).
+ * Only the token's SHA-256 is kept in the database: a leak of the table does not
+ * allow anyone to accept an invitation.
  */
 final class Token {
 
 	private const BYTES  = 32;
 	private const LENGTH = 43;
 
-	/** Génère un jeton. */
+	/** Generates a token. */
 	public static function generate(): string {
 		return rtrim( strtr( base64_encode( random_bytes( self::BYTES ) ), '+/', '-_' ), '=' );
 	}
 
 	/**
-	 * Hachage stocké.
+	 * Stored hash.
 	 *
-	 * @param string $token Jeton en clair.
+	 * @param string $token Plain-text token.
 	 */
 	public static function hash( string $token ): string {
 		return hash( 'sha256', $token );
 	}
 
 	/**
-	 * Vérifie la forme d'un jeton reçu (avant toute requête en base).
+	 * Checks the format of a received token (before any database query).
 	 *
-	 * @param string $token Jeton reçu.
+	 * @param string $token Received token.
 	 */
 	public static function is_well_formed( string $token ): bool {
 		return self::LENGTH === strlen( $token ) && 1 === preg_match( '/^[A-Za-z0-9_-]+$/', $token );

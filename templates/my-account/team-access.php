@@ -1,13 +1,13 @@
 <?php
 /**
- * Mon compte > Mes invités.
+ * My Account > My guests.
  *
- * Surcharge : votre-theme/wc-subscription-team-access/my-account/team-access.php
+ * Override: your-theme/wc-subscription-team-access/my-account/team-access.php
  *
  * @package WCSubscriptionTeamAccess
  *
  * @var array<int, array{subscription: WC_Subscription, name: string, status: string, summary: array, nonce: string}> $blocks
- * @var string $action_url URL de l'endpoint.
+ * @var string $action_url Endpoint URL.
  */
 
 use WCSubscriptionTeamAccess\Labels;

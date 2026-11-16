@@ -1,6 +1,6 @@
 <?php
 /**
- * Point d'entrée : vérifie les dépendances et assemble les composants.
+ * Entry point: checks the dependencies and wires the components.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -17,7 +17,7 @@ use WCSubscriptionTeamAccess\Repository\Logger;
 use WCSubscriptionTeamAccess\Repository\SeatRepository;
 
 /**
- * Conteneur des services (instance unique).
+ * Service container (single instance).
  */
 final class Plugin {
 
@@ -34,7 +34,7 @@ final class Plugin {
 	private Emails $emails;
 	private TeamManager $team;
 
-	/** Démarrage sur « plugins_loaded ». */
+	/** Boots on "plugins_loaded". */
 	public static function boot(): void {
 		add_action( 'init', array( self::class, 'load_textdomain' ), 0 );
 
@@ -64,7 +64,7 @@ final class Plugin {
 		self::instance()->register();
 	}
 
-	/** Instance unique. */
+	/** Single instance. */
 	public static function instance(): self {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -72,13 +72,13 @@ final class Plugin {
 		return self::$instance;
 	}
 
-	/** Charge les traductions. */
+	/** Loads the translations. */
 	public static function load_textdomain(): void {
 		load_plugin_textdomain( 'wc-subscription-team-access', false, dirname( plugin_basename( WCSTA_FILE ) ) . '/languages' );
 	}
 
 	/**
-	 * Extensions requises absentes.
+	 * Missing required plugins.
 	 *
 	 * @return string[]
 	 */
@@ -96,7 +96,7 @@ final class Plugin {
 		return $missing;
 	}
 
-	/** Assemble les services. */
+	/** Builds the services. */
 	private function __construct() {
 		$this->seats         = new SeatRepository();
 		$this->grants        = new GrantRepository();
@@ -111,7 +111,7 @@ final class Plugin {
 		$this->invitations->set_team( $this->team );
 	}
 
-	/** Branche les crochets de tous les composants. */
+	/** Hooks every component into WordPress. */
 	private function register(): void {
 		Installer::maybe_upgrade();
 		add_action( 'init', array( Installer::class, 'maybe_flush_rewrite_rules' ), 99 );
@@ -130,6 +130,7 @@ final class Plugin {
 		if ( is_admin() ) {
 			( new AdminPage( $this->team, $this->reconciler, $this->subscriptions, $this->quotas, $this->seats, $this->grants, $this->memberships, $this->logger ) )->register();
 			( new SubscriptionMetaBox( $this->team, $this->quotas ) )->register();
+			( new \WCSubscriptionTeamAccess\Admin\Help() )->register();
 			add_filter(
 				'woocommerce_get_settings_pages',
 				static function ( $pages ) {
@@ -147,9 +148,9 @@ final class Plugin {
 	}
 
 	/**
-	 * Liens « Réglages » et « Invités » dans la liste des extensions.
+	 * "Settings", "Shared subscriptions" and "Help" links in the plugins list.
 	 *
-	 * @param string[] $links Liens.
+	 * @param string[] $links Links.
 	 * @return string[]
 	 */
 	public static function action_links( $links ): array {
@@ -159,20 +160,21 @@ final class Plugin {
 			'<a href="' . esc_url( \WCSubscriptionTeamAccess\Admin\SettingsPage::url() ) . '">' . esc_html__( 'Settings', 'wc-subscription-team-access' ) . '</a>',
 			'<a href="' . esc_url( \WCSubscriptionTeamAccess\Admin\AdminPage::url() ) . '">' . esc_html__( 'Shared subscriptions', 'wc-subscription-team-access' ) . '</a>'
 		);
+		$links[] = '<a href="' . esc_url( \WCSubscriptionTeamAccess\Admin\Help::DOCUMENTATION_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Documentation', 'wc-subscription-team-access' ) . '</a>';
 		return $links;
 	}
 
-	/** Dépôt des places. */
+	/** Seat repository. */
 	public function seats(): SeatRepository {
 		return $this->seats;
 	}
 
-	/** Dépôt des sources de droits. */
+	/** Grant repository. */
 	public function grants(): GrantRepository {
 		return $this->grants;
 	}
 
-	/** Journal. */
+	/** Log. */
 	public function logger(): Logger {
 		return $this->logger;
 	}
@@ -182,32 +184,32 @@ final class Plugin {
 		return $this->quotas;
 	}
 
-	/** Abonnements. */
+	/** Subscriptions. */
 	public function subscriptions(): SubscriptionManager {
 		return $this->subscriptions;
 	}
 
-	/** Adhésions. */
+	/** Memberships. */
 	public function memberships(): MembershipManager {
 		return $this->memberships;
 	}
 
-	/** Synchronisation. */
+	/** Synchronization. */
 	public function reconciler(): Reconciler {
 		return $this->reconciler;
 	}
 
-	/** E-mails. */
+	/** Emails. */
 	public function emails(): Emails {
 		return $this->emails;
 	}
 
-	/** Opérations d'équipe. */
+	/** Team operations. */
 	public function team(): TeamManager {
 		return $this->team;
 	}
 
-	/** Page d'invitation. */
+	/** Invitation page. */
 	public function invitations(): InvitationController {
 		return $this->invitations;
 	}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Calcule le quota d'invités d'un abonnement à partir de ses lignes.
+ * Computes a subscription's guest quota from its line items.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,15 +10,15 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess\Domain;
 
 /**
- * Règle : somme, pour chaque ligne, du quota du produit (ou de la variation) multiplié
- * par la quantité. Une variation sans valeur propre hérite de la valeur du produit parent.
+ * Rule: sum, for each line, of the product (or variation) quota multiplied
+ * by the quantity. A variation without its own value inherits the parent product's value.
  */
 final class QuotaCalculator {
 
 	/**
-	 * Quota total.
+	 * Total quota.
 	 *
-	 * @param array<int, array{quantity:int, own:?int, parent:?int}> $lines Lignes : quota propre (variation ou produit simple), quota du parent, quantité.
+	 * @param array<int, array{quantity:int, own:?int, parent:?int}> $lines Lines: own quota (variation or simple product), parent quota, quantity.
 	 */
 	public static function total( array $lines ): int {
 		$total = 0;
@@ -30,9 +30,9 @@ final class QuotaCalculator {
 	}
 
 	/**
-	 * Convertit une méta brute en quota (null = non renseigné).
+	 * Converts a raw meta value into a quota (null = not set).
 	 *
-	 * @param mixed $raw Valeur brute.
+	 * @param mixed $raw Raw value.
 	 */
 	public static function parse( mixed $raw ): ?int {
 		if ( null === $raw || '' === $raw || false === $raw ) {

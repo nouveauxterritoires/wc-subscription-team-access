@@ -1,6 +1,6 @@
 <?php
 /**
- * Place invitée (ligne de la table wcsta_seats).
+ * Guest seat (row of the wcsta_seats table).
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -13,29 +13,29 @@ use WCSubscriptionTeamAccess\Domain\SeatStatus;
 use WCSubscriptionTeamAccess\Support\Dates;
 
 /**
- * Objet de lecture immuable.
+ * Immutable read object.
  */
 final class Seat {
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param int      $id               Identifiant.
-	 * @param int      $subscription_id  Abonnement.
-	 * @param int      $owner_id         Titulaire.
-	 * @param string   $email            Adresse invitée (normalisée).
-	 * @param int      $user_id          Compte invité (0 tant que non acceptée).
-	 * @param string   $status           Statut de cycle de vie.
-	 * @param string   $access           Accès effectif calculé.
-	 * @param string   $access_reason    Raison de suspension.
-	 * @param int|null $token_expires_at Expiration du jeton.
-	 * @param int      $sent_count       Nombre d'envois.
-	 * @param int|null $last_sent_at     Dernier envoi.
-	 * @param int      $replaced_seat_id Place remplacée.
-	 * @param int      $created_by       Auteur de l'invitation.
-	 * @param int      $created_at       Création.
-	 * @param int|null $accepted_at      Acceptation.
-	 * @param int|null $ended_at         Fin (révocation, annulation, expiration).
+	 * @param int      $id               ID.
+	 * @param int      $subscription_id  Subscription.
+	 * @param int      $owner_id         Owner.
+	 * @param string   $email            Guest address (normalized).
+	 * @param int      $user_id          Guest account (0 until accepted).
+	 * @param string   $status           Lifecycle status.
+	 * @param string   $access           Computed effective access.
+	 * @param string   $access_reason    Suspension reason.
+	 * @param int|null $token_expires_at Token expiration.
+	 * @param int      $sent_count       Number of sends.
+	 * @param int|null $last_sent_at     Last send.
+	 * @param int      $replaced_seat_id Replaced seat.
+	 * @param int      $created_by       Invitation author.
+	 * @param int      $created_at       Creation.
+	 * @param int|null $accepted_at      Acceptance.
+	 * @param int|null $ended_at         End (revocation, cancellation, expiration).
 	 */
 	public function __construct(
 		public readonly int $id,
@@ -57,9 +57,9 @@ final class Seat {
 	) {}
 
 	/**
-	 * Construit depuis une ligne SQL.
+	 * Builds from a SQL row.
 	 *
-	 * @param array<string, mixed> $row Ligne.
+	 * @param array<string, mixed> $row Row.
 	 */
 	public static function from_row( array $row ): self {
 		return new self(
@@ -82,32 +82,32 @@ final class Seat {
 		);
 	}
 
-	/** La place consomme du quota. */
+	/** The seat consumes quota. */
 	public function is_live(): bool {
 		return SeatStatus::is_live( $this->status );
 	}
 
-	/** Invitation en attente. */
+	/** Pending invitation. */
 	public function is_pending(): bool {
 		return SeatStatus::PENDING === $this->status;
 	}
 
-	/** Invitation acceptée. */
+	/** Accepted invitation. */
 	public function is_accepted(): bool {
 		return SeatStatus::ACCEPTED === $this->status;
 	}
 
 	/**
-	 * Le jeton est expiré.
+	 * The token is expired.
 	 *
-	 * @param int $now Instant de référence.
+	 * @param int $now Reference time.
 	 */
 	public function is_token_expired( int $now ): bool {
 		return null === $this->token_expires_at || $this->token_expires_at <= $now;
 	}
 
 	/**
-	 * Forme attendue par SeatAllocator.
+	 * Format expected by SeatAllocator.
 	 *
 	 * @return array{id:int, status:string, created_at:int, accepted_at:int|null}
 	 */

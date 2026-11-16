@@ -1,6 +1,6 @@
 <?php
 /**
- * Installation, mises à jour de schéma et désactivation.
+ * Installation, schema upgrades and deactivation.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess;
 
 /**
- * Crée les tables (dbDelta) et gère la version du schéma.
+ * Creates the tables (dbDelta) and manages the schema version.
  */
 final class Installer {
 
@@ -18,14 +18,14 @@ final class Installer {
 	public const DB_VERSION_OPTION = 'wcsta_db_version';
 	public const FLUSH_OPTION      = 'wcsta_flush_rewrite';
 
-	/** Activation de l'extension. */
+	/** Plugin activation. */
 	public static function activate(): void {
 		self::install();
-		// Les règles de réécriture sont enregistrées sur « init » : on vide le cache au prochain chargement.
+		// Rewrite rules are registered on "init": flush the cache on the next load.
 		update_option( self::FLUSH_OPTION, 'yes', false );
 	}
 
-	/** Désactivation : on retire les tâches planifiées, sans toucher aux données. */
+	/** Deactivation: remove the scheduled tasks, leaving the data untouched. */
 	public static function deactivate(): void {
 		if ( function_exists( 'as_unschedule_all_actions' ) ) {
 			as_unschedule_all_actions( Scheduler::DAILY_HOOK, array(), Scheduler::GROUP );
@@ -33,14 +33,14 @@ final class Installer {
 		flush_rewrite_rules();
 	}
 
-	/** Met le schéma à jour si nécessaire (appelé à chaque chargement, coût négligeable). */
+	/** Updates the schema if needed (called on every load, negligible cost). */
 	public static function maybe_upgrade(): void {
 		if ( get_option( self::DB_VERSION_OPTION ) !== self::DB_VERSION ) {
 			self::install();
 		}
 	}
 
-	/** Crée ou met à jour les tables. */
+	/** Creates or updates the tables. */
 	public static function install(): void {
 		global $wpdb;
 
@@ -51,9 +51,9 @@ final class Installer {
 		$grants  = $wpdb->prefix . 'wcsta_grants';
 		$log     = $wpdb->prefix . 'wcsta_log';
 
-		// « live » vaut 1 pour une place vivante et NULL sinon : la clé unique empêche
-		// deux invitations vivantes pour la même adresse sur un même abonnement, tout en
-		// conservant l'historique (plusieurs NULL sont autorisés).
+		// "live" is 1 for a live seat and NULL otherwise: the unique key prevents
+		// two live invitations for the same address on the same subscription, while
+		// keeping the history (multiple NULLs are allowed).
 		dbDelta(
 			"CREATE TABLE {$seats} (
 				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -122,7 +122,7 @@ final class Installer {
 		update_option( self::DB_VERSION_OPTION, self::DB_VERSION, false );
 	}
 
-	/** Vide le cache des règles de réécriture si demandé à l'activation. */
+	/** Flushes the rewrite rules cache if requested at activation. */
 	public static function maybe_flush_rewrite_rules(): void {
 		if ( 'yes' === get_option( self::FLUSH_OPTION ) ) {
 			delete_option( self::FLUSH_OPTION );

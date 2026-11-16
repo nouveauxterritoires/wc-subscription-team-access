@@ -1,6 +1,6 @@
 <?php
 /**
- * Outils de confidentialité WordPress : export et effacement des données personnelles.
+ * WordPress privacy tools: export and erasure of personal data.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -15,23 +15,23 @@ use WCSubscriptionTeamAccess\Repository\SeatRepository;
 use WCSubscriptionTeamAccess\Support\Dates;
 
 /**
- * Données traitées : adresse e-mail invitée, compte invité, dates d'invitation et d'acceptation.
- * Les adresses des places terminées sont anonymisées automatiquement (réglage « anonymize_after_days »).
+ * Data processed: invited email address, guest account, invitation and acceptance dates.
+ * Addresses of ended seats are anonymized automatically (the "anonymize_after_days" setting).
  */
 final class Privacy {
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param SeatRepository $seats      Places.
-	 * @param TeamManager    $team       Opérations.
+	 * @param SeatRepository $seats      Seats.
+	 * @param TeamManager    $team       Operations.
 	 */
 	public function __construct(
 		private readonly SeatRepository $seats,
 		private readonly TeamManager $team
 	) {}
 
-	/** Branche les crochets. */
+	/** Registers the hooks. */
 	public function register(): void {
 		add_filter( 'wp_privacy_personal_data_exporters', array( $this, 'register_exporter' ) );
 		add_filter( 'wp_privacy_personal_data_erasers', array( $this, 'register_eraser' ) );
@@ -39,9 +39,9 @@ final class Privacy {
 	}
 
 	/**
-	 * Déclare l'exportateur.
+	 * Registers the exporter.
 	 *
-	 * @param array<string, array<string, mixed>> $exporters Exportateurs.
+	 * @param array<string, array<string, mixed>> $exporters Exporters.
 	 * @return array<string, array<string, mixed>>
 	 */
 	public function register_exporter( $exporters ) {
@@ -53,9 +53,9 @@ final class Privacy {
 	}
 
 	/**
-	 * Déclare l'effaceur.
+	 * Registers the eraser.
 	 *
-	 * @param array<string, array<string, mixed>> $erasers Effaceurs.
+	 * @param array<string, array<string, mixed>> $erasers Erasers.
 	 * @return array<string, array<string, mixed>>
 	 */
 	public function register_eraser( $erasers ) {
@@ -67,9 +67,9 @@ final class Privacy {
 	}
 
 	/**
-	 * Exporte les invitations reçues par une adresse.
+	 * Exports the invitations received by an address.
 	 *
-	 * @param string $email Adresse.
+	 * @param string $email Address.
 	 * @return array{data: array<int, array<string, mixed>>, done: bool}
 	 */
 	public function export( $email ): array {
@@ -106,9 +106,9 @@ final class Privacy {
 	}
 
 	/**
-	 * Efface : révoque les accès et invitations vivants, puis anonymise l'adresse.
+	 * Erases: revokes live access and invitations, then anonymizes the address.
 	 *
-	 * @param string $email Adresse.
+	 * @param string $email Address.
 	 * @return array{items_removed: bool, items_retained: bool, messages: string[], done: bool}
 	 */
 	public function erase( $email ): array {
@@ -130,7 +130,7 @@ final class Privacy {
 		);
 	}
 
-	/** Texte suggéré pour la politique de confidentialité. */
+	/** Suggested text for the privacy policy. */
 	public function add_policy_text(): void {
 		if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
 			return;
@@ -146,9 +146,9 @@ final class Privacy {
 	}
 
 	/**
-	 * Places liées à une adresse (comme invité, par adresse ou par compte).
+	 * Seats linked to an address (as a guest, by address or by account).
 	 *
-	 * @param string $email Adresse.
+	 * @param string $email Address.
 	 * @return Seat[]
 	 */
 	private function seats_for( string $email ): array {

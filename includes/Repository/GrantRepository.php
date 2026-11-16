@@ -1,6 +1,6 @@
 <?php
 /**
- * Registre des sources de droits : une ligne par (place, plan) donnant un accès actif ou suspendu.
+ * Entitlement source registry: one row per (seat, plan) granting active or suspended access.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -13,24 +13,24 @@ use WCSubscriptionTeamAccess\Domain\AccessState;
 use WCSubscriptionTeamAccess\Support\Dates;
 
 /**
- * Dépôt de la table wcsta_grants.
+ * Repository for the wcsta_grants table.
  */
 final class GrantRepository {
 
-	/** Nom de la table. */
+	/** Table name. */
 	public static function table(): string {
 		global $wpdb;
 		return $wpdb->prefix . 'wcsta_grants';
 	}
 
 	/**
-	 * Crée ou met à jour une source de droits (idempotent grâce à la clé unique seat_plan).
+	 * Creates or updates an entitlement source (idempotent thanks to the seat_plan unique key).
 	 *
-	 * @param int         $seat_id         Place.
-	 * @param int         $subscription_id Abonnement.
-	 * @param int         $user_id         Invité.
-	 * @param int         $plan_id         Plan Memberships.
-	 * @param AccessState $state           État (actif ou suspendu).
+	 * @param int         $seat_id         Seat.
+	 * @param int         $subscription_id Subscription.
+	 * @param int         $user_id         Guest.
+	 * @param int         $plan_id         Memberships plan.
+	 * @param AccessState $state           State (active or suspended).
 	 */
 	public function upsert( int $seat_id, int $subscription_id, int $user_id, int $plan_id, AccessState $state ): void {
 		global $wpdb;
@@ -39,7 +39,7 @@ final class GrantRepository {
 		$end   = Dates::to_mysql( $state->end_ts );
 		$now   = Dates::now();
 
-		// prepare() ne sait pas produire NULL : la valeur littérale est choisie avant la préparation.
+		// prepare() cannot produce NULL: the literal value is chosen before preparation.
 		$end_placeholder = null === $end ? 'NULL' : '%s';
 		$args            = array( $seat_id, $subscription_id, $user_id, $plan_id, $state->state );
 		if ( null !== $end ) {
@@ -57,10 +57,10 @@ final class GrantRepository {
 	}
 
 	/**
-	 * Supprime les sources d'une place, sauf pour certains plans.
+	 * Deletes a seat's sources, except for certain plans.
 	 *
-	 * @param int   $seat_id       Place.
-	 * @param int[] $keep_plan_ids Plans à conserver.
+	 * @param int   $seat_id       Seat.
+	 * @param int[] $keep_plan_ids Plans to keep.
 	 */
 	public function delete_for_seat( int $seat_id, array $keep_plan_ids = array() ): void {
 		global $wpdb;
@@ -79,9 +79,9 @@ final class GrantRepository {
 	}
 
 	/**
-	 * Couples (utilisateur, plan) concernés par un abonnement.
+	 * (user, plan) pairs affected by a subscription.
 	 *
-	 * @param int $subscription_id Abonnement.
+	 * @param int $subscription_id Subscription.
 	 * @return array<int, array{0:int, 1:int}>
 	 */
 	public function pairs_for_subscription( int $subscription_id ): array {
@@ -97,9 +97,9 @@ final class GrantRepository {
 	}
 
 	/**
-	 * Couples (utilisateur, plan) d'un utilisateur.
+	 * (user, plan) pairs of a user.
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 * @return array<int, array{0:int, 1:int}>
 	 */
 	public function pairs_for_user( int $user_id ): array {
@@ -115,9 +115,9 @@ final class GrantRepository {
 	}
 
 	/**
-	 * Sources actives ou suspendues pour un utilisateur et un plan.
+	 * Active or suspended sources for a user and a plan.
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 * @param int $plan_id Plan.
 	 * @return array<int, array{seat_id:int, subscription_id:int, state:AccessState}>
 	 */
@@ -143,9 +143,9 @@ final class GrantRepository {
 	}
 
 	/**
-	 * Plans d'une place (pour l'affichage).
+	 * Plans of a seat (for display).
 	 *
-	 * @param int $seat_id Place.
+	 * @param int $seat_id Seat.
 	 * @return array<int, array{plan_id:int, state:string}>
 	 */
 	public function for_seat( int $seat_id ): array {
@@ -164,9 +164,9 @@ final class GrantRepository {
 	}
 
 	/**
-	 * Supprime toutes les sources d'un utilisateur (compte supprimé).
+	 * Deletes all of a user's sources (account deleted).
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 */
 	public function delete_for_user( int $user_id ): void {
 		global $wpdb;

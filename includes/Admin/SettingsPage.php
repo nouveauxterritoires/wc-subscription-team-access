@@ -1,6 +1,6 @@
 <?php
 /**
- * Onglet « Accès équipe » dans WooCommerce > Réglages.
+ * "Team access" tab in WooCommerce > Settings.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -16,27 +16,27 @@ use WCSubscriptionTeamAccess\Settings;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Les valeurs sont enregistrées par WooCommerce dans l'option tableau « wcsta_settings »
- * (champs « wcsta_settings[clé] »), puis normalisées et bornées par Settings::sanitize().
+ * Values are saved by WooCommerce in the array option "wcsta_settings"
+ * (fields "wcsta_settings[key]"), then normalized and bounded by Settings::sanitize().
  */
 class SettingsPage extends \WC_Settings_Page {
 
 	public const ID = 'wcsta';
 
-	/** Constructeur. */
+	/** Constructor. */
 	public function __construct() {
 		$this->id    = self::ID;
 		$this->label = __( 'Team access', 'wc-subscription-team-access' );
 		parent::__construct();
 	}
 
-	/** URL de l'onglet. */
+	/** Tab URL. */
 	public static function url(): string {
 		return admin_url( 'admin.php?page=wc-settings&tab=' . self::ID );
 	}
 
 	/**
-	 * Champs de l'onglet.
+	 * Tab fields.
 	 *
 	 * @return array<int, array<string, mixed>>
 	 */
@@ -125,7 +125,7 @@ class SettingsPage extends \WC_Settings_Page {
 		);
 	}
 
-	/** Enregistre, normalise et vide les règles de réécriture si une adresse change. */
+	/** Saves, normalizes and flushes rewrite rules if a URL changes. */
 	public function save() {
 		$before = Settings::all();
 
@@ -141,13 +141,13 @@ class SettingsPage extends \WC_Settings_Page {
 	}
 
 	/**
-	 * Champ numérique.
+	 * Numeric field.
 	 *
-	 * @param string               $key      Clé.
-	 * @param string               $title    Libellé.
+	 * @param string               $key      Key.
+	 * @param string               $title    Label.
 	 * @param int                  $min      Minimum.
 	 * @param int                  $max      Maximum.
-	 * @param array<string, mixed> $defaults Valeurs par défaut.
+	 * @param array<string, mixed> $defaults Default values.
 	 * @return array<string, mixed>
 	 */
 	private function number( string $key, string $title, int $min, int $max, array $defaults ): array {
@@ -166,11 +166,11 @@ class SettingsPage extends \WC_Settings_Page {
 	}
 
 	/**
-	 * Champ texte.
+	 * Text field.
 	 *
-	 * @param string               $key      Clé.
-	 * @param string               $title    Libellé.
-	 * @param array<string, mixed> $defaults Valeurs par défaut.
+	 * @param string               $key      Key.
+	 * @param string               $title    Label.
+	 * @param array<string, mixed> $defaults Default values.
 	 * @return array<string, mixed>
 	 */
 	private function text( string $key, string $title, array $defaults ): array {

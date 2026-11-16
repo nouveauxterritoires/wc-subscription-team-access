@@ -1,9 +1,9 @@
 <?php
 /**
- * Amorçage des tests unitaires : seule la logique pure (includes/Domain) est chargée.
+ * Unit test bootstrap: only the pure logic (includes/Domain) is loaded.
  *
- * Les scénarios bout en bout (WooCommerce, Subscriptions, Memberships réels) sont dans
- * tests/integration et s'exécutent sur un site WordPress via WP-CLI.
+ * The end-to-end scenarios (real WooCommerce, Subscriptions, Memberships) live in
+ * tests/integration and run on a WordPress site through WP-CLI.
  *
  * @package WCSubscriptionTeamAccess
  */

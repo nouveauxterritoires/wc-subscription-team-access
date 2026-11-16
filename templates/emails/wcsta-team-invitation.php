@@ -1,18 +1,18 @@
 <?php
 /**
- * E-mail d'invitation (HTML).
+ * Invitation email (HTML).
  *
- * Surcharge : votre-theme/woocommerce/emails/wcsta-team-invitation.php
+ * Override: your-theme/woocommerce/emails/wcsta-team-invitation.php
  *
  * @package WCSubscriptionTeamAccess
  *
- * @var string   $email_heading      Titre.
- * @var string   $additional_content Contenu additionnel.
- * @var string   $accept_url         Lien d'acceptation.
- * @var string   $inviter_name       Nom du titulaire.
- * @var string   $subscription_name  Nom de l'abonnement.
- * @var int      $expires_at         Expiration.
- * @var WC_Email $email              E-mail.
+ * @var string   $email_heading      Heading.
+ * @var string   $additional_content Additional content.
+ * @var string   $accept_url         Acceptance link.
+ * @var string   $inviter_name       Plan holder name.
+ * @var string   $subscription_name  Subscription name.
+ * @var int      $expires_at         Expiration timestamp.
+ * @var WC_Email $email              Email.
  */
 
 defined( 'ABSPATH' ) || exit;

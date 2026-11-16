@@ -1,11 +1,11 @@
 <?php
 /**
- * Désinstallation : supprime les tables, réglages et tâches de l'extension.
+ * Uninstall: removes the plugin's tables, settings and scheduled tasks.
  *
- * Les adhésions WooCommerce Memberships des invités sont conservées (elles appartiennent au
- * moteur Memberships) ; leur méta _wcsta_managed est retirée pour qu'elles deviennent ordinaires.
- * Pour retirer d'abord tous les accès invités : révoquer les invités, ou désactiver chaque
- * abonnement partagé, avant de désinstaller.
+ * The guests' WooCommerce Memberships are kept (they belong to the
+ * Memberships engine); their _wcsta_managed meta is removed so they become regular memberships.
+ * To remove all guest access first: revoke the guests, or deactivate each
+ * shared subscription, before uninstalling.
  *
  * @package WCSubscriptionTeamAccess
  */

@@ -1,6 +1,6 @@
 <?php
 /**
- * Page publique d'acceptation des invitations (/invitation-equipe/).
+ * Public page for accepting invitations (/invitation-equipe/).
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -15,15 +15,14 @@ use WCSubscriptionTeamAccess\Repository\Seat;
 use WCSubscriptionTeamAccess\Support\RateLimiter;
 
 /**
- * Parcours :
+ * Flow:
  *
- * 1. Le lien reçu par e-mail porte le jeton (?token=…). Il est aussitôt déplacé dans un cookie
- *    HttpOnly et l'utilisateur est redirigé vers l'URL sans jeton (pas de fuite par l'en-tête
- *    Referer, l'historique ou les outils de mesure d'audience).
- * 2. Visiteur déconnecté : connexion (formulaire WooCommerce) ou création d'un compte dont
- *    l'adresse est imposée par l'invitation. Un compte existant ne peut jamais recevoir de mot
- *    de passe par ce biais.
- * 3. Visiteur connecté : l'adresse du compte doit être celle de l'invitation ; il confirme.
+ * 1. The link received by email carries the token (?token=...). It is immediately moved into an
+ *    HttpOnly cookie and the user is redirected to the URL without the token (no leak through the
+ *    Referer header, browser history or analytics tools).
+ * 2. Logged-out visitor: login (WooCommerce form) or creation of an account whose address is
+ *    imposed by the invitation. An existing account can never be given a password this way.
+ * 3. Logged-in visitor: the account's address must match the invitation's; they confirm.
  */
 final class InvitationController {
 
@@ -31,24 +30,24 @@ final class InvitationController {
 	public const COOKIE    = 'wcsta_invitation';
 
 	private const MIN_PASSWORD_LENGTH = 8;
-	// Les jetons (256 bits) ne se devinent pas : ces limites protègent la base et le formulaire
-	// d'inscription sans bloquer les invités d'une même entreprise (NAT, proxy).
+	// Tokens (256 bits) cannot be guessed: these limits protect the database and the sign-up
+	// form without blocking guests from the same company (NAT, proxy).
 	private const BAD_TOKEN_LIMIT     = 100;
 	private const REGISTER_LIMIT      = 30;
 
-	/** Gestionnaire d'équipe (injecté après construction : dépendance circulaire avec les e-mails). */
+	/** Team manager (injected after construction: circular dependency with the emails). */
 	private ?TeamManager $team = null;
 
 	/**
-	 * Injecte le gestionnaire d'équipe.
+	 * Injects the team manager.
 	 *
-	 * @param TeamManager $team Gestionnaire.
+	 * @param TeamManager $team Manager.
 	 */
 	public function set_team( TeamManager $team ): void {
 		$this->team = $team;
 	}
 
-	/** Branche les crochets. */
+	/** Registers the hooks. */
 	public function register(): void {
 		add_action( 'init', array( $this, 'add_rewrite_rule' ) );
 		add_filter( 'query_vars', array( $this, 'add_query_var' ) );
@@ -62,7 +61,7 @@ final class InvitationController {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
-	/** Feuille de style de la page d'invitation. */
+	/** Stylesheet of the invitation page. */
 	public function enqueue_assets(): void {
 		if ( $this->is_request() ) {
 			wp_enqueue_style( 'wcsta-front', WCSTA_URL . 'assets/css/team-access.css', array(), WCSTA_VERSION );
@@ -70,9 +69,9 @@ final class InvitationController {
 	}
 
 	/**
-	 * Titre complet (thèmes qui ne passent pas par document_title_parts).
+	 * Full title (for themes that do not go through document_title_parts).
 	 *
-	 * @param string $title Titre.
+	 * @param string $title Title.
 	 */
 	public function pre_document_title( $title ) {
 		if ( ! $this->is_request() ) {
@@ -81,13 +80,13 @@ final class InvitationController {
 		return __( 'Invitation', 'wc-subscription-team-access' ) . ' – ' . get_bloginfo( 'name' );
 	}
 
-	/** Règle de réécriture de la page d'invitation. */
+	/** Rewrite rule for the invitation page. */
 	public function add_rewrite_rule(): void {
 		add_rewrite_rule( '^' . preg_quote( self::slug(), '/' ) . '/?$', 'index.php?' . self::QUERY_VAR . '=1', 'top' );
 	}
 
 	/**
-	 * Déclare la variable de requête.
+	 * Registers the query variable.
 	 *
 	 * @param string[] $vars Variables.
 	 * @return string[]
@@ -98,36 +97,36 @@ final class InvitationController {
 		return $vars;
 	}
 
-	/** URL de la page d'invitation. */
+	/** URL of the invitation page. */
 	public static function url(): string {
 		return home_url( user_trailingslashit( self::slug() ) );
 	}
 
 	/**
-	 * Lien d'acceptation contenu dans l'e-mail.
+	 * Acceptance link contained in the email.
 	 *
-	 * @param string $token Jeton en clair.
+	 * @param string $token Plain-text token.
 	 */
 	public function accept_url( string $token ): string {
 		return add_query_arg( 'token', rawurlencode( $token ), self::url() );
 	}
 
-	/** Slug de la page. */
+	/** Page slug. */
 	private static function slug(): string {
 		return (string) Settings::get( 'invitation_slug' );
 	}
 
-	/** La requête courante vise la page d'invitation. */
+	/** The current request targets the invitation page. */
 	public function is_request(): bool {
 		return (bool) get_query_var( self::QUERY_VAR );
 	}
 
 	/**
-	 * Laisse passer la page d'invitation à travers « Restricted Site Access », uniquement
-	 * lorsqu'un jeton est présenté (les invités n'ont pas encore de compte).
+	 * Lets the invitation page through "Restricted Site Access", only
+	 * when a token is presented (guests do not have an account yet).
 	 *
-	 * @param bool  $is_restricted Accès restreint.
-	 * @param \WP   $wp            Requête.
+	 * @param bool  $is_restricted Restricted access.
+	 * @param \WP   $wp            Request.
 	 */
 	public function allow_through_site_restriction( $is_restricted, $wp = null ) {
 		if ( ! $wp instanceof \WP || empty( $wp->query_vars[ self::QUERY_VAR ] ) ) {
@@ -137,7 +136,7 @@ final class InvitationController {
 	}
 
 	/**
-	 * Page non indexable.
+	 * Non-indexable page.
 	 *
 	 * @param array<string, bool> $robots Directives.
 	 * @return array<string, bool>
@@ -151,9 +150,9 @@ final class InvitationController {
 	}
 
 	/**
-	 * Titre du document.
+	 * Document title.
 	 *
-	 * @param array<string, string> $parts Parties du titre.
+	 * @param array<string, string> $parts Title parts.
 	 * @return array<string, string>
 	 */
 	public function document_title( $parts ) {
@@ -163,7 +162,7 @@ final class InvitationController {
 		return $parts;
 	}
 
-	/** Traite la requête (jeton dans l'URL, formulaires) avant l'affichage. */
+	/** Handles the request (token in the URL, forms) before display. */
 	public function handle_request(): void {
 		if ( ! $this->is_request() || ! $this->team ) {
 			return;
@@ -173,7 +172,7 @@ final class InvitationController {
 		header( 'Referrer-Policy: no-referrer' );
 		header( 'X-Robots-Tag: noindex, nofollow' );
 
-		// 1. Jeton dans l'URL → cookie, puis redirection vers l'URL propre.
+		// 1. Token in the URL -> cookie, then redirect to the clean URL.
 		if ( isset( $_GET['token'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$token = sanitize_text_field( wp_unslash( $_GET['token'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( Token::is_well_formed( $token ) ) {
@@ -198,9 +197,9 @@ final class InvitationController {
 	}
 
 	/**
-	 * Remplace le gabarit par la page d'invitation.
+	 * Replaces the template with the invitation page.
 	 *
-	 * @param string $template Gabarit.
+	 * @param string $template Template.
 	 */
 	public function template_include( $template ) {
 		if ( ! $this->is_request() ) {
@@ -210,13 +209,13 @@ final class InvitationController {
 		return WCSTA_DIR . 'templates/invitation/page.php';
 	}
 
-	/** Affiche le contenu de la page (appelé par le gabarit). */
+	/** Renders the page content (called by the template). */
 	public function render(): void {
 		wc_get_template( 'invitation/accept.php', $this->view(), 'wc-subscription-team-access/', WCSTA_DIR . 'templates/' );
 	}
 
 	/**
-	 * Données de la vue.
+	 * View data.
 	 *
 	 * @return array<string, mixed>
 	 */
@@ -259,7 +258,7 @@ final class InvitationController {
 		$view['masked_email']      = EmailAddress::mask( $seat->email );
 
 		if ( ! is_user_logged_in() ) {
-			// L'adresse invitée n'est affichée en clair qu'au porteur du lien, pour pré-remplir le formulaire.
+			// The invited address is only shown in clear text to the link holder, to pre-fill the form.
 			$view['state'] = 'logged_out';
 			$view['email'] = $seat->email;
 			return $view;
@@ -277,9 +276,9 @@ final class InvitationController {
 	}
 
 	/**
-	 * Acceptation par un utilisateur connecté.
+	 * Acceptance by a logged-in user.
 	 *
-	 * @param string $token Jeton.
+	 * @param string $token Token.
 	 */
 	private function handle_accept( string $token ): void {
 		if ( ! is_user_logged_in() ) {
@@ -296,9 +295,9 @@ final class InvitationController {
 	}
 
 	/**
-	 * Création du compte puis acceptation.
+	 * Account creation, then acceptance.
 	 *
-	 * @param string $token Jeton.
+	 * @param string $token Token.
 	 */
 	private function handle_register( string $token ): void {
 		if ( is_user_logged_in() || ! $this->verify_nonce( 'wcsta_register' ) ) {
@@ -331,14 +330,14 @@ final class InvitationController {
 	}
 
 	/**
-	 * Crée le compte de l'invité avec l'adresse de l'invitation.
+	 * Creates the guest's account with the invitation's address.
 	 *
 	 * @param Seat $seat Invitation.
-	 * @return int|\WP_Error Identifiant du compte.
+	 * @return int|\WP_Error Account identifier.
 	 */
 	private function create_account( Seat $seat ): int|\WP_Error {
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce vérifié dans handle_register().
-		$password   = isset( $_POST['wcsta_password'] ) ? (string) wp_unslash( $_POST['wcsta_password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- un mot de passe ne doit pas être altéré.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce verified in handle_register().
+		$password   = isset( $_POST['wcsta_password'] ) ? (string) wp_unslash( $_POST['wcsta_password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a password must not be altered.
 		$confirm    = isset( $_POST['wcsta_password_confirm'] ) ? (string) wp_unslash( $_POST['wcsta_password_confirm'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$first_name = isset( $_POST['wcsta_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wcsta_first_name'] ) ) : '';
 		$last_name  = isset( $_POST['wcsta_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wcsta_last_name'] ) ) : '';
@@ -384,9 +383,9 @@ final class InvitationController {
 	}
 
 	/**
-	 * Termine une acceptation : message, nettoyage du cookie et redirection.
+	 * Completes an acceptance: message, cookie cleanup and redirect.
 	 *
-	 * @param Seat|\WP_Error $result Résultat.
+	 * @param Seat|\WP_Error $result Result.
 	 */
 	private function finish( Seat|\WP_Error $result ): never {
 		if ( is_wp_error( $result ) ) {
@@ -399,10 +398,10 @@ final class InvitationController {
 		self::notice( __( 'Welcome! Your invitation is accepted: you now have access to the premium content.', 'wc-subscription-team-access' ), 'success' );
 
 		/**
-		 * Filtre la page de destination après acceptation d'une invitation.
+		 * Filters the destination page after an invitation is accepted.
 		 *
-		 * @param string $url  URL (par défaut : Mon compte).
-		 * @param Seat   $seat Place acceptée.
+		 * @param string $url  URL (default: My Account).
+		 * @param Seat   $seat Accepted seat.
 		 */
 		$url = (string) apply_filters( 'wcsta_after_accept_redirect', wc_get_page_permalink( 'myaccount' ), $result );
 		wp_safe_redirect( $url );
@@ -410,8 +409,8 @@ final class InvitationController {
 	}
 
 	/**
-	 * Ajoute un message WooCommerce, en garantissant la session d'un visiteur déconnecté
-	 * (sinon le message serait perdu lors de la redirection).
+	 * Adds a WooCommerce notice, ensuring a session exists for a logged-out visitor
+	 * (otherwise the notice would be lost on redirect).
 	 *
 	 * @param string $message Message.
 	 * @param string $type    Type (success, error, notice).
@@ -424,7 +423,7 @@ final class InvitationController {
 	}
 
 	/**
-	 * Vérifie le nonce d'un formulaire.
+	 * Verifies a form's nonce.
 	 *
 	 * @param string $action Action.
 	 */
@@ -433,16 +432,16 @@ final class InvitationController {
 		return (bool) wp_verify_nonce( $nonce, $action );
 	}
 
-	/** Jeton présenté (cookie). */
+	/** Presented token (cookie). */
 	private function token(): string {
 		$token = isset( $_COOKIE[ self::COOKIE ] ) ? sanitize_text_field( wp_unslash( $_COOKIE[ self::COOKIE ] ) ) : '';
 		return Token::is_well_formed( $token ) ? $token : '';
 	}
 
 	/**
-	 * Pose le cookie du jeton (HttpOnly, SameSite=Lax, une journée au plus).
+	 * Sets the token cookie (HttpOnly, SameSite=Lax, one day at most).
 	 *
-	 * @param string $token Jeton.
+	 * @param string $token Token.
 	 */
 	private function set_cookie( string $token ): void {
 		setcookie(
@@ -460,7 +459,7 @@ final class InvitationController {
 		$_COOKIE[ self::COOKIE ] = $token;
 	}
 
-	/** Supprime le cookie du jeton. */
+	/** Deletes the token cookie. */
 	private function clear_cookie(): void {
 		setcookie(
 			self::COOKIE,

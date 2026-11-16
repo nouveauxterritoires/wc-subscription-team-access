@@ -1,17 +1,17 @@
 <?php
 /**
- * E-mail au titulaire : invitation acceptée (HTML).
+ * Email to the plan holder: invitation accepted (HTML).
  *
- * Surcharge : votre-theme/woocommerce/emails/wcsta-team-invitation-accepted.php
+ * Override: your-theme/woocommerce/emails/wcsta-team-invitation-accepted.php
  *
  * @package WCSubscriptionTeamAccess
  *
- * @var string   $email_heading      Titre.
- * @var string   $additional_content Contenu additionnel.
- * @var string   $guest_email        Adresse de l'invité.
- * @var string   $subscription_name  Nom de l'abonnement.
- * @var string   $manage_url         Gestion des invités.
- * @var WC_Email $email              E-mail.
+ * @var string   $email_heading      Heading.
+ * @var string   $additional_content Additional content.
+ * @var string   $guest_email        Guest email address.
+ * @var string   $subscription_name  Subscription name.
+ * @var string   $manage_url         Guest management URL.
+ * @var WC_Email $email              Email.
  */
 
 defined( 'ABSPATH' ) || exit;

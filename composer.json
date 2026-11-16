@@ -1,6 +1,6 @@
 {
     "name": "nouveauxterritoires/wc-subscription-team-access",
-    "description": "Partage des accès WooCommerce Memberships d'un abonnement WooCommerce Subscriptions avec des invités.",
+    "description": "Lets a WooCommerce Subscriptions holder share their WooCommerce Memberships access with guests.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "require": {

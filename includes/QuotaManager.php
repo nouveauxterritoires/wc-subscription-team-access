@@ -1,6 +1,6 @@
 <?php
 /**
- * Instantané du quota d'invités sur l'abonnement et mise à jour contrôlée.
+ * Snapshot of the guest quota on the subscription, and controlled updates.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -13,9 +13,9 @@ use WCSubscriptionTeamAccess\Domain\QuotaCalculator;
 use WCSubscriptionTeamAccess\Repository\Logger;
 
 /**
- * Le quota applicable est figé dans les métadonnées de l'abonnement à l'achat, pour que les
- * modifications ultérieures du catalogue n'affectent pas les abonnements existants. Il n'est
- * recalculé que lors d'un changement de formule (switch), ou remplacé par un administrateur.
+ * The applicable quota is frozen in the subscription's metadata at purchase time, so that later
+ * catalog changes do not affect existing subscriptions. It is only recomputed on a plan
+ * switch, or overridden by an administrator.
  */
 final class QuotaManager {
 
@@ -27,22 +27,22 @@ final class QuotaManager {
 	private const HISTORY_MAX = 20;
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param Logger $logger Journal.
+	 * @param Logger $logger Logger.
 	 */
 	public function __construct( private readonly Logger $logger ) {}
 
-	/** Branche les crochets WooCommerce Subscriptions. */
+	/** Registers the WooCommerce Subscriptions hooks. */
 	public function register(): void {
 		add_action( 'woocommerce_checkout_subscription_created', array( $this, 'on_checkout_subscription_created' ), 10, 1 );
 		add_action( 'woocommerce_subscription_status_updated', array( $this, 'on_status_updated' ), 5, 3 );
 	}
 
 	/**
-	 * Instantané à la création de l'abonnement au paiement.
+	 * Snapshot when the subscription is created at payment.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	public function on_checkout_subscription_created( $subscription ): void {
 		if ( $subscription instanceof \WC_Subscription ) {
@@ -51,11 +51,11 @@ final class QuotaManager {
 	}
 
 	/**
-	 * Instantané à la première activation (abonnements créés hors tunnel de commande).
+	 * Snapshot on first activation (subscriptions created outside the checkout flow).
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param string           $new_status   Nouveau statut.
-	 * @param string           $old_status   Ancien statut.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param string           $new_status   New status.
+	 * @param string           $old_status   Old status.
 	 */
 	public function on_status_updated( $subscription, $new_status, $old_status ): void {
 		unset( $old_status );
@@ -65,9 +65,9 @@ final class QuotaManager {
 	}
 
 	/**
-	 * Quota applicable (remplacement administrateur > instantané > calcul immédiat figé).
+	 * Applicable quota (administrator override > snapshot > frozen immediate computation).
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	public function quota( \WC_Subscription $subscription ): int {
 		$override = $this->override( $subscription );
@@ -81,29 +81,29 @@ final class QuotaManager {
 	}
 
 	/**
-	 * Quota de l'instantané, sans remplacement.
+	 * Snapshot quota, without override.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	public function snapshot_value( \WC_Subscription $subscription ): ?int {
 		return $this->has_snapshot( $subscription ) ? (int) $subscription->get_meta( self::META_QUOTA ) : null;
 	}
 
 	/**
-	 * Remplacement administrateur (null = aucun).
+	 * Administrator override (null = none).
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	public function override( \WC_Subscription $subscription ): ?int {
 		return QuotaCalculator::parse( $subscription->get_meta( self::META_OVERRIDE ) );
 	}
 
 	/**
-	 * Définit ou retire le remplacement administrateur.
+	 * Sets or removes the administrator override.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param int|null         $value        Quota imposé, ou null pour revenir à l'instantané.
-	 * @param int              $actor_id     Administrateur.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param int|null         $value        Enforced quota, or null to revert to the snapshot.
+	 * @param int              $actor_id     Administrator.
 	 */
 	public function set_override( \WC_Subscription $subscription, ?int $value, int $actor_id ): void {
 		$before = $this->quota( $subscription );
@@ -119,11 +119,11 @@ final class QuotaManager {
 	}
 
 	/**
-	 * Recalcule l'instantané depuis les lignes actuelles de l'abonnement.
+	 * Recomputes the snapshot from the subscription's current line items.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param string           $reason       Motif (checkout, activation, switch, lazy, admin).
-	 * @return int Nouveau quota de l'instantané.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param string           $reason       Reason (checkout, activation, switch, lazy, admin).
+	 * @return int New snapshot quota.
 	 */
 	public function snapshot( \WC_Subscription $subscription, string $reason ): int {
 		$before = $this->snapshot_value( $subscription );
@@ -141,9 +141,9 @@ final class QuotaManager {
 	}
 
 	/**
-	 * Calcule le quota depuis les lignes de l'abonnement.
+	 * Computes the quota from the subscription's line items.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	public function compute( \WC_Subscription $subscription ): int {
 		$lines = array();
@@ -175,18 +175,18 @@ final class QuotaManager {
 		}
 
 		/**
-		 * Filtre le quota calculé pour un abonnement.
+		 * Filters the computed quota for a subscription.
 		 *
-		 * @param int              $quota        Quota calculé.
-		 * @param \WC_Subscription $subscription Abonnement.
+		 * @param int              $quota        Computed quota.
+		 * @param \WC_Subscription $subscription Subscription.
 		 */
 		return max( 0, (int) apply_filters( 'wcsta_computed_quota', QuotaCalculator::total( $lines ), $subscription ) );
 	}
 
 	/**
-	 * Historique des changements de quota.
+	 * History of quota changes.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 * @return array<int, array<string, mixed>>
 	 */
 	public function history( \WC_Subscription $subscription ): array {
@@ -195,22 +195,22 @@ final class QuotaManager {
 	}
 
 	/**
-	 * Un instantané existe.
+	 * A snapshot exists.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	private function has_snapshot( \WC_Subscription $subscription ): bool {
 		return '' !== (string) $subscription->get_meta( self::META_QUOTA );
 	}
 
 	/**
-	 * Journalise un changement de quota.
+	 * Logs a quota change.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param int|null         $before       Avant.
-	 * @param int              $after        Après.
-	 * @param string           $reason       Motif.
-	 * @param int              $actor_id     Auteur.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param int|null         $before       Before.
+	 * @param int              $after        After.
+	 * @param string           $reason       Reason.
+	 * @param int              $actor_id     Actor.
 	 */
 	private function record_history( \WC_Subscription $subscription, ?int $before, int $after, string $reason, int $actor_id ): void {
 		$history   = $this->history( $subscription );

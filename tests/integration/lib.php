@@ -1,9 +1,9 @@
 <?php
 /**
- * Outils de la suite d'intégration (WordPress, WooCommerce, Subscriptions et Memberships réels).
+ * Tooling for the integration suite (real WordPress, WooCommerce, Subscriptions and Memberships).
  *
- * Exécution : bash tests/integration/run.sh (voir README). Ne jamais exposer ces fichiers
- * sur un serveur web : ils créent et suppriment des comptes et des abonnements de test.
+ * Run with: bash tests/integration/run.sh (see README). Never expose these files
+ * on a web server: they create and delete test accounts and subscriptions.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -14,7 +14,7 @@ defined( 'WP_CLI' ) && WP_CLI || exit( 1 );
 use WCSubscriptionTeamAccess\Plugin;
 
 /**
- * Mini-framework d'assertions, fixtures et capture des e-mails.
+ * Mini framework for assertions, fixtures and email capture.
  */
 final class WCSTA_IT {
 
@@ -23,24 +23,24 @@ final class WCSTA_IT {
 	/** @var array<int, array{name:string, ok:bool, message:string}> */
 	public array $results = array();
 
-	/** @var array<int, array<string, mixed>> E-mails capturés (aucun n'est réellement envoyé). */
+	/** @var array<int, array<string, mixed>> Captured emails (none is actually sent). */
 	public array $mails = array();
 
-	/** @var array<string, mixed> Fixtures créées par setup.php. */
+	/** @var array<string, mixed> Fixtures created by setup.php. */
 	public array $fixtures = array();
 
-	/** @var int[] Utilisateurs créés pendant les scénarios. */
+	/** @var int[] Users created during the scenarios. */
 	public array $created_users = array();
 
-	/** @var int[] Commandes et abonnements créés pendant les scénarios. */
+	/** @var int[] Orders and subscriptions created during the scenarios. */
 	public array $created_orders = array();
 
 	private string $current = '';
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param string $fixtures_file Fichier JSON des fixtures.
+	 * @param string $fixtures_file Fixtures JSON file.
 	 */
 	public function __construct( string $fixtures_file = '' ) {
 		if ( '' !== $fixtures_file ) {
@@ -59,10 +59,10 @@ final class WCSTA_IT {
 	}
 
 	/**
-	 * Exécute un scénario.
+	 * Runs a scenario.
 	 *
-	 * @param string   $name Nom.
-	 * @param callable $test Scénario.
+	 * @param string   $name Name.
+	 * @param callable $test Scenario.
 	 */
 	public function test( string $name, callable $test ): void {
 		$this->current = $name;
@@ -88,8 +88,8 @@ final class WCSTA_IT {
 	 * Assertion.
 	 *
 	 * @param bool   $condition Condition.
-	 * @param string $message   Message d'échec.
-	 * @throws \RuntimeException En cas d'échec.
+	 * @param string $message   Failure message.
+	 * @throws \RuntimeException On failure.
 	 */
 	public function ok( bool $condition, string $message ): void {
 		if ( ! $condition ) {
@@ -98,52 +98,52 @@ final class WCSTA_IT {
 	}
 
 	/**
-	 * Égalité stricte.
+	 * Strict equality.
 	 *
-	 * @param mixed  $expected Attendu.
-	 * @param mixed  $actual   Obtenu.
-	 * @param string $message  Contexte.
+	 * @param mixed  $expected Expected.
+	 * @param mixed  $actual   Actual.
+	 * @param string $message  Context.
 	 */
 	public function same( mixed $expected, mixed $actual, string $message ): void {
-		$this->ok( $expected === $actual, $message . ' — attendu ' . var_export( $expected, true ) . ', obtenu ' . var_export( $actual, true ) );
+		$this->ok( $expected === $actual, $message . ' — expected ' . var_export( $expected, true ) . ', got ' . var_export( $actual, true ) );
 	}
 
 	/**
-	 * Le résultat est une erreur portant ce code.
+	 * The result is an error carrying this code.
 	 *
-	 * @param mixed  $result Résultat.
-	 * @param string $code   Code attendu (sans préfixe).
+	 * @param mixed  $result Result.
+	 * @param string $code   Expected code (without prefix).
 	 */
 	public function error( mixed $result, string $code ): void {
-		$this->ok( is_wp_error( $result ), "Erreur « {$code} » attendue, succès obtenu" );
-		$this->same( 'wcsta_' . $code, $result->get_error_code(), 'Code d\'erreur' );
+		$this->ok( is_wp_error( $result ), "Error \"{$code}\" expected, got success" );
+		$this->same( 'wcsta_' . $code, $result->get_error_code(), 'Error code' );
 	}
 
 	/**
-	 * Le résultat n'est pas une erreur.
+	 * The result is not an error.
 	 *
-	 * @param mixed  $result  Résultat.
-	 * @param string $context Contexte.
+	 * @param mixed  $result  Result.
+	 * @param string $context Context.
 	 */
 	public function success( mixed $result, string $context ): mixed {
 		$this->ok( ! is_wp_error( $result ), $context . ' : ' . ( is_wp_error( $result ) ? $result->get_error_code() . ' — ' . $result->get_error_message() : '' ) );
 		return $result;
 	}
 
-	/** Services de l'extension. */
+	/** Plugin services. */
 	public function plugin(): Plugin {
 		return Plugin::instance();
 	}
 
-	/** Plan de test. */
+	/** Test plan. */
 	public function plan(): int {
 		return (int) $this->fixtures['plan_id'];
 	}
 
 	/**
-	 * Crée un utilisateur de test.
+	 * Creates a test user.
 	 *
-	 * @param string $label Libellé.
+	 * @param string $label Label.
 	 */
 	public function user( string $label ): int {
 		$suffix = strtolower( wp_generate_password( 6, false ) );
@@ -165,21 +165,21 @@ final class WCSTA_IT {
 	}
 
 	/**
-	 * E-mail d'un utilisateur.
+	 * A user's email.
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 */
 	public function email( int $user_id ): string {
 		return (string) get_userdata( $user_id )->user_email;
 	}
 
 	/**
-	 * Simule l'achat d'un produit d'abonnement : commande payée + abonnement actif.
-	 * Memberships accorde alors l'adhésion du titulaire et la lie à l'abonnement.
+	 * Simulates the purchase of a subscription product: paid order + active subscription.
+	 * Memberships then grants the holder's membership and links it to the subscription.
 	 *
-	 * @param int $user_id    Acheteur.
-	 * @param int $product_id Produit ou variation.
-	 * @param int $quantity   Quantité.
+	 * @param int $user_id    Buyer.
+	 * @param int $product_id Product or variation.
+	 * @param int $quantity   Quantity.
 	 */
 	public function purchase( int $user_id, int $product_id, int $quantity = 1 ): \WC_Subscription {
 		$product = wc_get_product( $product_id );
@@ -220,39 +220,39 @@ final class WCSTA_IT {
 		$this->created_orders[] = $subscription->get_id();
 
 		$subscription = wcs_get_subscription( $subscription->get_id() );
-		$this->same( 'active', $subscription->get_status(), 'Abonnement actif après paiement' );
+		$this->same( 'active', $subscription->get_status(), 'Subscription active after payment' );
 		return $subscription;
 	}
 
 	/**
-	 * Recharge un abonnement.
+	 * Reloads a subscription.
 	 *
-	 * @param int $id Abonnement.
+	 * @param int $id Subscription.
 	 */
 	public function reload( int $id ): \WC_Subscription {
 		return wcs_get_subscription( $id );
 	}
 
 	/**
-	 * Invite et retourne la place.
+	 * Invites and returns the seat.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param string           $email        Adresse.
-	 * @param int              $actor        Acteur (titulaire par défaut).
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param string           $email        Email address.
+	 * @param int              $actor        Actor (plan holder by default).
 	 */
 	public function invite( \WC_Subscription $subscription, string $email, int $actor = 0 ): \WCSubscriptionTeamAccess\Repository\Seat {
 		$result = $this->success(
 			$this->plugin()->team()->invite( $subscription->get_id(), $email, $actor ?: (int) $subscription->get_customer_id() ),
-			"Invitation de {$email}"
+			"Invitation of {$email}"
 		);
-		$this->ok( $result['mailed'], "E-mail d'invitation envoyé à {$email}" );
+		$this->ok( $result['mailed'], "Invitation email sent to {$email}" );
 		return $result['seat'];
 	}
 
 	/**
-	 * Jeton contenu dans le dernier e-mail envoyé à une adresse.
+	 * Token contained in the last email sent to an address.
 	 *
-	 * @param string $email Adresse.
+	 * @param string $email Email address.
 	 */
 	public function token_for( string $email ): string {
 		foreach ( array_reverse( $this->mails ) as $mail ) {
@@ -260,15 +260,15 @@ final class WCSTA_IT {
 				return $m[1];
 			}
 		}
-		throw new \RuntimeException( "Aucun e-mail d'invitation pour {$email}" );
+		throw new \RuntimeException( "No invitation email for {$email}" );
 	}
 
 	/**
-	 * Un e-mail capturé est destiné à une adresse. Un éventuel filtre « wp_mail » de recette
-	 * peut rediriger le destinataire : l'adresse d'origine est alors cherchée dans l'objet.
+	 * A captured email is addressed to an address. A possible staging "wp_mail" filter
+	 * may redirect the recipient: the original address is then searched for in the subject.
 	 *
-	 * @param array<string, mixed> $mail  E-mail capturé.
-	 * @param string               $email Adresse.
+	 * @param array<string, mixed> $mail  Captured email.
+	 * @param string               $email Email address.
 	 */
 	public function mail_is_for( array $mail, string $email ): bool {
 		$to = is_array( $mail['to'] ) ? implode( ',', $mail['to'] ) : (string) $mail['to'];
@@ -276,22 +276,22 @@ final class WCSTA_IT {
 	}
 
 	/**
-	 * Invite puis accepte avec un compte.
+	 * Invites, then accepts with an account.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param int              $user_id      Compte invité.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param int              $user_id      Invited account.
 	 */
 	public function invite_and_accept( \WC_Subscription $subscription, int $user_id ): \WCSubscriptionTeamAccess\Repository\Seat {
 		$email = $this->email( $user_id );
 		$this->invite( $subscription, $email );
-		return $this->success( $this->plugin()->team()->accept( $this->token_for( $email ), $user_id ), "Acceptation par {$email}" );
+		return $this->success( $this->plugin()->team()->accept( $this->token_for( $email ), $user_id ), "Acceptance by {$email}" );
 	}
 
 	/**
-	 * Membre actif du plan selon Memberships (sans cache).
+	 * Active plan member according to Memberships (uncached).
 	 *
-	 * @param int $user_id Utilisateur.
-	 * @param int $plan_id Plan (plan de test par défaut).
+	 * @param int $user_id User.
+	 * @param int $plan_id Plan (test plan by default).
 	 */
 	public function is_member( int $user_id, int $plan_id = 0 ): bool {
 		$this->reset_memberships_cache();
@@ -299,11 +299,11 @@ final class WCSTA_IT {
 	}
 
 	/**
-	 * L'utilisateur porte le rôle « membre actif » de Memberships (si l'option d'attribution des
-	 * rôles est activée ; sinon la vérification est sans objet et renvoie la valeur attendue).
+	 * The user has the Memberships "active member" role (if the role assignment option is
+	 * enabled; otherwise the check is moot and returns the expected value).
 	 *
-	 * @param int  $user_id  Utilisateur.
-	 * @param bool $expected Valeur attendue lorsque l'option est désactivée.
+	 * @param int  $user_id  User.
+	 * @param bool $expected Expected value when the option is disabled.
 	 */
 	public function has_active_member_role( int $user_id, bool $expected ): bool {
 		if ( 'yes' !== get_option( 'wc_memberships_assign_user_roles_to_members', 'no' ) ) {
@@ -315,8 +315,8 @@ final class WCSTA_IT {
 	}
 
 	/**
-	 * Vide la mémoïsation interne de Memberships. Elle ne vit que le temps d'une requête PHP ;
-	 * la suite enchaîne de nombreuses opérations dans un même processus.
+	 * Clears Memberships' internal memoization. It only lives for one PHP request;
+	 * the suite chains many operations in a single process.
 	 */
 	public function reset_memberships_cache(): void {
 		$instance = wc_memberships()->get_user_memberships_instance();
@@ -331,9 +331,9 @@ final class WCSTA_IT {
 	}
 
 	/**
-	 * Nombre d'adhésions gérées pour un utilisateur.
+	 * Number of managed memberships for a user.
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 */
 	public function managed_count( int $user_id ): int {
 		$count = 0;
@@ -346,27 +346,27 @@ final class WCSTA_IT {
 	}
 
 	/**
-	 * Adhésion gérée.
+	 * Managed membership.
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 */
 	public function managed( int $user_id ): ?\WC_Memberships_User_Membership {
 		return $this->plugin()->memberships()->managed_membership( $user_id, $this->plan() );
 	}
 
 	/**
-	 * Place relue.
+	 * Seat reloaded.
 	 *
-	 * @param int $seat_id Place.
+	 * @param int $seat_id Seat.
 	 */
 	public function seat( int $seat_id ): \WCSubscriptionTeamAccess\Repository\Seat {
 		return $this->plugin()->seats()->find( $seat_id );
 	}
 
 	/**
-	 * Contenu restreint vu par un utilisateur (shortcode Memberships natif).
+	 * Restricted content seen by a user (native Memberships shortcode).
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 */
 	public function sees_restricted_content( int $user_id ): bool {
 		$this->reset_memberships_cache();
@@ -377,7 +377,7 @@ final class WCSTA_IT {
 		return str_contains( $html, 'WCSTA_SECRET' );
 	}
 
-	/** Supprime les données créées par les scénarios. */
+	/** Deletes the data created by the scenarios. */
 	public function cleanup_created(): void {
 		global $wpdb;
 		$seats = $wpdb->prefix . 'wcsta_seats';
@@ -395,14 +395,14 @@ final class WCSTA_IT {
 		}
 	}
 
-	/** Bilan, et code de sortie non nul en cas d'échec. */
+	/** Summary, and non-zero exit code on failure. */
 	public function report(): void {
 		$failed = array_filter( $this->results, static fn( array $r ): bool => ! $r['ok'] );
 		WP_CLI::log( '' );
-		WP_CLI::log( sprintf( '%d scénario(s), %d réussi(s), %d échec(s).', count( $this->results ), count( $this->results ) - count( $failed ), count( $failed ) ) );
+		WP_CLI::log( sprintf( '%d scenario(s), %d passed, %d failed.', count( $this->results ), count( $this->results ) - count( $failed ), count( $failed ) ) );
 		if ( $failed ) {
-			WP_CLI::error( 'Échecs : ' . implode( ' | ', array_column( $failed, 'name' ) ) );
+			WP_CLI::error( 'Failures: ' . implode( ' | ', array_column( $failed, 'name' ) ) );
 		}
-		WP_CLI::success( 'Tous les scénarios sont passés.' );
+		WP_CLI::success( 'All scenarios passed.' );
 	}
 }

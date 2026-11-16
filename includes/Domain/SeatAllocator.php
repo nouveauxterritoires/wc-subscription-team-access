@@ -1,6 +1,6 @@
 <?php
 /**
- * Répartition déterministe des places vivantes entre « dans le quota » et « en dépassement ».
+ * Deterministic split of live seats between "within quota" and "over quota".
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,15 +10,15 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess\Domain;
 
 /**
- * Règle de priorité (documentée dans le README) :
+ * Priority rule (documented in the README):
  *
- * 1. les places acceptées, de la plus ancienne acceptation à la plus récente ;
- * 2. puis les invitations en attente, de la plus ancienne à la plus récente ;
- * 3. à date égale, l'identifiant le plus petit l'emporte.
+ * 1. accepted seats, from the oldest acceptance to the most recent;
+ * 2. then pending invitations, from the oldest to the most recent;
+ * 3. on equal dates, the lowest ID wins.
  *
- * Les `quota` premières places sont dans le quota ; les suivantes sont en dépassement.
- * Avec la politique « keep_all », aucune place n'est suspendue : le dépassement est
- * seulement signalé et bloque les nouvelles invitations.
+ * The first `quota` seats are within the quota; the rest are over quota.
+ * With the "keep_all" policy, no seat is suspended: the overage is
+ * only reported and blocks new invitations.
  */
 final class SeatAllocator {
 
@@ -26,11 +26,11 @@ final class SeatAllocator {
 	public const POLICY_KEEP_ALL       = 'keep_all';
 
 	/**
-	 * Calcule la répartition.
+	 * Computes the allocation.
 	 *
-	 * @param array<int, array{id:int, status:string, created_at:int, accepted_at:int|null}> $seats  Places vivantes.
-	 * @param int                                                                          $quota  Quota d'invités.
-	 * @param string                                                                       $policy Politique de dépassement.
+	 * @param array<int, array{id:int, status:string, created_at:int, accepted_at:int|null}> $seats  Live seats.
+	 * @param int                                                                          $quota  Guest quota.
+	 * @param string                                                                       $policy Over-quota policy.
 	 */
 	public static function allocate( array $seats, int $quota, string $policy = self::POLICY_SUSPEND_NEWEST ): Allocation {
 		$quota = max( 0, $quota );
@@ -58,10 +58,10 @@ final class SeatAllocator {
 	}
 
 	/**
-	 * Comparateur de priorité.
+	 * Priority comparator.
 	 *
-	 * @param array{id:int, status:string, created_at:int, accepted_at:int|null} $a Place A.
-	 * @param array{id:int, status:string, created_at:int, accepted_at:int|null} $b Place B.
+	 * @param array{id:int, status:string, created_at:int, accepted_at:int|null} $a Seat A.
+	 * @param array{id:int, status:string, created_at:int, accepted_at:int|null} $b Seat B.
 	 */
 	private static function compare( array $a, array $b ): int {
 		$a_accepted = SeatStatus::ACCEPTED === $a['status'];

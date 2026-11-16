@@ -8,7 +8,7 @@ use WCSubscriptionTeamAccess\Domain\AccessAggregator;
 use WCSubscriptionTeamAccess\Domain\AccessState;
 
 /**
- * Combinaison de plusieurs sources de droits (invité par plusieurs abonnements).
+ * Combination of several access sources (guest invited by several subscriptions).
  */
 final class AccessAggregatorTest extends TestCase {
 

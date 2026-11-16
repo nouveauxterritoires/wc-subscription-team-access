@@ -1,6 +1,6 @@
 <?php
 /**
- * Accès aux places invitées. Toutes les requêtes sont préparées.
+ * Access to guest seats. All queries are prepared.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -13,11 +13,11 @@ use WCSubscriptionTeamAccess\Domain\SeatStatus;
 use WCSubscriptionTeamAccess\Support\Dates;
 
 /**
- * Dépôt de la table wcsta_seats.
+ * Repository for the wcsta_seats table.
  */
 final class SeatRepository {
 
-	/** Colonnes modifiables. */
+	/** Updatable columns. */
 	private const WRITABLE = array(
 		'subscription_id',
 		'owner_id',
@@ -38,17 +38,17 @@ final class SeatRepository {
 		'ended_at',
 	);
 
-	/** Nom de la table. */
+	/** Table name. */
 	public static function table(): string {
 		global $wpdb;
 		return $wpdb->prefix . 'wcsta_seats';
 	}
 
 	/**
-	 * Insère une place.
+	 * Inserts a seat.
 	 *
-	 * @param array<string, mixed> $data Colonnes.
-	 * @return int|\WP_Error Identifiant ou erreur (doublon notamment).
+	 * @param array<string, mixed> $data Columns.
+	 * @return int|\WP_Error ID or error (notably a duplicate).
 	 */
 	public function insert( array $data ): int|\WP_Error {
 		global $wpdb;
@@ -79,10 +79,10 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Met à jour une place.
+	 * Updates a seat.
 	 *
-	 * @param int                  $id   Identifiant.
-	 * @param array<string, mixed> $data Colonnes.
+	 * @param int                  $id   ID.
+	 * @param array<string, mixed> $data Columns.
 	 */
 	public function update( int $id, array $data ): bool {
 		global $wpdb;
@@ -94,9 +94,9 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Lit une place.
+	 * Reads a seat.
 	 *
-	 * @param int $id Identifiant.
+	 * @param int $id ID.
 	 */
 	public function find( int $id ): ?Seat {
 		global $wpdb;
@@ -105,9 +105,9 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Place associée à un jeton (par son hachage).
+	 * Seat associated with a token (by its hash).
 	 *
-	 * @param string $hash Hachage SHA-256.
+	 * @param string $hash SHA-256 hash.
 	 */
 	public function find_by_token_hash( string $hash ): ?Seat {
 		global $wpdb;
@@ -116,10 +116,10 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Places d'un abonnement.
+	 * Seats of a subscription.
 	 *
-	 * @param int           $subscription_id Abonnement.
-	 * @param string[]|null $statuses        Filtre de statuts.
+	 * @param int           $subscription_id Subscription.
+	 * @param string[]|null $statuses        Status filter.
 	 * @return Seat[]
 	 */
 	public function for_subscription( int $subscription_id, ?array $statuses = null ): array {
@@ -139,9 +139,9 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Places vivantes d'un abonnement.
+	 * Live seats of a subscription.
 	 *
-	 * @param int $subscription_id Abonnement.
+	 * @param int $subscription_id Subscription.
 	 * @return Seat[]
 	 */
 	public function live_for_subscription( int $subscription_id ): array {
@@ -149,10 +149,10 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Places vivantes d'un abonnement pour une adresse.
+	 * Live seats of a subscription for an address.
 	 *
-	 * @param int    $subscription_id Abonnement.
-	 * @param string $email           Adresse normalisée.
+	 * @param int    $subscription_id Subscription.
+	 * @param string $email           Normalized address.
 	 */
 	public function live_for_email( int $subscription_id, string $email ): ?Seat {
 		global $wpdb;
@@ -168,10 +168,10 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Place acceptée d'un utilisateur sur un abonnement.
+	 * Accepted seat of a user on a subscription.
 	 *
-	 * @param int $subscription_id Abonnement.
-	 * @param int $user_id         Utilisateur.
+	 * @param int $subscription_id Subscription.
+	 * @param int $user_id         User.
 	 */
 	public function accepted_for_user( int $subscription_id, int $user_id ): ?Seat {
 		global $wpdb;
@@ -188,10 +188,10 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Places d'un utilisateur (en tant qu'invité) ou d'une adresse.
+	 * Seats of a user (as a guest) or of an address.
 	 *
-	 * @param int    $user_id Utilisateur (0 pour ignorer).
-	 * @param string $email   Adresse normalisée ('' pour ignorer).
+	 * @param int    $user_id User (0 to ignore).
+	 * @param string $email   Normalized address ('' to ignore).
 	 * @return Seat[]
 	 */
 	public function for_user_or_email( int $user_id, string $email ): array {
@@ -208,9 +208,9 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Places dont l'utilisateur est titulaire.
+	 * Seats owned by the user.
 	 *
-	 * @param int $owner_id Titulaire.
+	 * @param int $owner_id Owner.
 	 * @return Seat[]
 	 */
 	public function for_owner( int $owner_id ): array {
@@ -223,10 +223,10 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Nombre d'invitations créées par un acteur depuis une date.
+	 * Number of invitations created by an actor since a date.
 	 *
-	 * @param int $actor_id Acteur.
-	 * @param int $since    Horodatage.
+	 * @param int $actor_id Actor.
+	 * @param int $since    Timestamp.
 	 */
 	public function count_created_by_since( int $actor_id, int $since ): int {
 		global $wpdb;
@@ -240,10 +240,10 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Passe en « expirée » les invitations en attente dont le jeton est périmé.
+	 * Marks as "expired" the pending invitations whose token has expired.
 	 *
-	 * @param int $subscription_id Abonnement (0 = tous).
-	 * @return int Nombre de places expirées.
+	 * @param int $subscription_id Subscription (0 = all).
+	 * @return int Number of expired seats.
 	 */
 	public function expire_stale( int $subscription_id = 0 ): int {
 		global $wpdb;
@@ -261,10 +261,10 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Abonnements ayant au moins une place, par lots.
+	 * Subscriptions with at least one seat, in batches.
 	 *
-	 * @param int $after_id Dernier identifiant traité.
-	 * @param int $limit    Taille du lot.
+	 * @param int $after_id Last ID processed.
+	 * @param int $limit    Batch size.
 	 * @return int[]
 	 */
 	public function subscription_ids( int $after_id = 0, int $limit = 200 ): array {
@@ -280,10 +280,10 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Anonymise les adresses des places terminées depuis longtemps (minimisation RGPD).
+	 * Anonymizes the addresses of seats that ended long ago (GDPR minimization).
 	 *
-	 * @param int $older_than Horodatage limite de fin.
-	 * @return int Lignes anonymisées.
+	 * @param int $older_than End timestamp cutoff.
+	 * @return int Rows anonymized.
 	 */
 	public function anonymize_ended_before( int $older_than ): int {
 		global $wpdb;
@@ -297,11 +297,11 @@ final class SeatRepository {
 	}
 
 	/**
-	 * Recherche paginée pour l'administration.
+	 * Paginated search for the admin area.
 	 *
-	 * @param array{search?:string, status?:string} $filters Filtres.
-	 * @param int                                   $limit   Taille.
-	 * @param int                                   $offset  Décalage.
+	 * @param array{search?:string, status?:string} $filters Filters.
+	 * @param int                                   $limit   Page size.
+	 * @param int                                   $offset  Offset.
 	 * @return array{rows: array<int, array<string, mixed>>, total: int}
 	 */
 	public function admin_subscription_summary( array $filters, int $limit, int $offset ): array {

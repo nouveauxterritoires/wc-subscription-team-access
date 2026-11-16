@@ -1,6 +1,6 @@
 <?php
 /**
- * Chargeur de classes PSR-4 minimal (aucune dépendance Composer en production).
+ * Minimal PSR-4 class autoloader (no Composer dependency in production).
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,16 +10,16 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess;
 
 /**
- * Charge les classes de l'espace de noms WCSubscriptionTeamAccess depuis includes/.
+ * Loads classes from the WCSubscriptionTeamAccess namespace out of includes/.
  */
 final class Autoloader {
 
 	private const PREFIX = __NAMESPACE__ . '\\';
 
 	/**
-	 * Enregistre le chargeur.
+	 * Registers the autoloader.
 	 *
-	 * @param string $base_dir Répertoire includes/ avec barre oblique finale.
+	 * @param string $base_dir The includes/ directory with a trailing slash.
 	 */
 	public static function register( string $base_dir ): void {
 		spl_autoload_register(

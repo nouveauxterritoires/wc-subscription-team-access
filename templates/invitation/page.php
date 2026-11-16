@@ -1,9 +1,9 @@
 <?php
 /**
- * Gabarit de page de l'invitation : en-tête et pied de page du thème autour du contenu.
+ * Invitation page template: theme header and footer around the content.
  *
- * Surcharge possible : copier ce fichier dans votre-theme/wc-subscription-team-access/invitation/page.php
- * n'est pas pris en charge (gabarit de page) ; surchargez plutôt invitation/accept.php.
+ * Overriding by copying this file into your-theme/wc-subscription-team-access/invitation/page.php
+ * is not supported (page template); override invitation/accept.php instead.
  *
  * @package WCSubscriptionTeamAccess
  */

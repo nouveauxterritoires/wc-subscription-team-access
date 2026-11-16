@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WCSubscriptionTeamAccess\Domain\QuotaCalculator;
 
 /**
- * Quota d'un abonnement à partir de ses lignes.
+ * Quota of a subscription computed from its line items.
  */
 final class QuotaCalculatorTest extends TestCase {
 

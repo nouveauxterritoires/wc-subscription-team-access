@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Génère languages/wc-subscription-team-access-fr_FR.po depuis le .pot et le dictionnaire ci-dessous.
+"""Generates languages/wc-subscription-team-access-fr_FR.po from the .pot file and the dictionary below.
 
-Usage : python3 bin/build-fr.py && msgfmt -o languages/wc-subscription-team-access-fr_FR.mo languages/wc-subscription-team-access-fr_FR.po
-Toute chaîne du .pot absente du dictionnaire fait échouer le script.
+Usage: python3 bin/build-fr.py && msgfmt -o languages/wc-subscription-team-access-fr_FR.mo languages/wc-subscription-team-access-fr_FR.po
+Any string in the .pot that is missing from the dictionary makes the script fail.
 """
 import re
 from datetime import datetime, timezone
@@ -256,6 +256,130 @@ FR = {
     'All the seats of your subscription are used. Remove or replace a guest to invite someone else.':
         'Toutes les places de votre abonnement sont utilisées. Retirez ou remplacez un invité pour inviter quelqu’un d’autre.',
     'Previous guests and invitations': 'Anciens invités et invitations',
+    # Contextual help.
+    'Subscription statuses': 'Statuts des abonnements',
+    'Overview': 'Présentation',
+    'Setting up': 'Mise en place',
+    'Quotas': 'Quotas',
+    'Access rights': 'Droits d’accès',
+    'Tools and troubleshooting': 'Outils et dépannage',
+    'Team access lets the holder of a WooCommerce subscription share the premium access of their subscription with guests. Each guest uses their own WordPress account and is not billed.':
+        'Accès équipe permet au titulaire d’un abonnement WooCommerce de partager les accès premium de son abonnement avec des invités. Chaque invité utilise son propre compte WordPress et n’est pas facturé.',
+    'The holder invites guests by email from My account > My guests. A guest accepts the invitation, logs in or creates an account, and immediately gets the same access to premium content as the holder, through WooCommerce Memberships.':
+        'Le titulaire invite des personnes par e-mail depuis Mon compte > Mes invités. L’invité accepte l’invitation, se connecte ou crée un compte, et obtient immédiatement le même accès aux contenus premium que le titulaire, via WooCommerce Memberships.',
+    'The access of guests follows the subscription of the holder: suspended when it is on hold, kept until the end of the paid period when it is cancelled, removed when it expires.':
+        'L’accès des invités suit l’abonnement du titulaire : suspendu quand il est en attente, conservé jusqu’à la fin de la période payée quand il est annulé, retiré quand il expire.',
+    'Where to find what': 'Où trouver quoi',
+    '<strong>WooCommerce > Team access</strong>: shared subscriptions, their guests, actions and log.':
+        '<strong>WooCommerce > Accès équipe</strong> : abonnements partagés, leurs invités, actions et journal.',
+    '<strong>WooCommerce > Settings > Team access</strong>: invitation validity, sending limits, quota policy, emails, addresses.':
+        '<strong>WooCommerce > Réglages > Accès équipe</strong> : validité des invitations, limites d’envoi, règle de quota, e-mails, adresses.',
+    '<strong>Product edit screen</strong>: maximum number of guests of each subscription product.':
+        '<strong>Écran d’édition d’un produit</strong> : nombre maximal d’invités de chaque produit d’abonnement.',
+    '<strong>Subscription edit screen</strong>: "Team access" box with the seats of the subscription.':
+        '<strong>Écran d’édition d’un abonnement</strong> : encadré « Accès équipe » avec les places de l’abonnement.',
+    'Setting up a team subscription': 'Mettre en place un abonnement équipe',
+    'Edit a simple or variable subscription product and fill in <strong>Maximum number of guests</strong> in the General tab. 0 or empty disables the feature. For variable subscriptions, each variation has its own field; an empty variation field uses the product value.':
+        'Modifiez un produit d’abonnement simple ou variable et renseignez <strong>Nombre maximal d’invités</strong> dans l’onglet Général. 0 ou vide désactive la fonctionnalité. Pour un abonnement variable, chaque variation a son propre champ ; un champ de variation vide reprend la valeur du produit.',
+    'Make sure the product grants a WooCommerce Memberships plan (plan with "product purchase" access that contains this product). Guests share exactly the plans granted by the subscription.':
+        'Vérifiez que le produit accorde un plan WooCommerce Memberships (plan avec accès « à l’achat d’un produit » contenant ce produit). Les invités partagent exactement les plans accordés par l’abonnement.',
+    'Optionally, adjust the settings in WooCommerce > Settings > Team access and the two emails in WooCommerce > Settings > Emails ("Team access invitation" and "Team access invitation accepted").':
+        'Si besoin, ajustez les réglages dans WooCommerce > Réglages > Accès équipe et les deux e-mails dans WooCommerce > Réglages > E-mails (« Invitation accès équipe » et « Invitation accès équipe acceptée »).',
+    'The quota is recorded in the subscription at purchase: changing the product later does not affect existing subscriptions.':
+        'Le quota est enregistré dans l’abonnement à l’achat : modifier ensuite le produit n’a pas d’effet sur les abonnements existants.',
+    'For the holder (My account > My guests)': 'Pour le titulaire (Mon compte > Mes invités)',
+    '<strong>Invite a user</strong>: an email with a personal link is sent. A pending invitation reserves a seat until it is accepted, cancelled or expired.':
+        '<strong>Inviter un utilisateur</strong> : un e-mail contenant un lien personnel est envoyé. Une invitation en attente réserve une place jusqu’à ce qu’elle soit acceptée, annulée ou expirée.',
+    '<strong>Resend</strong>: a new link is sent and the previous one stops working.':
+        '<strong>Renvoyer</strong> : un nouveau lien est envoyé et le précédent cesse de fonctionner.',
+    '<strong>Replace</strong>: the guest (or invitation) is removed and the seat is given to a new email address.':
+        '<strong>Remplacer</strong> : l’invité (ou l’invitation) est retiré et la place est attribuée à une nouvelle adresse e-mail.',
+    '<strong>Cancel / Remove</strong>: the seat is freed and the guest immediately loses the access shared by the subscription. Their other rights (own subscription, other invitations) are kept.':
+        '<strong>Annuler / Supprimer</strong> : la place est libérée et l’invité perd immédiatement l’accès partagé par l’abonnement. Ses autres droits (abonnement personnel, autres invitations) sont conservés.',
+    'For the guest': 'Pour l’invité',
+    'Without an account: the guest chooses a password; the email address is the one of the invitation. This works even if registration is disabled on My account.':
+        'Sans compte : l’invité choisit un mot de passe ; l’adresse e-mail est celle de l’invitation. Cela fonctionne même si l’inscription est désactivée sur Mon compte.',
+    'With an account: the guest logs in with the account that uses the invited email address, then accepts. An invitation sent to another address cannot be accepted.':
+        'Avec un compte : l’invité se connecte avec le compte qui utilise l’adresse invitée, puis accepte. Une invitation envoyée à une autre adresse ne peut pas être acceptée.',
+    'No password is ever sent by email, and an invitation can never set the password of an existing account.':
+        'Aucun mot de passe n’est jamais envoyé par e-mail, et une invitation ne peut jamais définir le mot de passe d’un compte existant.',
+    'Statuses': 'Statuts',
+    '<strong>Invitation pending</strong>: sent, not accepted yet.': '<strong>Invitation en attente</strong> : envoyée, pas encore acceptée.',
+    '<strong>Invitation accepted</strong>: the guest has access.': '<strong>Invitation acceptée</strong> : l’invité a accès.',
+    '<strong>Access suspended</strong>: the subscription is on hold, or the guest is over a reduced quota.':
+        '<strong>Accès suspendu</strong> : l’abonnement est en attente, ou l’invité dépasse un quota réduit.',
+    '<strong>Access revoked</strong>: removed by the holder or an administrator.': '<strong>Accès révoqué</strong> : retiré par le titulaire ou un administrateur.',
+    'Counting seats': 'Décompte des places',
+    'The holder does not use a seat. Pending invitations and accepted guests each use one. Cancelling, removing or letting an invitation expire frees the seat.':
+        'Le titulaire n’occupe pas de place. Les invitations en attente et les invités acceptés en occupent une chacun. Annuler, supprimer ou laisser expirer une invitation libère la place.',
+    'The quota is the value of the product multiplied by the quantity, recorded at purchase. It is recalculated only when the customer switches plans. An administrator can force the quota of a subscription on its detail page in WooCommerce > Team access.':
+        'Le quota est la valeur du produit multipliée par la quantité, enregistrée à l’achat. Il n’est recalculé que lors d’un changement de formule. Un administrateur peut imposer le quota d’un abonnement depuis sa page de détail dans WooCommerce > Accès équipe.',
+    'Simultaneous invitations cannot exceed the quota: seats are reserved under a database lock.':
+        'Des invitations simultanées ne peuvent pas dépasser le quota : les places sont réservées sous verrou en base de données.',
+    'Seats are ranked: accepted guests from the oldest acceptance to the most recent, then pending invitations from the oldest to the most recent.':
+        'Les places sont classées : les invités acceptés, de l’acceptation la plus ancienne à la plus récente, puis les invitations en attente, de la plus ancienne à la plus récente.',
+    'With the default policy, the seats beyond the quota are suspended. Nobody is deleted, and suspended guests regain access automatically when a seat becomes available.':
+        'Avec la règle par défaut, les places au-delà du quota sont suspendues. Personne n’est supprimé, et les invités suspendus retrouvent automatiquement l’accès dès qu’une place se libère.',
+    'With the "keep all guests" policy, nobody is suspended: the overage is only reported.':
+        'Avec la règle « conserver tous les invités », personne n’est suspendu : le dépassement est seulement signalé.',
+    'In both cases, new invitations are blocked while the quota is exceeded, and the overage is shown to the holder and in the administration.':
+        'Dans les deux cas, les nouvelles invitations sont bloquées tant que le quota est dépassé, et le dépassement est affiché au titulaire et dans l’administration.',
+    'On hold (including a failed renewal)': 'En attente (y compris après un renouvellement échoué)',
+    'Guests have access.': 'Les invités ont accès.',
+    'Access suspended; restored when the subscription is reactivated.': 'Accès suspendu ; rétabli à la réactivation de l’abonnement.',
+    'Pending cancellation': 'Annulation programmée',
+    'Access kept until the end of the paid period, then removed.': 'Accès conservé jusqu’à la fin de la période payée, puis retiré.',
+    'Cancelled': 'Annulé',
+    'Access kept while the real end date is in the future, then removed.': 'Accès conservé tant que la date de fin réelle n’est pas atteinte, puis retiré.',
+    'Expired, trashed or deleted': 'Expiré, mis à la corbeille ou supprimé',
+    'Access removed.': 'Accès retiré.',
+    'Plan switch': 'Changement de formule',
+    'New quota and new plans applied.': 'Nouveau quota et nouveaux plans appliqués.',
+    'The access of guests follows the status of the subscription of the holder:': 'L’accès des invités suit le statut de l’abonnement du titulaire :',
+    'Every change is applied immediately, and a catch-up synchronization runs every day in case an event was missed. Running the same synchronization several times never creates duplicates.':
+        'Chaque changement est appliqué immédiatement, et une synchronisation de rattrapage s’exécute chaque jour au cas où un événement aurait été manqué. Lancer plusieurs fois la même synchronisation ne crée jamais de doublon.',
+    'How guests get access': 'Comment les invités obtiennent l’accès',
+    'Content restriction stays entirely handled by WooCommerce Memberships: the plugin creates a "guest membership" on the shared plan for each guest.':
+        'La restriction des contenus reste entièrement gérée par WooCommerce Memberships : l’extension crée une « adhésion invitée » sur le plan partagé pour chaque invité.',
+    'A guest has at most one guest membership per plan, even when invited by several subscriptions: it stays active as long as one of them grants access.':
+        'Un invité a au plus une adhésion invitée par plan, même s’il est invité par plusieurs abonnements : elle reste active tant que l’un d’eux donne accès.',
+    'Memberships bought or granted independently are never modified or deleted. If the guest already has an active membership on the plan, no guest membership is created; if it stops, the invitation takes over.':
+        'Les adhésions achetées ou accordées indépendamment ne sont jamais modifiées ni supprimées. Si l’invité a déjà une adhésion active sur le plan, aucune adhésion invitée n’est créée ; si elle s’interrompt, l’invitation prend le relais.',
+    'If a guest later buys their own subscription, WooCommerce Memberships reuses the guest membership for the purchase: it then becomes a regular membership.':
+        'Si un invité achète ensuite son propre abonnement, WooCommerce Memberships réutilise l’adhésion invitée pour cet achat : elle devient alors une adhésion ordinaire.',
+    'If WooCommerce Memberships assigns roles to members, guests get and lose the active member role like any other member.':
+        'Si WooCommerce Memberships attribue des rôles aux membres, les invités reçoivent et perdent le rôle de membre actif comme tout autre membre.',
+    'Good to know': 'Bon à savoir',
+    'Guest memberships are managed by the plugin: change them from WooCommerce > Team access, not from the Memberships screens, otherwise the next synchronization restores them.':
+        'Les adhésions invitées sont gérées par l’extension : modifiez-les depuis WooCommerce > Accès équipe et non depuis les écrans de Memberships, sinon la synchronisation suivante les rétablit.',
+    'By default, the WooCommerce Memberships emails (activated, ending soon, ended, renewal reminder) are not sent to guests, and the Cancel and Renew actions are hidden from their members area.':
+        'Par défaut, les e-mails WooCommerce Memberships (activation, fin prochaine, fin, rappel de renouvellement) ne sont pas envoyés aux invités, et les actions Annuler et Renouveler sont masquées dans leur espace membre.',
+    'Administration': 'Administration',
+    '<strong>Resynchronize</strong> a subscription from its detail page, or all of them from the list (runs in the background).':
+        '<strong>Resynchroniser</strong> un abonnement depuis sa page de détail, ou tous depuis la liste (en arrière-plan).',
+    '<strong>Log</strong>: synchronization errors and warnings, with a banner when an error occurred in the last 7 days.':
+        '<strong>Journal</strong> : erreurs et avertissements de synchronisation, avec un bandeau en cas d’erreur ces 7 derniers jours.',
+    '<strong>Invite on behalf of the holder</strong>, revoke or resend from the detail page of a subscription.':
+        '<strong>Inviter pour le compte du titulaire</strong>, révoquer ou renvoyer depuis la page de détail d’un abonnement.',
+    'Frequent questions': 'Questions fréquentes',
+    'A guest has no access: check that the subscription is active, that the product grants a Memberships plan, and that the guest is within the quota; then resynchronize the subscription.':
+        'Un invité n’a pas accès : vérifiez que l’abonnement est actif, que le produit accorde un plan Memberships et que l’invité est dans le quota, puis resynchronisez l’abonnement.',
+    'The invitation link does not work: it may have been used, cancelled, replaced by a newer invitation or have expired. Resend the invitation.':
+        'Le lien d’invitation ne fonctionne pas : il a peut-être déjà servi, été annulé, remplacé par une invitation plus récente ou expiré. Renvoyez l’invitation.',
+    'The guest cannot accept: they must be logged in with the account that uses the invited email address, or create an account with it.':
+        'L’invité ne peut pas accepter : il doit être connecté avec le compte qui utilise l’adresse invitée, ou créer un compte avec cette adresse.',
+    'WP-CLI commands': 'Commandes WP-CLI',
+    'For more information:': 'Pour plus d’informations :',
+    'Full documentation': 'Documentation complète',
+    'For subscription products, the "Maximum number of guests" field (General tab, and on each variation of a variable subscription) sets how many people the buyer can invite to share the premium access, in addition to themselves. 0 or empty disables the feature; an empty variation field uses the product value.':
+        'Pour les produits d’abonnement, le champ « Nombre maximal d’invités » (onglet Général, et sur chaque variation d’un abonnement variable) fixe le nombre de personnes que l’acheteur peut inviter à partager les accès premium, en plus de lui-même. 0 ou vide désactive la fonctionnalité ; un champ de variation vide reprend la valeur du produit.',
+    'The value is recorded in each subscription at purchase: changing it does not affect existing subscriptions. The product must grant a WooCommerce Memberships plan.':
+        'La valeur est enregistrée dans chaque abonnement à l’achat : la modifier n’a pas d’effet sur les abonnements existants. Le produit doit accorder un plan WooCommerce Memberships.',
+    'The "Team access" box shows the guest seats used by this subscription. Use "Manage guests" to see the guests, force the quota, revoke or resend invitations, or resynchronize.':
+        'L’encadré « Accès équipe » indique les places d’invités utilisées par cet abonnement. « Gérer les invités » permet de voir les invités, d’imposer le quota, de révoquer ou renvoyer des invitations, ou de resynchroniser.',
+    'Changing the status of the subscription updates the access of its guests: on hold suspends it, reactivation restores it, cancellation keeps it until the end of the paid period, expiration removes it.':
+        'Changer le statut de l’abonnement met à jour l’accès de ses invités : la mise en attente le suspend, la réactivation le rétablit, l’annulation le conserve jusqu’à la fin de la période payée, l’expiration le retire.',
+    'Documentation': 'Documentation',
 }
 
 
@@ -292,15 +416,15 @@ def main():
                 continue
             out.append(prefix + f'msgid {quote(msgid)}\nmsgid_plural {quote(plural)}\nmsgstr[0] {quote(tr[0])}\nmsgstr[1] {quote(tr[1])}')
         else:
-            tr = FR.get(msgid)
+            tr = FR.get(msgid, FR.get(msgid.replace('\\"', '"')))
             if tr is None:
                 missing.append(msgid)
                 continue
             out.append(prefix + f'msgid {quote(msgid)}\nmsgstr {quote(tr)}')
     if missing:
-        sys.exit('Traductions manquantes :\n- ' + '\n- '.join(missing))
+        sys.exit('Missing translations:\n- ' + '\n- '.join(missing))
     PO.write_text('\n\n'.join(out) + '\n', encoding='utf-8')
-    print(f'{len(out) - 1} chaînes traduites -> {PO.relative_to(ROOT)}')
+    print(f'{len(out) - 1} translated strings -> {PO.relative_to(ROOT)}')
 
 
 if __name__ == '__main__':

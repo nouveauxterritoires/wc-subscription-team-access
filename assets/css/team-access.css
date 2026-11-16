@@ -1,4 +1,4 @@
-/* WC Subscription Team Access — espace client. S'appuie sur les styles WooCommerce du thème. */
+/* WC Subscription Team Access — customer area. Builds on the theme's WooCommerce styles. */
 .wcsta-team { display: grid; gap: 2rem; }
 .wcsta-team__intro { margin: 0; }
 
@@ -46,7 +46,7 @@
 .wcsta-history { margin-top: 1rem; font-size: .9em; }
 .wcsta-history ul { margin: .5rem 0 0 1rem; }
 
-/* Page d'invitation */
+/* Invitation page */
 .wcsta-invitation { max-width: 960px; margin: 2rem auto; padding: 0 16px; }
 .wcsta-invitation-card__lead { font-size: 1.1em; }
 .wcsta-invitation-card__email { opacity: .8; }
@@ -61,6 +61,6 @@
 	.wcsta-seats__actions { justify-content: flex-start; }
 }
 
-/* « Remplacer » est un <summary> : les thèmes ne le stylent pas toujours comme un bouton. */
+/* "Replace" is a <summary>: themes do not always style it like a button. */
 .wcsta-replace > summary.wcsta-button { display: inline-block; border: 1px solid currentColor; border-radius: 3px; background: transparent; line-height: 1.4; }
 .wcsta-replace[open] > summary.wcsta-button { opacity: .7; }

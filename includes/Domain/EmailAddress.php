@@ -1,6 +1,6 @@
 <?php
 /**
- * Normalisation et masquage des adresses e-mail.
+ * Normalization and masking of email addresses.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,36 +10,36 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess\Domain;
 
 /**
- * Fonctions pures autour des adresses e-mail.
+ * Pure functions for email addresses.
  */
 final class EmailAddress {
 
 	public const MAX_LENGTH = 100;
 
 	/**
-	 * Forme canonique utilisée pour les comparaisons (espaces retirés, minuscules).
+	 * Canonical form used for comparisons (whitespace trimmed, lowercase).
 	 *
-	 * @param string $email Adresse brute.
+	 * @param string $email Raw address.
 	 */
 	public static function normalize( string $email ): string {
 		return strtolower( trim( $email ) );
 	}
 
 	/**
-	 * Compare deux adresses sans tenir compte de la casse.
+	 * Compares two addresses case-insensitively.
 	 *
-	 * @param string $a Adresse A.
-	 * @param string $b Adresse B.
+	 * @param string $a Address A.
+	 * @param string $b Address B.
 	 */
 	public static function same( string $a, string $b ): bool {
 		return '' !== self::normalize( $a ) && self::normalize( $a ) === self::normalize( $b );
 	}
 
 	/**
-	 * Masque une adresse pour l'afficher à une personne qui n'en est pas forcément titulaire.
-	 * Exemple : jean.dupont@example.org → j•••••••••@example.org
+	 * Masks an address so it can be shown to someone who is not necessarily its owner.
+	 * Example: jean.dupont@example.org → j•••••••••@example.org
 	 *
-	 * @param string $email Adresse.
+	 * @param string $email Address.
 	 */
 	public static function mask( string $email ): string {
 		$at = strrpos( $email, '@' );

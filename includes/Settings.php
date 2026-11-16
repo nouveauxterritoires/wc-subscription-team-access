@@ -1,6 +1,6 @@
 <?php
 /**
- * Réglages de l'extension (une seule option sérialisée).
+ * Plugin settings (a single serialized option).
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -12,14 +12,14 @@ namespace WCSubscriptionTeamAccess;
 use WCSubscriptionTeamAccess\Domain\SeatAllocator;
 
 /**
- * Accès typé aux réglages, avec valeurs par défaut et bornes.
+ * Typed access to settings, with default values and bounds.
  */
 final class Settings {
 
 	public const OPTION = 'wcsta_settings';
 
 	/**
-	 * Valeurs par défaut.
+	 * Default values.
 	 *
 	 * @return array<string, mixed>
 	 */
@@ -39,7 +39,7 @@ final class Settings {
 	}
 
 	/**
-	 * Toutes les valeurs, normalisées.
+	 * All values, normalized.
 	 *
 	 * @return array<string, mixed>
 	 */
@@ -49,24 +49,24 @@ final class Settings {
 	}
 
 	/**
-	 * Une valeur.
+	 * A single value.
 	 *
-	 * @param string $key Clé.
+	 * @param string $key Key.
 	 */
 	public static function get( string $key ): mixed {
 		$all = self::all();
 		return $all[ $key ] ?? null;
 	}
 
-	/** Durée de validité d'une invitation, en secondes. */
+	/** Invitation validity period, in seconds. */
 	public static function expiry_seconds(): int {
 		return (int) self::get( 'invitation_expiry_days' ) * DAY_IN_SECONDS;
 	}
 
 	/**
-	 * Valide et borne les valeurs (utilisé à l'enregistrement et à la lecture).
+	 * Validates and bounds the values (used on save and on read).
 	 *
-	 * @param array<string, mixed> $input Valeurs brutes.
+	 * @param array<string, mixed> $input Raw values.
 	 * @return array<string, mixed>
 	 */
 	public static function sanitize( array $input ): array {
@@ -98,12 +98,12 @@ final class Settings {
 	}
 
 	/**
-	 * Entier borné.
+	 * Bounded integer.
 	 *
-	 * @param mixed $value   Valeur.
+	 * @param mixed $value   Value.
 	 * @param int   $min     Minimum.
 	 * @param int   $max     Maximum.
-	 * @param int   $default Défaut si invalide.
+	 * @param int   $default Default if invalid.
 	 */
 	private static function bounded( mixed $value, int $min, int $max, int $default ): int {
 		if ( ! is_numeric( $value ) ) {

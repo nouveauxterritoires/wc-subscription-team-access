@@ -1,6 +1,6 @@
 <?php
 /**
- * Vérifie qu'après les invitations concurrentes le quota n'est pas dépassé.
+ * Checks that the quota is not exceeded after the concurrent invitations.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -12,6 +12,6 @@ $fixtures = (array) json_decode( (string) file_get_contents( (string) $args[0] )
 $live     = \WCSubscriptionTeamAccess\Plugin::instance()->seats()->live_for_subscription( (int) $fixtures['concurrency_sub'] );
 
 if ( 5 !== count( $live ) ) {
-	WP_CLI::error( sprintf( 'Invitations concurrentes : %d places vivantes pour un quota de 5.', count( $live ) ) );
+	WP_CLI::error( sprintf( 'Concurrent invitations: %d live seats for a quota of 5.', count( $live ) ) );
 }
-WP_CLI::success( 'Invitations concurrentes : quota respecté (5 places vivantes sur 5, une seule invitation acceptée).' );
+WP_CLI::success( 'Concurrent invitations: quota respected (5 live seats out of 5, only one invitation accepted).' );

@@ -1,6 +1,6 @@
 <?php
 /**
- * Synchronisation idempotente : abonnement → places → sources de droits → adhésions.
+ * Idempotent synchronization: subscription -> seats -> rights sources -> memberships.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -20,24 +20,24 @@ use WCSubscriptionTeamAccess\Support\Dates;
 use WCSubscriptionTeamAccess\Support\Lock;
 
 /**
- * Chaque synchronisation recalcule l'état cible à partir de l'état courant (et non d'un
- * événement) : rejouer un même événement, ou synchroniser plusieurs fois, ne crée ni doublon
- * ni droit supplémentaire.
+ * Each synchronization recomputes the target state from the current state (not from an
+ * event): replaying the same event, or synchronizing several times, creates neither duplicates
+ * nor extra rights.
  */
 final class Reconciler {
 
-	/** Déclencheurs qui sont déjà des reprises : pas de nouvelle mise en file en cas d'échec. */
+	/** Triggers that are already retries: no new queuing on failure. */
 	private const RETRY_TRIGGERS = array( 'async', 'catch_up' );
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param SeatRepository      $seats         Places.
-	 * @param GrantRepository     $grants        Sources de droits.
-	 * @param SubscriptionManager $subscriptions Abonnements.
+	 * @param SeatRepository      $seats         Seats.
+	 * @param GrantRepository     $grants        Rights sources.
+	 * @param SubscriptionManager $subscriptions Subscriptions.
 	 * @param QuotaManager        $quotas        Quotas.
-	 * @param MembershipManager   $memberships   Adhésions.
-	 * @param Logger              $logger        Journal.
+	 * @param MembershipManager   $memberships   Memberships.
+	 * @param Logger              $logger        Logger.
 	 */
 	public function __construct(
 		private readonly SeatRepository $seats,
@@ -49,10 +49,10 @@ final class Reconciler {
 	) {}
 
 	/**
-	 * Synchronise un abonnement et les adhésions de ses invités.
+	 * Synchronizes a subscription and its guests' memberships.
 	 *
-	 * @param int    $subscription_id Abonnement.
-	 * @param string $trigger         Origine (pour le journal).
+	 * @param int    $subscription_id Subscription.
+	 * @param string $trigger         Origin (for the log).
 	 * @return array{subscription_id:int, access:string, quota:int, used:int, over:int, plans:int[], memberships:array<string,string>}|\WP_Error
 	 */
 	public function sync_subscription( int $subscription_id, string $trigger = 'manual' ): array|\WP_Error {
@@ -75,8 +75,8 @@ final class Reconciler {
 			}
 		);
 
-		// Toute synchronisation en échec est rejouée en tâche de fond (une seule fois par
-		// déclenchement : un échec persistant est ensuite repris par le rattrapage quotidien).
+		// Any failed synchronization is replayed as a background task (only once per
+		// trigger: a persistent failure is then picked up by the daily catch-up).
 		if ( $result instanceof \WP_Error && ! in_array( $trigger, self::RETRY_TRIGGERS, true ) ) {
 			Scheduler::enqueue_subscription( $subscription_id );
 		}
@@ -85,9 +85,9 @@ final class Reconciler {
 	}
 
 	/**
-	 * Synchronise un couple utilisateur / plan.
+	 * Synchronizes a user / plan pair.
 	 *
-	 * @param int $user_id Utilisateur.
+	 * @param int $user_id User.
 	 * @param int $plan_id Plan.
 	 */
 	public function sync_user_plan( int $user_id, int $plan_id ): string {
@@ -95,10 +95,10 @@ final class Reconciler {
 	}
 
 	/**
-	 * Calcule la répartition courante des places d'un abonnement (lecture seule).
+	 * Computes the current seat distribution of a subscription (read-only).
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param Seat[]|null      $live_seats   Places vivantes (lues si null).
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param Seat[]|null      $live_seats   Live seats (read if null).
 	 */
 	public function allocation( \WC_Subscription $subscription, ?array $live_seats = null ): \WCSubscriptionTeamAccess\Domain\Allocation {
 		$live_seats = $live_seats ?? $this->seats->live_for_subscription( $subscription->get_id() );
@@ -110,17 +110,17 @@ final class Reconciler {
 	}
 
 	/**
-	 * Abonnements ayant des places (pour le rattrapage par lots).
+	 * Subscriptions that have seats (for batched catch-up).
 	 *
-	 * @param int $after_id Dernier identifiant traité.
-	 * @param int $limit    Taille du lot.
+	 * @param int $after_id Last processed identifier.
+	 * @param int $limit    Batch size.
 	 * @return int[]
 	 */
 	public function subscription_ids( int $after_id, int $limit ): array {
 		return $this->seats->subscription_ids( $after_id, $limit );
 	}
 
-	/** Maintenance quotidienne : expirations, minimisation des données, purge du journal. */
+	/** Daily maintenance: expirations, data minimization, log purge. */
 	public function maintenance(): void {
 		$expired = $this->seats->expire_stale();
 		if ( $expired > 0 ) {
@@ -136,7 +136,7 @@ final class Reconciler {
 	}
 
 	/**
-	 * Adhésions gérées sans source de droits (événement manqué, place supprimée à la main…).
+	 * Managed memberships without a rights source (missed event, seat deleted by hand...).
 	 */
 	public function sweep_orphan_memberships(): void {
 		global $wpdb;
@@ -157,9 +157,9 @@ final class Reconciler {
 	}
 
 	/**
-	 * Synchronisation sous verrou.
+	 * Synchronization under lock.
 	 *
-	 * @param int $subscription_id Abonnement.
+	 * @param int $subscription_id Subscription.
 	 * @return array{subscription_id:int, access:string, quota:int, used:int, over:int, plans:int[], memberships:array<string,string>}
 	 */
 	private function sync_locked( int $subscription_id ): array {
@@ -201,8 +201,8 @@ final class Reconciler {
 			if ( isset( $done[ $key ] ) ) {
 				continue;
 			}
-			// Chaque couple est isolé : un échec n'empêche pas de traiter les autres invités,
-			// et il est rejoué en tâche de fond.
+			// Each pair is isolated: a failure does not prevent processing the other guests,
+			// and it is replayed as a background task.
 			$done[ $key ] = $this->memberships->reconcile( $user_id, $plan_id );
 			if ( MembershipManager::RESULT_ERROR === $done[ $key ] ) {
 				Scheduler::enqueue_user_plan( $user_id, $plan_id );
@@ -221,12 +221,12 @@ final class Reconciler {
 	}
 
 	/**
-	 * Calcule et enregistre l'accès d'une place et ses sources de droits.
+	 * Computes and stores a seat's access and its rights sources.
 	 *
-	 * @param Seat        $seat     Place.
-	 * @param AccessState $access   Droit conféré par l'abonnement.
-	 * @param int[]       $plan_ids Plans partagés.
-	 * @param bool        $within   Place dans le quota.
+	 * @param Seat        $seat     Seat.
+	 * @param AccessState $access   Right granted by the subscription.
+	 * @param int[]       $plan_ids Shared plans.
+	 * @param bool        $within   Seat within the quota.
 	 */
 	private function sync_seat( Seat $seat, AccessState $access, array $plan_ids, bool $within ): void {
 		[ $seat_access, $reason, $grant ] = $this->seat_target( $seat, $access, $plan_ids, $within );
@@ -253,13 +253,13 @@ final class Reconciler {
 	}
 
 	/**
-	 * État cible d'une place.
+	 * Target state of a seat.
 	 *
-	 * @param Seat        $seat     Place.
-	 * @param AccessState $access   Droit de l'abonnement.
+	 * @param Seat        $seat     Seat.
+	 * @param AccessState $access   Subscription right.
 	 * @param int[]       $plan_ids Plans.
-	 * @param bool        $within   Dans le quota.
-	 * @return array{0:string, 1:string, 2:AccessState} Accès affiché, raison, droit à accorder.
+	 * @param bool        $within   Within the quota.
+	 * @return array{0:string, 1:string, 2:AccessState} Displayed access, reason, right to grant.
 	 */
 	private function seat_target( Seat $seat, AccessState $access, array $plan_ids, bool $within ): array {
 		if ( ! $seat->is_accepted() || $seat->user_id <= 0 ) {
@@ -281,10 +281,10 @@ final class Reconciler {
 	}
 
 	/**
-	 * Le titulaire de l'abonnement a pu changer (réattribution par un administrateur).
+	 * The subscription holder may have changed (reassignment by an administrator).
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param Seat[]           $seats        Places.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param Seat[]           $seats        Seats.
 	 */
 	private function sync_owner( \WC_Subscription $subscription, array $seats ): void {
 		$owner_id = (int) $subscription->get_customer_id();
@@ -296,10 +296,10 @@ final class Reconciler {
 	}
 
 	/**
-	 * Abonnement supprimé définitivement : toutes les places vivantes prennent fin.
+	 * Subscription permanently deleted: all live seats end.
 	 *
-	 * @param int    $subscription_id Abonnement.
-	 * @param string $reason          Motif.
+	 * @param int    $subscription_id Subscription.
+	 * @param string $reason          Reason.
 	 */
 	private function end_all_seats( int $subscription_id, string $reason ): void {
 		foreach ( $this->seats->live_for_subscription( $subscription_id ) as $seat ) {

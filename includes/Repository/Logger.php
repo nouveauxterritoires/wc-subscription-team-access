@@ -1,6 +1,6 @@
 <?php
 /**
- * Journal des événements et erreurs de synchronisation (table wcsta_log + journal WooCommerce).
+ * Log of sync events and errors (wcsta_log table + WooCommerce log).
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -12,7 +12,7 @@ namespace WCSubscriptionTeamAccess\Repository;
 use WCSubscriptionTeamAccess\Support\Dates;
 
 /**
- * Journalisation consultable depuis l'administration.
+ * Logging viewable from the admin area.
  */
 final class Logger {
 
@@ -22,22 +22,22 @@ final class Logger {
 
 	private const SOURCE = 'wc-subscription-team-access';
 
-	/** Nom de la table. */
+	/** Table name. */
 	public static function table(): string {
 		global $wpdb;
 		return $wpdb->prefix . 'wcsta_log';
 	}
 
 	/**
-	 * Ajoute une entrée.
+	 * Adds an entry.
 	 *
-	 * @param string               $level           Niveau.
-	 * @param string               $event           Code d'événement.
-	 * @param string               $message         Message lisible (non traduit, à destination des administrateurs).
-	 * @param array<string, mixed> $context         Contexte.
-	 * @param int                  $subscription_id Abonnement.
-	 * @param int                  $seat_id         Place.
-	 * @param int                  $user_id         Utilisateur.
+	 * @param string               $level           Level.
+	 * @param string               $event           Event code.
+	 * @param string               $message         Human-readable message (untranslated, intended for administrators).
+	 * @param array<string, mixed> $context         Context.
+	 * @param int                  $subscription_id Subscription.
+	 * @param int                  $seat_id         Seat.
+	 * @param int                  $user_id         User.
 	 */
 	public function log( string $level, string $event, string $message, array $context = array(), int $subscription_id = 0, int $seat_id = 0, int $user_id = 0 ): void {
 		global $wpdb;
@@ -66,45 +66,45 @@ final class Logger {
 	}
 
 	/**
-	 * Entrée informative.
+	 * Informational entry.
 	 *
 	 * @param string               $event   Code.
 	 * @param string               $message Message.
-	 * @param array<string, mixed> $ids     Identifiants : subscription_id, seat_id, user_id, et contexte libre.
+	 * @param array<string, mixed> $ids     IDs: subscription_id, seat_id, user_id, and free-form context.
 	 */
 	public function info( string $event, string $message, array $ids = array() ): void {
 		$this->log_with_ids( self::INFO, $event, $message, $ids );
 	}
 
 	/**
-	 * Avertissement.
+	 * Warning.
 	 *
 	 * @param string               $event   Code.
 	 * @param string               $message Message.
-	 * @param array<string, mixed> $ids     Identifiants et contexte.
+	 * @param array<string, mixed> $ids     IDs and context.
 	 */
 	public function warning( string $event, string $message, array $ids = array() ): void {
 		$this->log_with_ids( self::WARNING, $event, $message, $ids );
 	}
 
 	/**
-	 * Erreur.
+	 * Error.
 	 *
 	 * @param string               $event   Code.
 	 * @param string               $message Message.
-	 * @param array<string, mixed> $ids     Identifiants et contexte.
+	 * @param array<string, mixed> $ids     IDs and context.
 	 */
 	public function error( string $event, string $message, array $ids = array() ): void {
 		$this->log_with_ids( self::ERROR, $event, $message, $ids );
 	}
 
 	/**
-	 * Liste paginée.
+	 * Paginated list.
 	 *
-	 * @param string $level  Niveau ('' = tous, 'problems' = avertissements et erreurs).
-	 * @param int    $limit  Taille.
-	 * @param int    $offset Décalage.
-	 * @param int    $subscription_id Filtre abonnement.
+	 * @param string $level  Level ('' = all, 'problems' = warnings and errors).
+	 * @param int    $limit  Page size.
+	 * @param int    $offset Offset.
+	 * @param int    $subscription_id Subscription filter.
 	 * @return array{rows: array<int, array<string, mixed>>, total: int}
 	 */
 	public function query( string $level, int $limit, int $offset, int $subscription_id = 0 ): array {
@@ -141,9 +141,9 @@ final class Logger {
 	}
 
 	/**
-	 * Nombre d'erreurs récentes (bandeau d'administration).
+	 * Number of recent errors (admin notice).
 	 *
-	 * @param int $since Horodatage.
+	 * @param int $since Timestamp.
 	 */
 	public function count_errors_since( int $since ): int {
 		global $wpdb;
@@ -153,9 +153,9 @@ final class Logger {
 	}
 
 	/**
-	 * Purge les entrées anciennes.
+	 * Purges old entries.
 	 *
-	 * @param int $days Âge maximal en jours.
+	 * @param int $days Maximum age in days.
 	 */
 	public function prune( int $days ): int {
 		global $wpdb;
@@ -165,12 +165,12 @@ final class Logger {
 	}
 
 	/**
-	 * Répartit identifiants et contexte.
+	 * Splits IDs from context.
 	 *
-	 * @param string               $level   Niveau.
+	 * @param string               $level   Level.
 	 * @param string               $event   Code.
 	 * @param string               $message Message.
-	 * @param array<string, mixed> $ids     Identifiants et contexte.
+	 * @param array<string, mixed> $ids     IDs and context.
 	 */
 	private function log_with_ids( string $level, string $event, string $message, array $ids ): void {
 		$subscription_id = (int) ( $ids['subscription_id'] ?? 0 );

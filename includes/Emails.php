@@ -1,6 +1,6 @@
 <?php
 /**
- * Enregistrement et envoi des e-mails WooCommerce de l'extension.
+ * Registration and sending of the plugin's WooCommerce emails.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -14,8 +14,8 @@ use WCSubscriptionTeamAccess\Emails\InvitationEmail;
 use WCSubscriptionTeamAccess\Repository\Seat;
 
 /**
- * Les e-mails sont des WC_Email : ils se configurent dans WooCommerce > Réglages > E-mails et
- * leurs gabarits peuvent être surchargés dans le thème (woocommerce/emails/…).
+ * The emails are WC_Email instances: they are configured under WooCommerce > Settings > Emails and
+ * their templates can be overridden in the theme (woocommerce/emails/...).
  */
 final class Emails {
 
@@ -23,21 +23,21 @@ final class Emails {
 	public const ACCEPTED   = 'WCSTA_Invitation_Accepted';
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param InvitationController $invitations Construction des liens d'acceptation.
+	 * @param InvitationController $invitations Builds the acceptance links.
 	 */
 	public function __construct( private readonly InvitationController $invitations ) {}
 
-	/** Branche les crochets. */
+	/** Registers the hooks. */
 	public function register(): void {
 		add_filter( 'woocommerce_email_classes', array( $this, 'register_classes' ) );
 	}
 
 	/**
-	 * Ajoute les classes d'e-mails.
+	 * Adds the email classes.
 	 *
-	 * @param array<string, \WC_Email> $classes Classes existantes.
+	 * @param array<string, \WC_Email> $classes Existing classes.
 	 * @return array<string, \WC_Email>
 	 */
 	public function register_classes( $classes ) {
@@ -48,11 +48,11 @@ final class Emails {
 	}
 
 	/**
-	 * Envoie l'invitation.
+	 * Sends the invitation.
 	 *
-	 * @param Seat             $seat         Place.
-	 * @param string           $token        Jeton en clair (n'est jamais stocké).
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param Seat             $seat         Seat.
+	 * @param string           $token        Plain-text token (never stored).
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	public function send_invitation( Seat $seat, string $token, \WC_Subscription $subscription ): bool {
 		$email = $this->get( self::INVITATION );
@@ -68,10 +68,10 @@ final class Emails {
 	}
 
 	/**
-	 * Prévient le titulaire qu'une invitation a été acceptée.
+	 * Notifies the holder that an invitation has been accepted.
 	 *
-	 * @param Seat             $seat         Place acceptée.
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param Seat             $seat         Accepted seat.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	public function send_accepted( Seat $seat, \WC_Subscription $subscription ): bool {
 		$email = $this->get( self::ACCEPTED );
@@ -88,9 +88,9 @@ final class Emails {
 	}
 
 	/**
-	 * Nom affiché du titulaire (prénom et nom, sinon nom public).
+	 * Displayed name of the holder (first and last name, otherwise public name).
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	public function inviter_name( \WC_Subscription $subscription ): string {
 		$name = trim( $subscription->get_billing_first_name() . ' ' . $subscription->get_billing_last_name() );
@@ -98,8 +98,8 @@ final class Emails {
 			$owner = get_userdata( (int) $subscription->get_customer_id() );
 			$name  = $owner ? (string) $owner->display_name : '';
 		}
-		// Nom saisi librement par le client : on retire balises, liens et caractères de contrôle
-		// pour qu'il ne puisse pas servir à glisser un message ou une adresse dans l'invitation.
+		// Name freely entered by the customer: strip tags, links and control characters
+		// so it cannot be used to slip a message or an address into the invitation.
 		$name = wp_strip_all_tags( $name );
 		$name = (string) preg_replace( '#(?:https?://|www\.)\S*#i', '', $name );
 		$name = (string) preg_replace( '/[\x00-\x1F\x7F]/u', '', $name );
@@ -109,9 +109,9 @@ final class Emails {
 	}
 
 	/**
-	 * Nom de l'abonnement (produits), sans information de facturation.
+	 * Subscription name (products), without billing information.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	private function subscription_name( \WC_Subscription $subscription ): string {
 		$names = array();
@@ -122,9 +122,9 @@ final class Emails {
 	}
 
 	/**
-	 * Instance d'un e-mail chargé par WooCommerce.
+	 * Instance of an email loaded by WooCommerce.
 	 *
-	 * @param string $id Identifiant de classe.
+	 * @param string $id Class identifier.
 	 */
 	private function get( string $id ): ?\WC_Email {
 		if ( ! function_exists( 'WC' ) ) {

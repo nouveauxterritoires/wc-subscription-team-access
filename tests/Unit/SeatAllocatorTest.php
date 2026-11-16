@@ -8,15 +8,15 @@ use WCSubscriptionTeamAccess\Domain\SeatAllocator;
 use WCSubscriptionTeamAccess\Domain\SeatStatus;
 
 /**
- * Répartition des places et règle de dépassement de quota.
+ * Seat allocation and quota overflow rule.
  */
 final class SeatAllocatorTest extends TestCase {
 
 	/**
-	 * @param int      $id          Place.
-	 * @param string   $status      Statut.
-	 * @param int      $created_at  Création.
-	 * @param int|null $accepted_at Acceptation.
+	 * @param int      $id          Seat.
+	 * @param string   $status      Status.
+	 * @param int      $created_at  Creation.
+	 * @param int|null $accepted_at Acceptance.
 	 * @return array{id:int, status:string, created_at:int, accepted_at:int|null}
 	 */
 	private static function seat( int $id, string $status, int $created_at, ?int $accepted_at = null ): array {

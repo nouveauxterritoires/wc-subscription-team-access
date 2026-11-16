@@ -1,6 +1,6 @@
 <?php
 /**
- * E-mail envoyé au titulaire lorsqu'un invité accepte son invitation.
+ * Email sent to the holder when a guest accepts their invitation.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -14,20 +14,20 @@ use WCSubscriptionTeamAccess\Repository\Seat;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Notification au titulaire de l'abonnement.
+ * Notification to the subscription holder.
  */
 class InvitationAcceptedEmail extends \WC_Email {
 
-	/** Adresse de l'invité. */
+	/** Guest's address. */
 	public string $guest_email = '';
 
-	/** Nom de l'abonnement. */
+	/** Subscription name. */
 	public string $subscription_name = '';
 
-	/** Lien vers la gestion des invités. */
+	/** Link to guest management. */
 	public string $manage_url = '';
 
-	/** Constructeur. */
+	/** Constructor. */
 	public function __construct() {
 		$this->id             = 'wcsta_team_invitation_accepted';
 		$this->customer_email = true;
@@ -44,23 +44,23 @@ class InvitationAcceptedEmail extends \WC_Email {
 		parent::__construct();
 	}
 
-	/** Objet par défaut. */
+	/** Default subject. */
 	public function get_default_subject() {
 		return __( '{guest_email} joined your subscription on {site_title}', 'wc-subscription-team-access' );
 	}
 
-	/** Titre par défaut. */
+	/** Default heading. */
 	public function get_default_heading() {
 		return __( 'A guest joined your subscription', 'wc-subscription-team-access' );
 	}
 
 	/**
-	 * Déclenche l'envoi.
+	 * Triggers sending.
 	 *
-	 * @param Seat   $seat              Place acceptée.
-	 * @param string $owner_email       Adresse du titulaire.
-	 * @param string $subscription_name Nom de l'abonnement.
-	 * @param string $manage_url        Lien de gestion.
+	 * @param Seat   $seat              Accepted seat.
+	 * @param string $owner_email       Holder's address.
+	 * @param string $subscription_name Subscription name.
+	 * @param string $manage_url        Management link.
 	 */
 	public function trigger( Seat $seat, string $owner_email, string $subscription_name, string $manage_url ): bool {
 		$this->setup_locale();
@@ -81,20 +81,20 @@ class InvitationAcceptedEmail extends \WC_Email {
 		return $sent;
 	}
 
-	/** Contenu HTML. */
+	/** HTML content. */
 	public function get_content_html() {
 		return wc_get_template_html( $this->template_html, $this->template_args( false ), '', $this->template_base );
 	}
 
-	/** Contenu texte. */
+	/** Plain-text content. */
 	public function get_content_plain() {
 		return wc_get_template_html( $this->template_plain, $this->template_args( true ), '', $this->template_base );
 	}
 
 	/**
-	 * Variables des gabarits.
+	 * Template variables.
 	 *
-	 * @param bool $plain_text Version texte.
+	 * @param bool $plain_text Plain-text version.
 	 * @return array<string, mixed>
 	 */
 	private function template_args( bool $plain_text ): array {

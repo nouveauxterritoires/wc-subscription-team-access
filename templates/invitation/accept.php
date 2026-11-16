@@ -1,21 +1,21 @@
 <?php
 /**
- * Contenu de la page d'invitation.
+ * Invitation page content.
  *
- * Surcharge : votre-theme/wc-subscription-team-access/invitation/accept.php
+ * Override: your-theme/wc-subscription-team-access/invitation/accept.php
  *
  * @package WCSubscriptionTeamAccess
  *
  * @var string $state             invalid | expired | logged_out | mismatch | ready
- * @var string $message           Message d'erreur éventuel.
- * @var string $inviter_name      Nom du titulaire.
- * @var string $subscription_name Nom de l'abonnement.
- * @var string $masked_email      Adresse invitée masquée.
- * @var string $email             Adresse invitée (visiteur déconnecté uniquement).
- * @var string $page_url          URL de la page.
- * @var string $logout_url        URL de déconnexion.
- * @var string $account_url       URL de Mon compte.
- * @var int    $min_password      Longueur minimale du mot de passe.
+ * @var string $message           Optional error message.
+ * @var string $inviter_name      Plan holder name.
+ * @var string $subscription_name Subscription name.
+ * @var string $masked_email      Masked invited email address.
+ * @var string $email             Invited email address (logged-out visitors only).
+ * @var string $page_url          Page URL.
+ * @var string $logout_url        Logout URL.
+ * @var string $account_url       My Account URL.
+ * @var int    $min_password      Minimum password length.
  */
 
 defined( 'ABSPATH' ) || exit;

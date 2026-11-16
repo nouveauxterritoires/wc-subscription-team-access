@@ -1,6 +1,6 @@
 <?php
 /**
- * Lecture des abonnements via les API publiques de WooCommerce Subscriptions et Memberships.
+ * Reads subscriptions through the public APIs of WooCommerce Subscriptions and Memberships.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -14,15 +14,15 @@ use WCSubscriptionTeamAccess\Domain\SubscriptionAccessResolver;
 use WCSubscriptionTeamAccess\Repository\SeatRepository;
 
 /**
- * Droits effectifs, plans accordés et propriété d'un abonnement.
+ * Effective rights, granted plans and ownership of a subscription.
  */
 final class SubscriptionManager {
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
 	 * @param QuotaManager   $quotas Quotas.
-	 * @param SeatRepository $seats  Places.
+	 * @param SeatRepository $seats  Seats.
 	 */
 	public function __construct(
 		private readonly QuotaManager $quotas,
@@ -30,9 +30,9 @@ final class SubscriptionManager {
 	) {}
 
 	/**
-	 * Charge un abonnement (compatible HPOS).
+	 * Loads a subscription (HPOS compatible).
 	 *
-	 * @param int $subscription_id Identifiant.
+	 * @param int $subscription_id Identifier.
 	 */
 	public function get( int $subscription_id ): ?\WC_Subscription {
 		if ( $subscription_id <= 0 || ! function_exists( 'wcs_get_subscription' ) ) {
@@ -43,9 +43,9 @@ final class SubscriptionManager {
 	}
 
 	/**
-	 * Droit effectif conféré par l'abonnement à l'instant présent.
+	 * Effective right granted by the subscription at the present time.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	public function effective_access( \WC_Subscription $subscription ): AccessState {
 		$state = SubscriptionAccessResolver::resolve(
@@ -55,23 +55,23 @@ final class SubscriptionManager {
 		);
 
 		/**
-		 * Filtre le droit effectif d'un abonnement.
+		 * Filters the effective right of a subscription.
 		 *
-		 * @param AccessState      $state        Droit calculé.
-		 * @param \WC_Subscription $subscription Abonnement.
+		 * @param AccessState      $state        Computed right.
+		 * @param \WC_Subscription $subscription Subscription.
 		 */
 		$filtered = apply_filters( 'wcsta_subscription_effective_access', $state, $subscription );
 		return $filtered instanceof AccessState ? $filtered : $state;
 	}
 
 	/**
-	 * Plans WooCommerce Memberships effectivement accordés par l'abonnement.
+	 * WooCommerce Memberships plans actually granted by the subscription.
 	 *
-	 * Sources : les adhésions du titulaire liées à l'abonnement par Memberships, et les plans
-	 * dont les produits d'accès correspondent aux lignes de l'abonnement (le titulaire peut avoir
-	 * son adhésion liée à un autre de ses abonnements).
+	 * Sources: the holder's memberships linked to the subscription by Memberships, and the plans
+	 * whose access products match the subscription's line items (the holder may have
+	 * their membership linked to another one of their subscriptions).
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 * @return int[]
 	 */
 	public function plan_ids( \WC_Subscription $subscription ): array {
@@ -118,19 +118,19 @@ final class SubscriptionManager {
 		sort( $plan_ids );
 
 		/**
-		 * Filtre les plans partagés avec les invités d'un abonnement.
+		 * Filters the plans shared with the guests of a subscription.
 		 *
 		 * @param int[]            $plan_ids     Plans.
-		 * @param \WC_Subscription $subscription Abonnement.
+		 * @param \WC_Subscription $subscription Subscription.
 		 */
 		return array_values( array_map( 'intval', (array) apply_filters( 'wcsta_subscription_plan_ids', $plan_ids, $subscription ) ) );
 	}
 
 	/**
-	 * L'utilisateur peut gérer les invités de l'abonnement (titulaire ou gestionnaire de la boutique).
+	 * The user can manage the subscription's guests (holder or shop manager).
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param int              $user_id      Utilisateur.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param int              $user_id      User.
 	 */
 	public function can_manage( \WC_Subscription $subscription, int $user_id ): bool {
 		if ( $user_id <= 0 ) {
@@ -140,19 +140,19 @@ final class SubscriptionManager {
 	}
 
 	/**
-	 * L'utilisateur est le titulaire.
+	 * The user is the holder.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param int              $user_id      Utilisateur.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param int              $user_id      User.
 	 */
 	public function is_owner( \WC_Subscription $subscription, int $user_id ): bool {
 		return $user_id > 0 && (int) $subscription->get_customer_id() === $user_id;
 	}
 
 	/**
-	 * Abonnements d'un utilisateur concernés par le partage (quota > 0 ou invités existants).
+	 * Subscriptions of a user involved in sharing (quota > 0 or existing guests).
 	 *
-	 * @param int $user_id Titulaire.
+	 * @param int $user_id Holder.
 	 * @return \WC_Subscription[]
 	 */
 	public function team_subscriptions_for( int $user_id ): array {
@@ -178,9 +178,9 @@ final class SubscriptionManager {
 	}
 
 	/**
-	 * Nom lisible de l'abonnement (produits).
+	 * Readable name of the subscription (products).
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	public function display_name( \WC_Subscription $subscription ): string {
 		$names = array();
@@ -196,9 +196,9 @@ final class SubscriptionManager {
 	}
 
 	/**
-	 * Libellé traduit du statut.
+	 * Translated status label.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	public function status_label( \WC_Subscription $subscription ): string {
 		return function_exists( 'wcs_get_subscription_status_name' )
@@ -206,7 +206,7 @@ final class SubscriptionManager {
 			: (string) $subscription->get_status();
 	}
 
-	/** Intégration Subscriptions de Memberships, si disponible. */
+	/** Memberships' Subscriptions integration, if available. */
 	private function memberships_subscriptions_integration(): ?object {
 		if ( ! function_exists( 'wc_memberships' ) ) {
 			return null;

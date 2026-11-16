@@ -1,6 +1,6 @@
 <?php
 /**
- * Opérations métier sur les invités : inviter, annuler, révoquer, remplacer, renvoyer, accepter.
+ * Business operations on guests: invite, cancel, revoke, replace, resend, accept.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -21,20 +21,20 @@ use WCSubscriptionTeamAccess\Support\Lock;
 use WCSubscriptionTeamAccess\Support\RateLimiter;
 
 /**
- * Toutes les opérations qui modifient l'occupation des places s'exécutent sous le verrou de
- * l'abonnement : la vérification du quota et l'écriture sont atomiques vis-à-vis des requêtes
- * concurrentes. La clé unique (abonnement, e-mail, live) empêche en plus tout doublon.
+ * All operations that change seat occupancy run under the subscription lock: the quota check
+ * and the write are atomic with respect to concurrent requests. The unique key
+ * (subscription, email, live) additionally prevents any duplicate.
  */
 final class TeamManager {
 
 	/**
-	 * Constructeur.
+	 * Constructor.
 	 *
-	 * @param SeatRepository      $seats         Places.
-	 * @param SubscriptionManager $subscriptions Abonnements.
-	 * @param Reconciler          $reconciler    Synchronisation.
-	 * @param Emails              $emails        E-mails.
-	 * @param Logger              $logger        Journal.
+	 * @param SeatRepository      $seats         Seats.
+	 * @param SubscriptionManager $subscriptions Subscriptions.
+	 * @param Reconciler          $reconciler    Synchronization.
+	 * @param Emails              $emails        Emails.
+	 * @param Logger              $logger        Logger.
 	 */
 	public function __construct(
 		private readonly SeatRepository $seats,
@@ -44,17 +44,17 @@ final class TeamManager {
 		private readonly Logger $logger
 	) {}
 
-	/** Branche les crochets. */
+	/** Registers the hooks. */
 	public function register(): void {
 		add_action( 'delete_user', array( $this, 'on_user_deleted' ) );
 	}
 
 	/**
-	 * Invite une adresse sur un abonnement.
+	 * Invites an address to a subscription.
 	 *
-	 * @param int    $subscription_id Abonnement.
-	 * @param string $raw_email       Adresse saisie.
-	 * @param int    $actor_id        Auteur (titulaire ou administrateur).
+	 * @param int    $subscription_id Subscription.
+	 * @param string $raw_email       Entered address.
+	 * @param int    $actor_id        Actor (holder or administrator).
 	 * @return array{seat: Seat, mailed: bool}|\WP_Error
 	 */
 	public function invite( int $subscription_id, string $raw_email, int $actor_id ): array|\WP_Error {
@@ -110,10 +110,10 @@ final class TeamManager {
 	}
 
 	/**
-	 * Supprime une place : annule une invitation en attente ou révoque un accès.
+	 * Removes a seat: cancels a pending invitation or revokes access.
 	 *
-	 * @param int $seat_id  Place.
-	 * @param int $actor_id Auteur.
+	 * @param int $seat_id  Seat.
+	 * @param int $actor_id Actor.
 	 */
 	public function remove( int $seat_id, int $actor_id ): Seat|\WP_Error {
 		$seat = $this->seats->find( $seat_id );
@@ -124,9 +124,9 @@ final class TeamManager {
 	}
 
 	/**
-	 * Supprime une place sans contrôle d'acteur (effacement RGPD, tâches système).
+	 * Removes a seat without an actor check (GDPR erasure, system tasks).
 	 *
-	 * @param int $seat_id Place.
+	 * @param int $seat_id Seat.
 	 */
 	public function remove_as_system( int $seat_id ): Seat|\WP_Error {
 		$seat = $this->seats->find( $seat_id );
@@ -139,32 +139,32 @@ final class TeamManager {
 	}
 
 	/**
-	 * Annule une invitation en attente (libère la place).
+	 * Cancels a pending invitation (frees the seat).
 	 *
-	 * @param int $seat_id  Place.
-	 * @param int $actor_id Auteur.
+	 * @param int $seat_id  Seat.
+	 * @param int $actor_id Actor.
 	 */
 	public function cancel( int $seat_id, int $actor_id ): Seat|\WP_Error {
 		return $this->end_seat( $seat_id, $actor_id, SeatStatus::PENDING, SeatStatus::CANCELLED );
 	}
 
 	/**
-	 * Révoque l'accès d'un invité (libère la place et retire uniquement les droits de cette place).
+	 * Revokes a guest's access (frees the seat and removes only the rights granted by this seat).
 	 *
-	 * @param int $seat_id  Place.
-	 * @param int $actor_id Auteur.
+	 * @param int $seat_id  Seat.
+	 * @param int $actor_id Actor.
 	 */
 	public function revoke( int $seat_id, int $actor_id ): Seat|\WP_Error {
 		return $this->end_seat( $seat_id, $actor_id, SeatStatus::ACCEPTED, SeatStatus::REVOKED );
 	}
 
 	/**
-	 * Remplace un invité (ou une invitation) par une nouvelle adresse, en réattribuant la place.
+	 * Replaces a guest (or an invitation) with a new address, reassigning the seat.
 	 *
-	 * @param int    $seat_id   Place remplacée.
-	 * @param string $raw_email Nouvelle adresse.
-	 * @param int    $actor_id  Auteur.
-	 * @return array{seat: Seat, mailed: bool}|\WP_Error Nouvelle place.
+	 * @param int    $seat_id   Replaced seat.
+	 * @param string $raw_email New address.
+	 * @param int    $actor_id  Actor.
+	 * @return array{seat: Seat, mailed: bool}|\WP_Error New seat.
 	 */
 	public function replace( int $seat_id, string $raw_email, int $actor_id ): array|\WP_Error {
 		$old = $this->seats->find( $seat_id );
@@ -204,7 +204,7 @@ final class TeamManager {
 					return $check;
 				}
 
-				// La nouvelle place est écrite avant la fin de l'ancienne : en cas d'échec, rien ne change.
+				// The new seat is written before the old one ends: on failure, nothing changes.
 				$new = $this->insert_pending( $subscription, $email, $actor_id, $token, $old->id );
 				if ( is_wp_error( $new ) ) {
 					return $new;
@@ -238,11 +238,11 @@ final class TeamManager {
 	}
 
 	/**
-	 * Renvoie une invitation (nouveau jeton : l'ancien lien cesse de fonctionner).
-	 * Une invitation expirée peut être relancée si une place est disponible.
+	 * Resends an invitation (new token: the old link stops working).
+	 * An expired invitation can be resent if a seat is available.
 	 *
-	 * @param int $seat_id  Place.
-	 * @param int $actor_id Auteur.
+	 * @param int $seat_id  Seat.
+	 * @param int $actor_id Actor.
 	 * @return array{seat: Seat, mailed: bool}|\WP_Error
 	 */
 	public function resend( int $seat_id, int $actor_id ): array|\WP_Error {
@@ -333,9 +333,9 @@ final class TeamManager {
 	}
 
 	/**
-	 * Valide un jeton et retourne la place associée, sans rien modifier (affichage).
+	 * Validates a token and returns the associated seat, without modifying anything (display).
 	 *
-	 * @param string $token Jeton reçu.
+	 * @param string $token Received token.
 	 */
 	public function find_invitation( string $token ): Seat|\WP_Error {
 		if ( ! Token::is_well_formed( $token ) ) {
@@ -356,10 +356,10 @@ final class TeamManager {
 	}
 
 	/**
-	 * Accepte une invitation pour un compte connecté.
+	 * Accepts an invitation for a logged-in account.
 	 *
-	 * @param string $token   Jeton reçu.
-	 * @param int    $user_id Compte qui accepte.
+	 * @param string $token   Received token.
+	 * @param int    $user_id Accepting account.
 	 */
 	public function accept( string $token, int $user_id ): Seat|\WP_Error {
 		$seat = $this->find_invitation( $token );
@@ -389,8 +389,8 @@ final class TeamManager {
 		$result = Lock::run(
 			"subscription_{$subscription->get_id()}",
 			function () use ( $seat, $subscription, $user_id, $token ) {
-				// Revalidation complète sous verrou : un renvoi concurrent a pu changer le jeton,
-				// et l'abonnement a pu devenir inactif depuis la première vérification.
+				// Full revalidation under lock: a concurrent resend may have changed the token,
+				// and the subscription may have become inactive since the first check.
 				$current = $this->seats->find_by_token_hash( Token::hash( $token ) );
 				if ( ! $current || $current->id !== $seat->id || ! $current->is_pending() || $current->is_token_expired( time() ) ) {
 					return self::error( 'invalid_token' );
@@ -449,9 +449,9 @@ final class TeamManager {
 	}
 
 	/**
-	 * Compte supprimé : ses places d'invité prennent fin et ses sources de droits disparaissent.
+	 * Account deleted: its guest seats end and its rights sources disappear.
 	 *
-	 * @param int $user_id Compte supprimé.
+	 * @param int $user_id Deleted account.
 	 */
 	public function on_user_deleted( $user_id ): void {
 		$user_id = (int) $user_id;
@@ -464,9 +464,9 @@ final class TeamManager {
 	}
 
 	/**
-	 * Synthèse d'un abonnement pour l'affichage.
+	 * Summary of a subscription for display.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param \WC_Subscription $subscription Subscription.
 	 * @return array{quota:int, used:int, available:int, over:int, can_invite:bool, invitable:bool, seats: Seat[], history: Seat[]}
 	 */
 	public function summary( \WC_Subscription $subscription ): array {
@@ -491,9 +491,9 @@ final class TeamManager {
 	}
 
 	/**
-	 * Message d'erreur traduit.
+	 * Translated error message.
 	 *
-	 * @param string $code Code court.
+	 * @param string $code Short code.
 	 */
 	public static function error( string $code ): \WP_Error {
 		$messages = array(
@@ -522,14 +522,14 @@ final class TeamManager {
 	}
 
 	/**
-	 * Charge l'abonnement et vérifie les droits de l'acteur.
+	 * Loads the subscription and checks the actor's permissions.
 	 *
-	 * @param int $subscription_id Abonnement.
-	 * @param int $actor_id        Acteur.
+	 * @param int $subscription_id Subscription.
+	 * @param int $actor_id        Actor.
 	 */
 	private function authorize( int $subscription_id, int $actor_id ): \WC_Subscription|\WP_Error {
 		$subscription = $this->subscriptions->get( $subscription_id );
-		// Même message pour « inexistant » et « interdit » : ne révèle pas l'existence d'un abonnement.
+		// Same message for "not found" and "forbidden": does not reveal whether a subscription exists.
 		if ( ! $subscription || ! $this->subscriptions->can_manage( $subscription, $actor_id ) ) {
 			return self::error( 'forbidden' );
 		}
@@ -537,10 +537,10 @@ final class TeamManager {
 	}
 
 	/**
-	 * Valide l'adresse invitée.
+	 * Validates the invited address.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param string           $raw_email    Adresse saisie.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param string           $raw_email    Entered address.
 	 */
 	private function validate_email( \WC_Subscription $subscription, string $raw_email ): string|\WP_Error {
 		$email = EmailAddress::normalize( sanitize_email( $raw_email ) );
@@ -557,10 +557,10 @@ final class TeamManager {
 	}
 
 	/**
-	 * L'abonnement autorise les invitations (quota positif et accès actif).
+	 * The subscription allows invitations (positive quota and active access).
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param bool             $need_quota   Exiger un quota strictement positif.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param bool             $need_quota   Require a strictly positive quota.
 	 */
 	private function check_can_invite( \WC_Subscription $subscription, bool $need_quota = true ): bool|\WP_Error {
 		$quota = $this->reconciler->allocation( $subscription, array() )->quota;
@@ -574,11 +574,11 @@ final class TeamManager {
 	}
 
 	/**
-	 * Vérifie, sous verrou, qu'une place est disponible pour cette adresse.
+	 * Checks, under lock, that a seat is available for this address.
 	 *
-	 * @param \WC_Subscription $subscription    Abonnement.
-	 * @param string           $email           Adresse normalisée.
-	 * @param int              $exclude_seat_id Place ignorée (remplacement).
+	 * @param \WC_Subscription $subscription    Subscription.
+	 * @param string           $email           Normalized address.
+	 * @param int              $exclude_seat_id Ignored seat (replacement).
 	 */
 	private function check_seat_available( \WC_Subscription $subscription, string $email, int $exclude_seat_id = 0 ): bool|\WP_Error {
 		$this->seats->expire_stale( $subscription->get_id() );
@@ -618,13 +618,13 @@ final class TeamManager {
 	}
 
 	/**
-	 * Écrit une invitation en attente.
+	 * Writes a pending invitation.
 	 *
-	 * @param \WC_Subscription $subscription Abonnement.
-	 * @param string           $email        Adresse normalisée.
-	 * @param int              $actor_id     Auteur.
-	 * @param string           $token        Jeton en clair (seul son hachage est stocké).
-	 * @param int              $replaced_id  Place remplacée.
+	 * @param \WC_Subscription $subscription Subscription.
+	 * @param string           $email        Normalized address.
+	 * @param int              $actor_id     Actor.
+	 * @param string           $token        Plain-text token (only its hash is stored).
+	 * @param int              $replaced_id  Replaced seat.
 	 */
 	private function insert_pending( \WC_Subscription $subscription, string $email, int $actor_id, string $token, int $replaced_id ): Seat|\WP_Error {
 		$id = $this->seats->insert(
@@ -654,13 +654,13 @@ final class TeamManager {
 	}
 
 	/**
-	 * Termine une place (annulation ou révocation) et resynchronise.
+	 * Ends a seat (cancellation or revocation) and resynchronizes.
 	 *
-	 * @param int    $seat_id   Place.
-	 * @param int    $actor_id  Auteur.
-	 * @param string $expected  Statut attendu.
-	 * @param string $new_state Statut final.
-	 * @param bool   $authorize Contrôler les droits de l'acteur.
+	 * @param int    $seat_id   Seat.
+	 * @param int    $actor_id  Actor.
+	 * @param string $expected  Expected status.
+	 * @param string $new_state Final status.
+	 * @param bool   $authorize Check the actor's permissions.
 	 */
 	private function end_seat( int $seat_id, int $actor_id, string $expected, string $new_state, bool $authorize = true ): Seat|\WP_Error {
 		$seat = $this->seats->find( $seat_id );
@@ -684,7 +684,7 @@ final class TeamManager {
 				$this->mark_ended( $current, $new_state );
 				$sync = $this->reconciler->sync_subscription( $current->subscription_id, $new_state );
 				if ( is_wp_error( $sync ) ) {
-					// La place est bien terminée ; le retrait des droits est rejoué en tâche de fond.
+					// The seat is properly ended; the removal of rights is replayed as a background task.
 					$this->logger->warning(
 						'seat_end_sync_deferred',
 						'Seat ended but synchronization failed; a retry has been scheduled.',
@@ -719,10 +719,10 @@ final class TeamManager {
 	}
 
 	/**
-	 * Écrit la fin d'une place.
+	 * Writes the end of a seat.
 	 *
-	 * @param Seat   $seat   Place.
-	 * @param string $status Statut final.
+	 * @param Seat   $seat   Seat.
+	 * @param string $status Final status.
 	 */
 	private function mark_ended( Seat $seat, string $status ): void {
 		$this->seats->update(
@@ -740,11 +740,11 @@ final class TeamManager {
 	}
 
 	/**
-	 * Envoie l'e-mail d'invitation et met à jour les compteurs d'envoi.
+	 * Sends the invitation email and updates the send counters.
 	 *
-	 * @param Seat             $seat         Place.
-	 * @param string           $token        Jeton en clair.
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param Seat             $seat         Seat.
+	 * @param string           $token        Plain-text token.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	private function send_invitation( Seat $seat, string $token, \WC_Subscription $subscription ): bool {
 		$sent = $this->emails->send_invitation( $seat, $token, $subscription );
@@ -771,9 +771,9 @@ final class TeamManager {
 	}
 
 	/**
-	 * Limite le nombre d'e-mails d'invitation par acteur et par heure (sauf administrateurs).
+	 * Limits the number of invitation emails per actor per hour (except administrators).
 	 *
-	 * @param int $actor_id Acteur.
+	 * @param int $actor_id Actor.
 	 */
 	private function consume_mail_quota( int $actor_id ): bool {
 		if ( user_can( $actor_id, 'manage_woocommerce' ) ) {
@@ -783,10 +783,10 @@ final class TeamManager {
 	}
 
 	/**
-	 * L'acteur agit en tant qu'administrateur (et non comme titulaire).
+	 * The actor acts as an administrator (not as the holder).
 	 *
-	 * @param int              $actor_id     Acteur.
-	 * @param \WC_Subscription $subscription Abonnement.
+	 * @param int              $actor_id     Actor.
+	 * @param \WC_Subscription $subscription Subscription.
 	 */
 	private function is_admin_actor( int $actor_id, \WC_Subscription $subscription ): bool {
 		return ! $this->subscriptions->is_owner( $subscription, $actor_id ) && user_can( $actor_id, 'manage_woocommerce' );

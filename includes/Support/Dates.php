@@ -1,6 +1,6 @@
 <?php
 /**
- * Conversion des dates stockées (UTC, format MySQL).
+ * Conversion of stored dates (UTC, MySQL format).
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,23 +10,23 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess\Support;
 
 /**
- * Toutes les dates de l'extension sont stockées en UTC.
+ * All of the plugin's dates are stored in UTC.
  */
 final class Dates {
 
 	/**
-	 * Horodatage → chaîne MySQL UTC.
+	 * Timestamp → UTC MySQL string.
 	 *
-	 * @param int|null $timestamp Horodatage ou null.
+	 * @param int|null $timestamp Timestamp or null.
 	 */
 	public static function to_mysql( ?int $timestamp ): ?string {
 		return null === $timestamp ? null : gmdate( 'Y-m-d H:i:s', $timestamp );
 	}
 
 	/**
-	 * Chaîne MySQL UTC → horodatage.
+	 * UTC MySQL string → timestamp.
 	 *
-	 * @param string|null $value Valeur stockée.
+	 * @param string|null $value Stored value.
 	 */
 	public static function from_mysql( ?string $value ): ?int {
 		if ( null === $value || '' === $value || '0000-00-00 00:00:00' === $value ) {
@@ -36,16 +36,16 @@ final class Dates {
 		return false === $ts ? null : $ts;
 	}
 
-	/** Maintenant, au format MySQL UTC. */
+	/** Now, in UTC MySQL format. */
 	public static function now(): string {
 		return gmdate( 'Y-m-d H:i:s' );
 	}
 
 	/**
-	 * Affichage localisé d'un horodatage (fuseau du site).
+	 * Localized display of a timestamp (site timezone).
 	 *
-	 * @param int|null $timestamp Horodatage.
-	 * @param bool     $with_time Afficher l'heure.
+	 * @param int|null $timestamp Timestamp.
+	 * @param bool     $with_time Whether to show the time.
 	 */
 	public static function display( ?int $timestamp, bool $with_time = false ): string {
 		if ( null === $timestamp ) {

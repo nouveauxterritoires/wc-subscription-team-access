@@ -1,6 +1,6 @@
 <?php
 /**
- * Statuts du cycle de vie d'une place invitée.
+ * Lifecycle statuses of a guest seat.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace WCSubscriptionTeamAccess\Domain;
 
 /**
- * Une place est « vivante » (elle consomme du quota) tant qu'elle est en attente ou acceptée.
+ * A seat is "live" (it consumes quota) as long as it is pending or accepted.
  */
 final class SeatStatus {
 
@@ -20,12 +20,12 @@ final class SeatStatus {
 	public const CANCELLED = 'cancelled';
 	public const EXPIRED   = 'expired';
 
-	/** Accès effectif calculé pour une place acceptée. */
+	/** Effective access computed for an accepted seat. */
 	public const ACCESS_ACTIVE    = 'active';
 	public const ACCESS_SUSPENDED = 'suspended';
 	public const ACCESS_NONE      = 'none';
 
-	/** Raisons de suspension ou d'absence d'accès. */
+	/** Reasons for suspension or lack of access. */
 	public const REASON_NONE                  = '';
 	public const REASON_SUBSCRIPTION_PAUSED   = 'subscription_paused';
 	public const REASON_SUBSCRIPTION_INACTIVE = 'subscription_inactive';
@@ -33,7 +33,7 @@ final class SeatStatus {
 	public const REASON_NO_PLAN               = 'no_plan';
 
 	/**
-	 * Statuts qui consomment une place.
+	 * Statuses that consume a seat.
 	 *
 	 * @return string[]
 	 */
@@ -42,16 +42,16 @@ final class SeatStatus {
 	}
 
 	/**
-	 * Indique si un statut consomme une place.
+	 * Tells whether a status consumes a seat.
 	 *
-	 * @param string $status Statut.
+	 * @param string $status Status.
 	 */
 	public static function is_live( string $status ): bool {
 		return in_array( $status, self::live(), true );
 	}
 
 	/**
-	 * Liste de tous les statuts connus.
+	 * List of all known statuses.
 	 *
 	 * @return string[]
 	 */

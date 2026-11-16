@@ -1,6 +1,6 @@
 <?php
 /**
- * E-mail d'invitation envoyé à la personne invitée.
+ * Invitation email sent to the invited person.
  *
  * @package WCSubscriptionTeamAccess
  */
@@ -15,23 +15,23 @@ use WCSubscriptionTeamAccess\Settings;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Contient un lien d'acceptation à usage unique. Aucun mot de passe n'est jamais envoyé.
+ * Contains a single-use acceptance link. No password is ever sent.
  */
 class InvitationEmail extends \WC_Email {
 
-	/** Lien d'acceptation. */
+	/** Acceptance link. */
 	public string $accept_url = '';
 
-	/** Nom du titulaire. */
+	/** Holder name. */
 	public string $inviter_name = '';
 
-	/** Nom de l'abonnement. */
+	/** Subscription name. */
 	public string $subscription_name = '';
 
-	/** Date d'expiration (horodatage). */
+	/** Expiry date (timestamp). */
 	public int $expires_at = 0;
 
-	/** Constructeur. */
+	/** Constructor. */
 	public function __construct() {
 		$this->id             = 'wcsta_team_invitation';
 		$this->customer_email = true;
@@ -48,28 +48,28 @@ class InvitationEmail extends \WC_Email {
 		parent::__construct();
 	}
 
-	/** Objet par défaut. */
+	/** Default subject. */
 	public function get_default_subject() {
 		return __( '{inviter_name} invites you to share their access on {site_title}', 'wc-subscription-team-access' );
 	}
 
-	/** Titre par défaut. */
+	/** Default heading. */
 	public function get_default_heading() {
 		return __( 'You are invited', 'wc-subscription-team-access' );
 	}
 
-	/** Contenu additionnel par défaut. */
+	/** Default additional content. */
 	public function get_default_additional_content() {
 		return __( 'If you were not expecting this invitation, you can ignore this email: nothing will happen without your action.', 'wc-subscription-team-access' );
 	}
 
 	/**
-	 * Déclenche l'envoi.
+	 * Triggers sending.
 	 *
-	 * @param Seat   $seat              Place invitée.
-	 * @param string $accept_url        Lien d'acceptation.
-	 * @param string $inviter_name      Nom du titulaire.
-	 * @param string $subscription_name Nom de l'abonnement.
+	 * @param Seat   $seat              Invited seat.
+	 * @param string $accept_url        Acceptance link.
+	 * @param string $inviter_name      Holder's name.
+	 * @param string $subscription_name Subscription name.
 	 */
 	public function trigger( Seat $seat, string $accept_url, string $inviter_name, string $subscription_name ): bool {
 		$this->setup_locale();
@@ -91,20 +91,20 @@ class InvitationEmail extends \WC_Email {
 		return $sent;
 	}
 
-	/** Contenu HTML. */
+	/** HTML content. */
 	public function get_content_html() {
 		return wc_get_template_html( $this->template_html, $this->template_args( false ), '', $this->template_base );
 	}
 
-	/** Contenu texte. */
+	/** Plain-text content. */
 	public function get_content_plain() {
 		return wc_get_template_html( $this->template_plain, $this->template_args( true ), '', $this->template_base );
 	}
 
 	/**
-	 * Variables des gabarits.
+	 * Template variables.
 	 *
-	 * @param bool $plain_text Version texte.
+	 * @param bool $plain_text Plain-text version.
 	 * @return array<string, mixed>
 	 */
 	private function template_args( bool $plain_text ): array {
