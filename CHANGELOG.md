@@ -1,12 +1,24 @@
 # Changelog
 
-## 1.1.0 — 2026-11-16
+## Unreleased
 
-- Contextual **Help** tabs (WordPress help panel) on WooCommerce > Team access, WooCommerce > Settings > Team access, product and subscription edit screens, with a help sidebar and a "Documentation" link in the plugins list.
-- The whole plugin is now in English (code comments, WP-CLI help, documentation, tests); the French translation ships in `languages/`. The French README moves to `README.fr.md`.
-- Security review fixes: failed synchronizations are retried in the background, guest/plan pairs are isolated, per-IP limits no longer lock out guests behind a shared IP (new `wcsta_client_ip` filter), token and subscription re-validated under lock on acceptance, `pending-cancel` access ends once the paid period is over, resending to an anonymized address is refused, holder name sanitized in emails.
+- WordPress.org packaging: `readme.txt`, `.distignore`, `bin/build-zip.sh`, banner and icon in `.wordpress-org/`.
+- The log query and the anonymization query use stricter placeholders.
+- Help texts reworded.
 
-## 1.0.0 — 2026-11-16
+## 1.1.0 - 2026-11-16
+
+- **Help** tabs on WooCommerce > Team access, WooCommerce > Settings > Team access and the product and subscription edit screens, with a sidebar and a "Documentation" link in the plugins list.
+- Source strings, comments, WP-CLI help, documentation and tests are now in English. The French translation ships in `languages/` and the French README moved to `README.fr.md`.
+- Failed synchronizations are retried in the background.
+- Guest/plan pairs are isolated from each other.
+- Per-IP limits no longer lock out guests behind a shared IP address. Behind a proxy, use the new `wcsta_client_ip` filter.
+- Token and subscription are checked again under lock when an invitation is accepted.
+- `pending-cancel` access ends once the paid period is over.
+- Resending to an anonymized address is refused.
+- The holder name is sanitized in emails.
+
+## 1.0.0 - 2026-11-16
 
 First release.
 
