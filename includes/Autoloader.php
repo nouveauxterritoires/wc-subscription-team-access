@@ -2,15 +2,15 @@
 /**
  * Minimal PSR-4 class autoloader (no Composer dependency in production).
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
 /**
- * Loads classes from the WCSubscriptionTeamAccess namespace out of includes/.
+ * Loads classes from the Exprime\TeamAccess namespace out of includes/.
  */
 final class Autoloader {
 

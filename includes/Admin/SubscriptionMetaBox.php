@@ -2,16 +2,16 @@
 /**
  * "Team access" meta box on the subscription edit screen (HPOS compatible).
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Admin;
+namespace Exprime\TeamAccess\Admin;
 
-use WCSubscriptionTeamAccess\Labels;
-use WCSubscriptionTeamAccess\QuotaManager;
-use WCSubscriptionTeamAccess\TeamManager;
+use Exprime\TeamAccess\Labels;
+use Exprime\TeamAccess\QuotaManager;
+use Exprime\TeamAccess\TeamManager;
 
 /**
  * Seat summary and link to the detail.
@@ -37,7 +37,7 @@ final class SubscriptionMetaBox {
 		}
 
 		foreach ( array_unique( $screens ) as $screen ) {
-			add_meta_box( 'wcsta-team-access', __( 'Team access', 'wc-subscription-team-access' ), array( $this, 'render' ), $screen, 'side', 'default' );
+			add_meta_box( 'exprime-team-team-access', __( 'Team access', 'exprime-team-access' ), array( $this, 'render' ), $screen, 'side', 'default' );
 		}
 	}
 
@@ -58,17 +58,17 @@ final class SubscriptionMetaBox {
 		echo '<p>' . esc_html(
 			sprintf(
 				/* translators: 1: used seats, 2: quota. */
-				__( '%1$d guest seat(s) used of %2$d.', 'wc-subscription-team-access' ),
+				__( '%1$d guest seat(s) used of %2$d.', 'exprime-team-access' ),
 				$summary['used'],
 				$summary['quota']
 			)
-		) . ( $forced ? ' <em>' . esc_html__( '(forced quota)', 'wc-subscription-team-access' ) . '</em>' : '' ) . '</p>';
+		) . ( $forced ? ' <em>' . esc_html__( '(forced quota)', 'exprime-team-access' ) . '</em>' : '' ) . '</p>';
 
 		if ( $summary['over'] > 0 ) {
 			echo '<p style="color:#b32d2e">' . esc_html(
 				sprintf(
 					/* translators: %d: number of guests over quota. */
-					__( 'Over quota: %d', 'wc-subscription-team-access' ),
+					__( 'Over quota: %d', 'exprime-team-access' ),
 					$summary['over']
 				)
 			) . '</p>';
@@ -85,7 +85,7 @@ final class SubscriptionMetaBox {
 		printf(
 			'<p><a class="button" href="%s">%s</a></p>',
 			esc_url( AdminPage::url( array( 'subscription' => $subscription->get_id() ) ) ),
-			esc_html__( 'Manage guests', 'wc-subscription-team-access' )
+			esc_html__( 'Manage guests', 'exprime-team-access' )
 		);
 	}
 }

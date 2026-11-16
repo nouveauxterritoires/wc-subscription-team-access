@@ -2,23 +2,23 @@
 /**
  * Business operations on guests: invite, cancel, revoke, replace, resend, accept.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Domain\EmailAddress;
-use WCSubscriptionTeamAccess\Domain\SeatAllocator;
-use WCSubscriptionTeamAccess\Domain\SeatStatus;
-use WCSubscriptionTeamAccess\Domain\Token;
-use WCSubscriptionTeamAccess\Repository\Logger;
-use WCSubscriptionTeamAccess\Repository\Seat;
-use WCSubscriptionTeamAccess\Repository\SeatRepository;
-use WCSubscriptionTeamAccess\Support\Dates;
-use WCSubscriptionTeamAccess\Support\Lock;
-use WCSubscriptionTeamAccess\Support\RateLimiter;
+use Exprime\TeamAccess\Domain\EmailAddress;
+use Exprime\TeamAccess\Domain\SeatAllocator;
+use Exprime\TeamAccess\Domain\SeatStatus;
+use Exprime\TeamAccess\Domain\Token;
+use Exprime\TeamAccess\Repository\Logger;
+use Exprime\TeamAccess\Repository\Seat;
+use Exprime\TeamAccess\Repository\SeatRepository;
+use Exprime\TeamAccess\Support\Dates;
+use Exprime\TeamAccess\Support\Lock;
+use Exprime\TeamAccess\Support\RateLimiter;
 
 /**
  * All operations that change seat occupancy run under the subscription lock: the quota check
@@ -354,7 +354,7 @@ final class TeamManager {
 	public function accept( string $token, int $user_id ): Seat|\WP_Error {
 		$seat = $this->find_invitation( $token );
 		if ( is_wp_error( $seat ) ) {
-			if ( 'wcsta_expired_token' === $seat->get_error_code() ) {
+			if ( 'exprime_team_expired_token' === $seat->get_error_code() ) {
 				$this->seats->expire_stale();
 			}
 			return $seat;
@@ -487,28 +487,28 @@ final class TeamManager {
 	 */
 	public static function error( string $code ): \WP_Error {
 		$messages = array(
-			'not_found'             => __( 'This guest could not be found.', 'wc-subscription-team-access' ),
-			'forbidden'             => __( 'You are not allowed to manage the guests of this subscription.', 'wc-subscription-team-access' ),
-			'not_eligible'          => __( 'This subscription does not allow inviting guests.', 'wc-subscription-team-access' ),
-			'subscription_inactive' => __( 'The subscription that shares this access is not active.', 'wc-subscription-team-access' ),
-			'invalid_email'         => __( 'Please enter a valid email address.', 'wc-subscription-team-access' ),
-			'self_invite'           => __( 'The subscription holder already has access and cannot be invited.', 'wc-subscription-team-access' ),
-			'already_invited'       => __( 'This email address has already been invited to this subscription.', 'wc-subscription-team-access' ),
-			'already_member'        => __( 'This person already has access through this subscription.', 'wc-subscription-team-access' ),
-			'no_seat'               => __( 'No guest seat is available on this subscription.', 'wc-subscription-team-access' ),
-			'over_quota'            => __( 'The number of guests exceeds the quota of this subscription. Remove guests before inviting new ones.', 'wc-subscription-team-access' ),
-			'rate_limited'          => __( 'Too many invitations have been sent recently. Please try again later.', 'wc-subscription-team-access' ),
-			'resend_too_soon'       => __( 'This invitation was sent a few minutes ago. Please wait before sending it again.', 'wc-subscription-team-access' ),
-			'resend_limit'          => __( 'This invitation has been sent too many times.', 'wc-subscription-team-access' ),
-			'not_resendable'        => __( 'Only pending or expired invitations can be sent again.', 'wc-subscription-team-access' ),
-			'invalid_token'         => __( 'This invitation link is no longer valid: it may have already been used, cancelled or replaced by a more recent invitation.', 'wc-subscription-team-access' ),
-			'expired_token'         => __( 'This invitation has expired. Ask the person who invited you to send it again.', 'wc-subscription-team-access' ),
-			'email_mismatch'        => __( 'This invitation was sent to an address other than your account\'s email.', 'wc-subscription-team-access' ),
-			'not_logged_in'         => __( 'Please log in to accept this invitation.', 'wc-subscription-team-access' ),
-			'mail_failed'           => __( 'The invitation was saved but the email could not be sent. Use "Resend" to try again.', 'wc-subscription-team-access' ),
+			'not_found'             => __( 'This guest could not be found.', 'exprime-team-access' ),
+			'forbidden'             => __( 'You are not allowed to manage the guests of this subscription.', 'exprime-team-access' ),
+			'not_eligible'          => __( 'This subscription does not allow inviting guests.', 'exprime-team-access' ),
+			'subscription_inactive' => __( 'The subscription that shares this access is not active.', 'exprime-team-access' ),
+			'invalid_email'         => __( 'Please enter a valid email address.', 'exprime-team-access' ),
+			'self_invite'           => __( 'The subscription holder already has access and cannot be invited.', 'exprime-team-access' ),
+			'already_invited'       => __( 'This email address has already been invited to this subscription.', 'exprime-team-access' ),
+			'already_member'        => __( 'This person already has access through this subscription.', 'exprime-team-access' ),
+			'no_seat'               => __( 'No guest seat is available on this subscription.', 'exprime-team-access' ),
+			'over_quota'            => __( 'The number of guests exceeds the quota of this subscription. Remove guests before inviting new ones.', 'exprime-team-access' ),
+			'rate_limited'          => __( 'Too many invitations have been sent recently. Please try again later.', 'exprime-team-access' ),
+			'resend_too_soon'       => __( 'This invitation was sent a few minutes ago. Please wait before sending it again.', 'exprime-team-access' ),
+			'resend_limit'          => __( 'This invitation has been sent too many times.', 'exprime-team-access' ),
+			'not_resendable'        => __( 'Only pending or expired invitations can be sent again.', 'exprime-team-access' ),
+			'invalid_token'         => __( 'This invitation link is no longer valid: it may have already been used, cancelled or replaced by a more recent invitation.', 'exprime-team-access' ),
+			'expired_token'         => __( 'This invitation has expired. Ask the person who invited you to send it again.', 'exprime-team-access' ),
+			'email_mismatch'        => __( 'This invitation was sent to an address other than your account\'s email.', 'exprime-team-access' ),
+			'not_logged_in'         => __( 'Please log in to accept this invitation.', 'exprime-team-access' ),
+			'mail_failed'           => __( 'The invitation was saved but the email could not be sent. Use "Resend" to try again.', 'exprime-team-access' ),
 		);
 
-		return new \WP_Error( 'wcsta_' . $code, $messages[ $code ] ?? __( 'An error occurred.', 'wc-subscription-team-access' ) );
+		return new \WP_Error( 'exprime_team_' . $code, $messages[ $code ] ?? __( 'An error occurred.', 'exprime-team-access' ) );
 	}
 
 	/**
@@ -632,11 +632,11 @@ final class TeamManager {
 		);
 
 		if ( is_wp_error( $id ) ) {
-			if ( 'wcsta_duplicate' === $id->get_error_code() ) {
+			if ( 'exprime_team_duplicate' === $id->get_error_code() ) {
 				return self::error( 'already_invited' );
 			}
 			$this->logger->error( 'seat_insert_failed', $id->get_error_message(), array( 'subscription_id' => $subscription->get_id() ) );
-			return new \WP_Error( 'wcsta_db_error', __( 'An error occurred.', 'wc-subscription-team-access' ) );
+			return new \WP_Error( 'exprime_team_db_error', __( 'An error occurred.', 'exprime-team-access' ) );
 		}
 
 		$seat = $this->seats->find( $id );

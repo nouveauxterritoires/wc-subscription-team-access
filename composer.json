@@ -1,5 +1,5 @@
 {
-    "name": "nouveauxterritoires/wc-subscription-team-access",
+    "name": "nouveauxterritoires/exprime-team-access",
     "description": "Lets a WooCommerce Subscriptions holder share their WooCommerce Memberships access with guests.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
@@ -11,8 +11,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "WCSubscriptionTeamAccess\\": "includes/",
-            "WCSubscriptionTeamAccess\\Tests\\": "tests/"
+            "Exprime\\TeamAccess\\": "includes/",
+            "Exprime\\TeamAccess\\Tests\\": "tests/"
         }
     },
     "config": {
@@ -21,6 +21,6 @@
     },
     "scripts": {
         "test": "phpunit --testsuite unit",
-        "lint": "find includes templates tests wc-subscription-team-access.php uninstall.php -name '*.php' -print0 | xargs -0 -n1 php -l"
+        "lint": "find includes templates tests exprime-team-access.php uninstall.php -name '*.php' -print0 | xargs -0 -n1 php -l"
     }
 }

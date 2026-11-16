@@ -2,19 +2,19 @@
 /**
  * Customer area: "My guests" WooCommerce endpoint (/mon-compte/mes-invites/).
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
 /**
  * Display and handling of the forms (PRG: POST -> message -> redirect).
  */
 final class AccountEndpoint {
 
-	public const KEY = 'team-access';
+	public const KEY = 'exprime-team-access';
 
 	/** @var array<int, \WC_Subscription[]> Per-request cache. */
 	private array $cache = array();
@@ -60,7 +60,7 @@ final class AccountEndpoint {
 			return $items;
 		}
 
-		$entry  = array( self::KEY => __( 'My guests', 'wc-subscription-team-access' ) );
+		$entry  = array( self::KEY => __( 'My guests', 'exprime-team-access' ) );
 		$result = array();
 		$added  = false;
 		foreach ( $items as $key => $label ) {
@@ -74,7 +74,7 @@ final class AccountEndpoint {
 	}
 
 	public function title(): string {
-		return __( 'My guests', 'wc-subscription-team-access' );
+		return __( 'My guests', 'exprime-team-access' );
 	}
 
 	public function render(): void {
@@ -97,8 +97,8 @@ final class AccountEndpoint {
 				'blocks'     => $blocks,
 				'action_url' => self::url(),
 			),
-			'wc-subscription-team-access/',
-			WCSTA_DIR . 'templates/'
+			'exprime-team-access/',
+			EXPRIME_TEAM_ACCESS_DIR . 'templates/'
 		);
 	}
 
@@ -107,27 +107,27 @@ final class AccountEndpoint {
 		if ( ! function_exists( 'is_wc_endpoint_url' ) || ! is_wc_endpoint_url( self::KEY ) ) {
 			return;
 		}
-		wp_enqueue_style( 'wcsta-front', WCSTA_URL . 'assets/css/team-access.css', array(), WCSTA_VERSION );
-		wp_enqueue_script( 'wcsta-front', WCSTA_URL . 'assets/js/team-access.js', array(), WCSTA_VERSION, true );
+		wp_enqueue_style( 'exprime-team-front', EXPRIME_TEAM_ACCESS_URL . 'assets/css/team-access.css', array(), EXPRIME_TEAM_ACCESS_VERSION );
+		wp_enqueue_script( 'exprime-team-front', EXPRIME_TEAM_ACCESS_URL . 'assets/js/team-access.js', array(), EXPRIME_TEAM_ACCESS_VERSION, true );
 	}
 
 	/** Handles the endpoint's forms. */
 	public function handle_post(): void {
-		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || empty( $_POST['wcsta_action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || empty( $_POST['exprime_team_action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return;
 		}
 
 		$subscription_id = isset( $_POST['subscription_id'] ) ? absint( wp_unslash( $_POST['subscription_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$nonce           = isset( $_POST['_wcsta_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_wcsta_nonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$redirect        = self::url() . '#wcsta-subscription-' . $subscription_id;
+		$nonce           = isset( $_POST['_exprime_team_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_exprime_team_nonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$redirect        = self::url() . '#exprime-team-subscription-' . $subscription_id;
 
 		if ( ! is_user_logged_in() || ! wp_verify_nonce( $nonce, self::nonce_action( $subscription_id ) ) ) {
-			wc_add_notice( __( 'Your session has expired. Please try again.', 'wc-subscription-team-access' ), 'error' );
+			wc_add_notice( __( 'Your session has expired. Please try again.', 'exprime-team-access' ), 'error' );
 			wp_safe_redirect( self::url() );
 			exit;
 		}
 
-		$action  = sanitize_key( wp_unslash( $_POST['wcsta_action'] ) );
+		$action  = sanitize_key( wp_unslash( $_POST['exprime_team_action'] ) );
 		$seat_id = isset( $_POST['seat_id'] ) ? absint( wp_unslash( $_POST['seat_id'] ) ) : 0;
 		$email   = isset( $_POST['email'] ) ? sanitize_text_field( wp_unslash( $_POST['email'] ) ) : '';
 		$user_id = get_current_user_id();
@@ -143,7 +143,7 @@ final class AccountEndpoint {
 				$this->notice_for_mail(
 					$this->team->invite( $subscription_id, $email, $user_id ),
 					/* translators: %s: email address. */
-					__( 'An invitation has been sent to %s.', 'wc-subscription-team-access' )
+					__( 'An invitation has been sent to %s.', 'exprime-team-access' )
 				);
 				break;
 
@@ -151,7 +151,7 @@ final class AccountEndpoint {
 				$this->notice_for_mail(
 					$this->team->replace( $seat_id, $email, $user_id ),
 					/* translators: %s: email address. */
-					__( 'The guest has been replaced. An invitation has been sent to %s.', 'wc-subscription-team-access' )
+					__( 'The guest has been replaced. An invitation has been sent to %s.', 'exprime-team-access' )
 				);
 				break;
 
@@ -159,7 +159,7 @@ final class AccountEndpoint {
 				$this->notice_for_mail(
 					$this->team->resend( $seat_id, $user_id ),
 					/* translators: %s: email address. */
-					__( 'The invitation has been sent again to %s.', 'wc-subscription-team-access' )
+					__( 'The invitation has been sent again to %s.', 'exprime-team-access' )
 				);
 				break;
 
@@ -169,10 +169,10 @@ final class AccountEndpoint {
 					wc_add_notice( $result->get_error_message(), 'error' );
 				} elseif ( 'cancelled' === $result->status ) {
 					/* translators: %s: email address. */
-					wc_add_notice( sprintf( __( 'The invitation sent to %s has been cancelled.', 'wc-subscription-team-access' ), $result->email ), 'success' );
+					wc_add_notice( sprintf( __( 'The invitation sent to %s has been cancelled.', 'exprime-team-access' ), $result->email ), 'success' );
 				} else {
 					/* translators: %s: email address. */
-					wc_add_notice( sprintf( __( 'The access of %s has been revoked. The seat is available again.', 'wc-subscription-team-access' ), $result->email ), 'success' );
+					wc_add_notice( sprintf( __( 'The access of %s has been revoked. The seat is available again.', 'exprime-team-access' ), $result->email ), 'success' );
 				}
 				break;
 
@@ -190,7 +190,7 @@ final class AccountEndpoint {
 	 * @param int $subscription_id Subscription.
 	 */
 	public static function nonce_action( int $subscription_id ): string {
-		return 'wcsta_team_' . $subscription_id;
+		return 'exprime_team_team_' . $subscription_id;
 	}
 
 	/**
@@ -223,7 +223,7 @@ final class AccountEndpoint {
 	/**
 	 * Message after an operation that sends an email.
 	 *
-	 * @param array{seat: \WCSubscriptionTeamAccess\Repository\Seat, mailed: bool}|\WP_Error $result  Result.
+	 * @param array{seat: \Exprime\TeamAccess\Repository\Seat, mailed: bool}|\WP_Error $result  Result.
 	 * @param string                                                                         $success Message (%s: address).
 	 */
 	private function notice_for_mail( array|\WP_Error $result, string $success ): void {

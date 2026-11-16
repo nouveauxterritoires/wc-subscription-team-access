@@ -2,12 +2,12 @@
 /**
  * Installation, schema upgrades and deactivation.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
 /**
  * Creates the tables (dbDelta) and manages the schema version.
@@ -15,8 +15,8 @@ namespace WCSubscriptionTeamAccess;
 final class Installer {
 
 	public const DB_VERSION        = '1';
-	public const DB_VERSION_OPTION = 'wcsta_db_version';
-	public const FLUSH_OPTION      = 'wcsta_flush_rewrite';
+	public const DB_VERSION_OPTION = 'exprime_team_db_version';
+	public const FLUSH_OPTION      = 'exprime_team_flush_rewrite';
 
 	public static function activate(): void {
 		self::install();
@@ -46,9 +46,9 @@ final class Installer {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$charset = $wpdb->get_charset_collate();
-		$seats   = $wpdb->prefix . 'wcsta_seats';
-		$grants  = $wpdb->prefix . 'wcsta_grants';
-		$log     = $wpdb->prefix . 'wcsta_log';
+		$seats   = $wpdb->prefix . 'exprime_team_seats';
+		$grants  = $wpdb->prefix . 'exprime_team_grants';
+		$log     = $wpdb->prefix . 'exprime_team_log';
 
 		// "live" is 1 for a live seat and NULL otherwise: the unique key prevents
 		// two live invitations for the same address on the same subscription, while

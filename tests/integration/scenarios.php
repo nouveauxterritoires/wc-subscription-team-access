@@ -4,7 +4,7 @@
  *
  * Usage: wp eval-file tests/integration/scenarios.php <fixtures-file.json>
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 
@@ -12,22 +12,22 @@ defined( 'WP_CLI' ) && WP_CLI || exit( 1 );
 
 require_once __DIR__ . '/lib.php';
 
-use WCSubscriptionTeamAccess\AccountEndpoint;
-use WCSubscriptionTeamAccess\Domain\SeatStatus;
-use WCSubscriptionTeamAccess\Domain\Token;
-use WCSubscriptionTeamAccess\Settings;
-use WCSubscriptionTeamAccess\Support\Dates;
+use Exprime\TeamAccess\AccountEndpoint;
+use Exprime\TeamAccess\Domain\SeatStatus;
+use Exprime\TeamAccess\Domain\Token;
+use Exprime\TeamAccess\Settings;
+use Exprime\TeamAccess\Support\Dates;
 
-$t    = new WCSTA_IT( (string) ( $args[0] ?? '' ) );
+$t    = new EXPRIME_TEAM_ACCESS_IT( (string) ( $args[0] ?? '' ) );
 $team = $t->plugin()->team();
 $sync = $t->plugin()->reconciler();
 
-WP_CLI::log( 'WC Subscription Team Access — integration scenarios' );
+WP_CLI::log( 'Exprime Team Access — integration scenarios' );
 
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Subscription without guest seats: invitation refused, no "My guests" menu',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'owner0' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p0'] );
 		$t->same( 0, $t->plugin()->quotas()->quota( $sub ), 'Quota' );
@@ -40,18 +40,18 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Subscription with 5 seats: quota frozen at purchase (catalog changed afterwards)',
-	function ( WCSTA_IT $t ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) {
 		$owner = $t->user( 'owner5' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
 		$t->same( 5, $t->plugin()->quotas()->quota( $sub ), 'Quota at purchase' );
 
 		$product = wc_get_product( $t->fixtures['p5'] );
-		$product->update_meta_data( '_wcsta_max_guests', '9' );
+		$product->update_meta_data( '_exprime_team_max_guests', '9' );
 		$product->save();
 		try {
 			$t->same( 5, $t->plugin()->quotas()->quota( $t->reload( $sub->get_id() ) ), 'The quota does not follow the catalog' );
 		} finally {
-			$product->update_meta_data( '_wcsta_max_guests', '5' );
+			$product->update_meta_data( '_exprime_team_max_guests', '5' );
 			$product->save();
 		}
 		$t->ok( in_array( $t->plan(), $t->plugin()->subscriptions()->plan_ids( $sub ), true ), 'Shared plan identified' );
@@ -61,10 +61,10 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Inviting a new user: email without password, account created, premium access',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerN' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
-		$email = WCSTA_IT::PREFIX . 'new-' . strtolower( wp_generate_password( 6, false ) ) . '@example.test';
+		$email = EXPRIME_TEAM_ACCESS_IT::PREFIX . 'new-' . strtolower( wp_generate_password( 6, false ) ) . '@example.test';
 
 		$seat = $t->invite( $sub, $email );
 		$t->same( SeatStatus::PENDING, $seat->status, 'Initial status' );
@@ -95,7 +95,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Inviting an existing user and notifying the holder',
-	function ( WCSTA_IT $t ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) {
 		$owner = $t->user( 'ownerE' );
 		$guest = $t->user( 'existing' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -114,11 +114,11 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Account email different from the invitation: refused',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerM' );
 		$other = $t->user( 'other' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
-		$email = WCSTA_IT::PREFIX . 'target-' . strtolower( wp_generate_password( 6, false ) ) . '@example.test';
+		$email = EXPRIME_TEAM_ACCESS_IT::PREFIX . 'target-' . strtolower( wp_generate_password( 6, false ) ) . '@example.test';
 		$t->invite( $sub, $email );
 		$t->error( $team->accept( $t->token_for( $email ), $other ), 'email_mismatch' );
 		$t->ok( ! $t->is_member( $other ), 'No access granted' );
@@ -128,7 +128,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Accepting an expired invitation: refused and seat released',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerX' );
 		$guest = $t->user( 'late' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -155,7 +155,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Invitation already used or replaced by a resend: invalid link',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerU' );
 		$guest = $t->user( 'used' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -177,7 +177,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Criteria 1 to 6: 5 guests accepted, premium access, sixth invitation refused',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner  = $t->user( 'ownerA' );
 		$sub    = $t->purchase( $owner, $t->fixtures['p5'] );
 		$guests = array();
@@ -199,7 +199,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'A pending invitation reserves a seat',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerP' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
 		for ( $i = 1; $i <= 5; $i++ ) {
@@ -213,7 +213,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Revoking a guest: only their access disappears, the seat is released',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerR' );
 		$a     = $t->user( 'keep' );
 		$b     = $t->user( 'revoked' );
@@ -236,7 +236,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Criterion 7: replacing a guest and reassigning their seat',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerRe' );
 		$old   = $t->user( 'replaced' );
 		$new   = $t->user( 'replacement' );
@@ -260,7 +260,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Criteria 8 and 9: suspension (on-hold) then reactivation of the subscription',
-	function ( WCSTA_IT $t ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) {
 		$owner = $t->user( 'ownerH' );
 		$guest = $t->user( 'held' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -282,7 +282,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Failed then successful renewal',
-	function ( WCSTA_IT $t ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) {
 		$owner = $t->user( 'ownerRn' );
 		$guest = $t->user( 'renew' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -304,7 +304,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Criterion 10: cancellation with paid period remaining, revocation only at the end',
-	function ( WCSTA_IT $t ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) {
 		$owner = $t->user( 'ownerC' );
 		$guest = $t->user( 'cancel' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -329,7 +329,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Subscription expiration',
-	function ( WCSTA_IT $t ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) {
 		$owner = $t->user( 'ownerEx' );
 		$guest = $t->user( 'expire' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -344,7 +344,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Plan switch: quota decrease (deterministic suspension) then increase (restoration)',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerS' );
 		$sub   = $t->purchase( $owner, $t->fixtures['vb'] );
 		$t->same( 10, $t->plugin()->quotas()->quota( $sub ), 'Variation without a value: quota inherited from the parent' );
@@ -394,7 +394,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Quota enforced by an administrator',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerO' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p0'] );
 		$t->plugin()->quotas()->set_override( $sub, 1, (int) $t->fixtures['admin_id'] );
@@ -408,7 +408,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Criterion 11: guest who already has a personal membership (preserved, never modified)',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner    = $t->user( 'ownerPe' );
 		$guest    = $t->user( 'personal' );
 		$own_sub  = $t->purchase( $guest, $t->fixtures['p0'] );
@@ -444,7 +444,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Guest who bought their own subscription afterwards: membership taken over by the purchase',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerHo' );
 		$guest = $t->user( 'buyer' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -464,7 +464,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'User invited by several subscriptions',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner_a = $t->user( 'ownerMa' );
 		$owner_b = $t->user( 'ownerMb' );
 		$guest   = $t->user( 'multi' );
@@ -492,7 +492,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Managing a subscription belonging to another user: refused',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner    = $t->user( 'ownerV' );
 		$intruder = $t->user( 'intruder' );
 		$guest    = $t->user( 'victim' );
@@ -516,7 +516,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Repeated execution of the same event: idempotence',
-	function ( WCSTA_IT $t ) use ( $sync ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $sync ) {
 		$owner = $t->user( 'ownerI' );
 		$guest = $t->user( 'idem' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -545,7 +545,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Catch-up: managed membership deleted or edited by hand, then resynchronization',
-	function ( WCSTA_IT $t ) use ( $sync ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $sync ) {
 		$owner = $t->user( 'ownerCa' );
 		$guest = $t->user( 'catch' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -565,7 +565,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Rate limiting of sends and resends',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerL' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
 		$seat  = $t->invite( $sub, 'limit-' . $sub->get_id() . '@example.test' );
@@ -584,7 +584,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Email validation and self-invitation',
-	function ( WCSTA_IT $t ) use ( $team ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) use ( $team ) {
 		$owner = $t->user( 'ownerVa' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
 		$t->error( $team->invite( $sub->get_id(), 'not-an-email', $owner ), 'invalid_email' );
@@ -598,7 +598,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'My Account: "My guests" menu and content for the holder only',
-	function ( WCSTA_IT $t ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) {
 		$owner = $t->user( 'ownerUi' );
 		$guest = $t->user( 'uiguest' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
@@ -612,7 +612,7 @@ $t->test(
 		$endpoint->render();
 		$html = (string) ob_get_clean();
 		$t->ok( str_contains( $html, $t->email( $guest ) ), 'Guest listed' );
-		$t->ok( str_contains( $html, 'wcsta-invite-form' ), 'Invitation form' );
+		$t->ok( str_contains( $html, 'exprime-team-invite-form' ), 'Invitation form' );
 
 		wp_set_current_user( $guest );
 		$items = ( new AccountEndpoint( $t->plugin()->team(), $t->plugin()->subscriptions() ) )->menu_items( array( 'dashboard' => 'Dashboard' ) );
@@ -624,13 +624,13 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'GDPR: export and erasure of a guest\'s data',
-	function ( WCSTA_IT $t ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) {
 		$owner = $t->user( 'ownerG' );
 		$guest = $t->user( 'gdpr' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );
 		$t->invite_and_accept( $sub, $guest );
 
-		$privacy = new \WCSubscriptionTeamAccess\Privacy( $t->plugin()->seats(), $t->plugin()->team() );
+		$privacy = new \Exprime\TeamAccess\Privacy( $t->plugin()->seats(), $t->plugin()->team() );
 		$export  = $privacy->export( $t->email( $guest ) );
 		$t->same( 1, count( $export['data'] ), 'One invitation exported' );
 
@@ -644,7 +644,7 @@ $t->test(
 // ---------------------------------------------------------------------------------------------
 $t->test(
 	'Native Memberships emails disabled for managed memberships',
-	function ( WCSTA_IT $t ) {
+	function ( EXPRIME_TEAM_ACCESS_IT $t ) {
 		$owner = $t->user( 'ownerMl' );
 		$guest = $t->user( 'mailguest' );
 		$sub   = $t->purchase( $owner, $t->fixtures['p5'] );

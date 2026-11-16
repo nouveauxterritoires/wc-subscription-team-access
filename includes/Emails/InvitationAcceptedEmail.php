@@ -2,14 +2,14 @@
 /**
  * Email sent to the holder when a guest accepts their invitation.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Emails;
+namespace Exprime\TeamAccess\Emails;
 
-use WCSubscriptionTeamAccess\Repository\Seat;
+use Exprime\TeamAccess\Repository\Seat;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -25,13 +25,13 @@ class InvitationAcceptedEmail extends \WC_Email {
 	public string $manage_url = '';
 
 	public function __construct() {
-		$this->id             = 'wcsta_team_invitation_accepted';
+		$this->id             = 'exprime_team_invitation_accepted';
 		$this->customer_email = true;
-		$this->title          = __( 'Team access invitation accepted', 'wc-subscription-team-access' );
-		$this->description    = __( 'Sent to the subscription holder when a guest accepts an invitation.', 'wc-subscription-team-access' );
-		$this->template_html  = 'emails/wcsta-team-invitation-accepted.php';
-		$this->template_plain = 'emails/plain/wcsta-team-invitation-accepted.php';
-		$this->template_base  = WCSTA_DIR . 'templates/';
+		$this->title          = __( 'Team access invitation accepted', 'exprime-team-access' );
+		$this->description    = __( 'Sent to the subscription holder when a guest accepts an invitation.', 'exprime-team-access' );
+		$this->template_html  = 'emails/exprime-team-invitation-accepted.php';
+		$this->template_plain = 'emails/plain/exprime-team-invitation-accepted.php';
+		$this->template_base  = EXPRIME_TEAM_ACCESS_DIR . 'templates/';
 		$this->placeholders   = array(
 			'{guest_email}'       => '',
 			'{subscription_name}' => '',
@@ -41,11 +41,11 @@ class InvitationAcceptedEmail extends \WC_Email {
 	}
 
 	public function get_default_subject() {
-		return __( '{guest_email} joined your subscription on {site_title}', 'wc-subscription-team-access' );
+		return __( '{guest_email} joined your subscription on {site_title}', 'exprime-team-access' );
 	}
 
 	public function get_default_heading() {
-		return __( 'A guest joined your subscription', 'wc-subscription-team-access' );
+		return __( 'A guest joined your subscription', 'exprime-team-access' );
 	}
 
 	/**

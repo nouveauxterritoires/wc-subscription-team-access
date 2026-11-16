@@ -1,22 +1,22 @@
 <?php
 /**
- * WP-CLI commands: wp team-access …
+ * WP-CLI commands: wp exprime-team …
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\CLI;
+namespace Exprime\TeamAccess\CLI;
 
-use WCSubscriptionTeamAccess\Labels;
-use WCSubscriptionTeamAccess\QuotaManager;
-use WCSubscriptionTeamAccess\Reconciler;
-use WCSubscriptionTeamAccess\Repository\SeatRepository;
-use WCSubscriptionTeamAccess\Scheduler;
-use WCSubscriptionTeamAccess\SubscriptionManager;
-use WCSubscriptionTeamAccess\Support\Dates;
-use WCSubscriptionTeamAccess\TeamManager;
+use Exprime\TeamAccess\Labels;
+use Exprime\TeamAccess\QuotaManager;
+use Exprime\TeamAccess\Reconciler;
+use Exprime\TeamAccess\Repository\SeatRepository;
+use Exprime\TeamAccess\Scheduler;
+use Exprime\TeamAccess\SubscriptionManager;
+use Exprime\TeamAccess\Support\Dates;
+use Exprime\TeamAccess\TeamManager;
 
 /**
  * Inspects and manages the shared access of subscriptions.
@@ -47,7 +47,7 @@ final class Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp team-access status 1234
+	 *     wp exprime-team status 1234
 	 *
 	 * @param array<int, string>    $args       Arguments.
 	 * @param array<string, string> $assoc_args Options.
@@ -109,7 +109,7 @@ final class Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp team-access invite 1234 jeanne@example.org
+	 *     wp exprime-team invite 1234 jeanne@example.org
 	 *
 	 * @param array<int, string>    $args       Arguments.
 	 * @param array<string, string> $assoc_args Options.
@@ -176,8 +176,8 @@ final class Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp team-access sync 1234
-	 *     wp team-access sync
+	 *     wp exprime-team sync 1234
+	 *     wp exprime-team sync
 	 *
 	 * @param array<int, string> $args Arguments.
 	 */

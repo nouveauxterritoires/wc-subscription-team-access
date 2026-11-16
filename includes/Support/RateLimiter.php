@@ -2,12 +2,12 @@
 /**
  * Simple fixed-window rate limiting, stored in transients.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Support;
+namespace Exprime\TeamAccess\Support;
 
 /**
  * Counts attempts per key over a time window.
@@ -73,14 +73,14 @@ final class RateLimiter {
 	 * @param string $key Key.
 	 */
 	private static function transient( string $key ): string {
-		return 'wcsta_rl_' . md5( $key );
+		return 'exprime_team_rl_' . md5( $key );
 	}
 
 	/**
 	 * Anonymized client identifier (hashed IP address, never stored in clear text).
 	 *
 	 * Behind a reverse proxy or a CDN, REMOTE_ADDR is the proxy's: the
-	 * "wcsta_client_ip" filter lets you supply the real address taken from a trusted header.
+	 * "exprime_team_client_ip" filter lets you supply the real address taken from a trusted header.
 	 */
 	public static function client_fingerprint(): string {
 		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
@@ -90,7 +90,7 @@ final class RateLimiter {
 		 *
 		 * @param string $ip Address (REMOTE_ADDR by default).
 		 */
-		$ip = (string) apply_filters( 'wcsta_client_ip', $ip );
+		$ip = (string) apply_filters( 'exprime_team_client_ip', $ip );
 		return hash_hmac( 'sha256', $ip, wp_salt( 'nonce' ) );
 	}
 }

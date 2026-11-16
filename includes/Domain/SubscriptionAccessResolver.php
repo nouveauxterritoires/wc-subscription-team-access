@@ -2,12 +2,12 @@
 /**
  * Translates a WooCommerce Subscriptions subscription status into an effective access entitlement.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Domain;
+namespace Exprime\TeamAccess\Domain;
 
 /**
  * Rules (documented in the README):

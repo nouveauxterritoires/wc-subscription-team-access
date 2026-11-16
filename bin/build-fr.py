@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Generates languages/wc-subscription-team-access-fr_FR.po from the .pot file and the dictionary below.
+"""Generates languages/exprime-team-access-fr_FR.po from the .pot file and the dictionary below.
 
-Usage: python3 bin/build-fr.py && msgfmt -o languages/wc-subscription-team-access-fr_FR.mo languages/wc-subscription-team-access-fr_FR.po
+Usage: python3 bin/build-fr.py && msgfmt -o languages/exprime-team-access-fr_FR.mo languages/exprime-team-access-fr_FR.po
 Any string in the .pot that is missing from the dictionary makes the script fail.
 """
 import re
@@ -10,14 +10,14 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-POT = ROOT / 'languages' / 'wc-subscription-team-access.pot'
-PO = ROOT / 'languages' / 'wc-subscription-team-access-fr_FR.po'
+POT = ROOT / 'languages' / 'exprime-team-access.pot'
+PO = ROOT / 'languages' / 'exprime-team-access-fr_FR.po'
 
 FR = {
-    'WC Subscription Team Access': 'WC Subscription Team Access',
+    'Exprime Team Access': 'Exprime Team Access',
     'https://github.com/nouveauxterritoires/wc-subscription-team-access': 'https://github.com/nouveauxterritoires/wc-subscription-team-access',
-    'Lets a WooCommerce Subscriptions holder share their WooCommerce Memberships access with guests who use their own accounts.':
-        "Permet au titulaire d’un abonnement WooCommerce Subscriptions de partager ses accès WooCommerce Memberships avec des invités disposant de leur propre compte.",
+    'Team access for WooCommerce Subscriptions: the subscriber shares their WooCommerce Memberships access with guests who use their own accounts. An independent extension, not developed or endorsed by the publisher of WooCommerce.':
+        "Accès équipe pour WooCommerce Subscriptions : l’abonné partage ses accès WooCommerce Memberships avec des invités disposant de leur propre compte. Extension indépendante, ni développée ni approuvée par l’éditeur de WooCommerce.",
     'Nouveaux Territoires': 'Nouveaux Territoires',
     'https://nouveauxterritoires.fr': 'https://nouveauxterritoires.fr',
     'My guests': 'Mes invités',
@@ -154,15 +154,15 @@ FR = {
     'The subscription is on hold.': 'L’abonnement est suspendu.',
     'The subscription is no longer active.': 'L’abonnement n’est plus actif.',
     'The subscription does not grant any membership plan.': 'L’abonnement n’accorde aucun plan d’adhésion.',
-    'Guest membership created by WC Subscription Team Access: access is shared by a subscription holder.':
-        'Adhésion invitée créée par WC Subscription Team Access : l’accès est partagé par le titulaire d’un abonnement.',
+    'Guest membership created by Exprime Team Access: access is shared by a subscription holder.':
+        'Adhésion invitée créée par Exprime Team Access : l’accès est partagé par le titulaire d’un abonnement.',
     'Guest access activated: the sharing subscription grants access.': 'Accès invité activé : l’abonnement partagé donne accès.',
     'Guest access suspended: the sharing subscription is on hold or the seat is over quota.':
         'Accès invité suspendu : l’abonnement partagé est suspendu ou la place dépasse le quota.',
     'Guest access ended: no active sharing subscription for this member.': 'Accès invité terminé : aucun abonnement partagé actif pour ce membre.',
-    "This membership is now linked to the member's own purchase and is no longer managed by WC Subscription Team Access.":
-        'Cette adhésion est désormais liée à un achat du membre et n’est plus gérée par WC Subscription Team Access.',
-    'WC Subscription Team Access is inactive: the following plugins are required: %s.': 'WC Subscription Team Access est inactif : les extensions suivantes sont requises : %s.',
+    "This membership is now linked to the member's own purchase and is no longer managed by Exprime Team Access.":
+        'Cette adhésion est désormais liée à un achat du membre et n’est plus gérée par Exprime Team Access.',
+    'Exprime Team Access is inactive: the following plugins are required: %s.': 'Exprime Team Access est inactif : les extensions suivantes sont requises : %s.',
     'Shared subscription access': 'Accès partagé à un abonnement',
     'Invited email address': 'Adresse e-mail invitée',
     'When a subscription holder invites someone to share their access, we store the invited email address, the date of the invitation and, once accepted, the account of the guest. This data is used only to send the invitation and to grant access to the content covered by the subscription. The subscription holder can see the email addresses they invited. The email addresses of ended invitations are anonymized automatically.':

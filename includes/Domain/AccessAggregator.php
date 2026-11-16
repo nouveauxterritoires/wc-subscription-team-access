@@ -2,12 +2,12 @@
 /**
  * Combines several entitlement sources for the same user and the same plan.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Domain;
+namespace Exprime\TeamAccess\Domain;
 
 /**
  * Rule: the most favourable state wins (active > paused > none).

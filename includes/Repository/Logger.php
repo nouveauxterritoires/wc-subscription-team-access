@@ -1,15 +1,15 @@
 <?php
 /**
- * Log of sync events and errors (wcsta_log table + WooCommerce log).
+ * Log of sync events and errors (exprime_team_log table + WooCommerce log).
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Repository;
+namespace Exprime\TeamAccess\Repository;
 
-use WCSubscriptionTeamAccess\Support\Dates;
+use Exprime\TeamAccess\Support\Dates;
 
 /**
  * Logging viewable from the admin area.
@@ -20,11 +20,11 @@ final class Logger {
 	public const WARNING = 'warning';
 	public const ERROR   = 'error';
 
-	private const SOURCE = 'wc-subscription-team-access';
+	private const SOURCE = 'exprime-team-access';
 
 	public static function table(): string {
 		global $wpdb;
-		return $wpdb->prefix . 'wcsta_log';
+		return $wpdb->prefix . 'exprime_team_log';
 	}
 
 	/**

@@ -1,66 +1,66 @@
-/* WC Subscription Team Access — customer area. Builds on the theme's WooCommerce styles. */
-.wcsta-team { display: grid; gap: 2rem; }
-.wcsta-team__intro { margin: 0; }
+/* Exprime Team Access — customer area. Builds on the theme's WooCommerce styles. */
+.exprime-team-team { display: grid; gap: 2rem; }
+.exprime-team-team__intro { margin: 0; }
 
-.wcsta-subscription { border: 1px solid rgba(0, 0, 0, .12); border-radius: 6px; padding: 1.25rem; }
-.wcsta-subscription__header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1rem; margin-bottom: 1rem; }
-.wcsta-subscription__title { margin: 0; }
-.wcsta-subscription__meta { margin: 0; display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
-.wcsta-subscription__status { font-size: .85em; padding: .15em .6em; border-radius: 999px; background: rgba(0, 0, 0, .06); }
-.wcsta-subscription__status.status-active { background: #e6f4ea; color: #1e6b34; }
-.wcsta-subscription__status.status-on-hold { background: #fff4e5; color: #8a4b00; }
+.exprime-team-subscription { border: 1px solid rgba(0, 0, 0, .12); border-radius: 6px; padding: 1.25rem; }
+.exprime-team-subscription__header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1rem; margin-bottom: 1rem; }
+.exprime-team-subscription__title { margin: 0; }
+.exprime-team-subscription__meta { margin: 0; display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+.exprime-team-subscription__status { font-size: .85em; padding: .15em .6em; border-radius: 999px; background: rgba(0, 0, 0, .06); }
+.exprime-team-subscription__status.status-active { background: #e6f4ea; color: #1e6b34; }
+.exprime-team-subscription__status.status-on-hold { background: #fff4e5; color: #8a4b00; }
 
-.wcsta-counters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 0 0 .75rem; }
-.wcsta-counters__item { background: rgba(0, 0, 0, .03); border-radius: 4px; padding: .6rem .8rem; }
-.wcsta-counters dt { font-size: .8em; opacity: .75; margin: 0; }
-.wcsta-counters dd { font-size: 1.5em; font-weight: 700; margin: 0; font-variant-numeric: tabular-nums; }
+.exprime-team-counters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 0 0 .75rem; }
+.exprime-team-counters__item { background: rgba(0, 0, 0, .03); border-radius: 4px; padding: .6rem .8rem; }
+.exprime-team-counters dt { font-size: .8em; opacity: .75; margin: 0; }
+.exprime-team-counters dd { font-size: 1.5em; font-weight: 700; margin: 0; font-variant-numeric: tabular-nums; }
 
-.wcsta-meter { height: 6px; border-radius: 3px; background: rgba(0, 0, 0, .08); overflow: hidden; margin-bottom: 1.25rem; }
-.wcsta-meter span { display: block; height: 100%; background: currentColor; opacity: .7; }
-.wcsta-meter--over span { background: #b32d2e; opacity: 1; }
+.exprime-team-meter { height: 6px; border-radius: 3px; background: rgba(0, 0, 0, .08); overflow: hidden; margin-bottom: 1.25rem; }
+.exprime-team-meter span { display: block; height: 100%; background: currentColor; opacity: .7; }
+.exprime-team-meter--over span { background: #b32d2e; opacity: 1; }
 
-.wcsta-status { display: inline-block; font-size: .85em; font-weight: 600; padding: .1em .55em; border-radius: 999px; background: rgba(0, 0, 0, .06); white-space: nowrap; }
-.wcsta-status--accepted { background: #e6f4ea; color: #1e6b34; }
-.wcsta-status--pending { background: #eef3fb; color: #1d4f91; }
-.wcsta-status--suspended { background: #fff4e5; color: #8a4b00; }
-.wcsta-status--revoked, .wcsta-status--cancelled, .wcsta-status--expired { background: #f3f3f3; color: #555; }
-.wcsta-status__reason { display: block; margin-top: .25rem; opacity: .8; }
+.exprime-team-status { display: inline-block; font-size: .85em; font-weight: 600; padding: .1em .55em; border-radius: 999px; background: rgba(0, 0, 0, .06); white-space: nowrap; }
+.exprime-team-status--accepted { background: #e6f4ea; color: #1e6b34; }
+.exprime-team-status--pending { background: #eef3fb; color: #1d4f91; }
+.exprime-team-status--suspended { background: #fff4e5; color: #8a4b00; }
+.exprime-team-status--revoked, .exprime-team-status--cancelled, .exprime-team-status--expired { background: #f3f3f3; color: #555; }
+.exprime-team-status__reason { display: block; margin-top: .25rem; opacity: .8; }
 
-.wcsta-seats__email { word-break: break-all; }
-.wcsta-seats__actions { display: flex; flex-wrap: wrap; gap: .4rem; align-items: flex-start; justify-content: flex-end; }
-.wcsta-inline-form { display: inline; margin: 0; }
-.wcsta-button { font-size: .85em !important; padding: .45em .9em !important; }
-.wcsta-button--danger { background: transparent !important; color: #b32d2e !important; border: 1px solid currentColor !important; }
+.exprime-team-seats__email { word-break: break-all; }
+.exprime-team-seats__actions { display: flex; flex-wrap: wrap; gap: .4rem; align-items: flex-start; justify-content: flex-end; }
+.exprime-team-inline-form { display: inline; margin: 0; }
+.exprime-team-button { font-size: .85em !important; padding: .45em .9em !important; }
+.exprime-team-button--danger { background: transparent !important; color: #b32d2e !important; border: 1px solid currentColor !important; }
 
-.wcsta-replace { position: relative; }
-.wcsta-replace > summary { list-style: none; cursor: pointer; }
-.wcsta-replace > summary::-webkit-details-marker { display: none; }
-.wcsta-replace__form { display: grid; gap: .4rem; margin-top: .5rem; min-width: min(18rem, 80vw); padding: .75rem; border: 1px solid rgba(0, 0, 0, .12); border-radius: 4px; background: #fff; }
+.exprime-team-replace { position: relative; }
+.exprime-team-replace > summary { list-style: none; cursor: pointer; }
+.exprime-team-replace > summary::-webkit-details-marker { display: none; }
+.exprime-team-replace__form { display: grid; gap: .4rem; margin-top: .5rem; min-width: min(18rem, 80vw); padding: .75rem; border: 1px solid rgba(0, 0, 0, .12); border-radius: 4px; background: #fff; }
 
-.wcsta-invite-form { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(0, 0, 0, .08); }
-.wcsta-invite-form__title { margin: 0 0 .5rem; }
-.wcsta-invite-form__row { display: flex; gap: .5rem; flex-wrap: wrap; }
-.wcsta-invite-form__row input { flex: 1 1 16rem; }
-.wcsta-invite-form__help, .wcsta-full, .wcsta-empty { font-size: .9em; opacity: .85; }
+.exprime-team-invite-form { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(0, 0, 0, .08); }
+.exprime-team-invite-form__title { margin: 0 0 .5rem; }
+.exprime-team-invite-form__row { display: flex; gap: .5rem; flex-wrap: wrap; }
+.exprime-team-invite-form__row input { flex: 1 1 16rem; }
+.exprime-team-invite-form__help, .exprime-team-full, .exprime-team-empty { font-size: .9em; opacity: .85; }
 
-.wcsta-history { margin-top: 1rem; font-size: .9em; }
-.wcsta-history ul { margin: .5rem 0 0 1rem; }
+.exprime-team-history { margin-top: 1rem; font-size: .9em; }
+.exprime-team-history ul { margin: .5rem 0 0 1rem; }
 
 /* Invitation page */
-.wcsta-invitation { max-width: 960px; margin: 2rem auto; padding: 0 16px; }
-.wcsta-invitation-card__lead { font-size: 1.1em; }
-.wcsta-invitation-card__email { opacity: .8; }
-.wcsta-invitation-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: 2rem; }
-.wcsta-invitation-columns .col-1, .wcsta-invitation-columns .col-2 { float: none; width: auto; max-width: none; }
-.wcsta-invitation .woocommerce-form-login { margin: 0; }
-.wcsta-register-form input[readonly] { opacity: .75; }
+.exprime-team-invitation { max-width: 960px; margin: 2rem auto; padding: 0 16px; }
+.exprime-team-invitation-card__lead { font-size: 1.1em; }
+.exprime-team-invitation-card__email { opacity: .8; }
+.exprime-team-invitation-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: 2rem; }
+.exprime-team-invitation-columns .col-1, .exprime-team-invitation-columns .col-2 { float: none; width: auto; max-width: none; }
+.exprime-team-invitation .woocommerce-form-login { margin: 0; }
+.exprime-team-register-form input[readonly] { opacity: .75; }
 
 @media (max-width: 600px) {
-	.wcsta-counters { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; }
-	.wcsta-counters dd { font-size: 1.2em; }
-	.wcsta-seats__actions { justify-content: flex-start; }
+	.exprime-team-counters { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; }
+	.exprime-team-counters dd { font-size: 1.2em; }
+	.exprime-team-seats__actions { justify-content: flex-start; }
 }
 
 /* "Replace" is a <summary>: themes do not always style it like a button. */
-.wcsta-replace > summary.wcsta-button { display: inline-block; border: 1px solid currentColor; border-radius: 3px; background: transparent; line-height: 1.4; }
-.wcsta-replace[open] > summary.wcsta-button { opacity: .7; }
+.exprime-team-replace > summary.exprime-team-button { display: inline-block; border: 1px solid currentColor; border-radius: 3px; background: transparent; line-height: 1.4; }
+.exprime-team-replace[open] > summary.exprime-team-button { opacity: .7; }

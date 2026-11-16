@@ -5,20 +5,20 @@
  * Run with: bash tests/integration/run.sh (see README). Never expose these files
  * on a web server: they create and delete test accounts and subscriptions.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 
 defined( 'WP_CLI' ) && WP_CLI || exit( 1 );
 
-use WCSubscriptionTeamAccess\Plugin;
+use Exprime\TeamAccess\Plugin;
 
 /**
  * Mini framework for assertions, fixtures and email capture.
  */
-final class WCSTA_IT {
+final class EXPRIME_TEAM_ACCESS_IT {
 
-	public const PREFIX = 'wcsta-it-';
+	public const PREFIX = 'exprime-team-it-';
 
 	/** @var array<int, array{name:string, ok:bool, message:string}> */
 	public array $results = array();
@@ -116,7 +116,7 @@ final class WCSTA_IT {
 	 */
 	public function error( mixed $result, string $code ): void {
 		$this->ok( is_wp_error( $result ), "Error \"{$code}\" expected, got success" );
-		$this->same( 'wcsta_' . $code, $result->get_error_code(), 'Error code' );
+		$this->same( 'exprime_team_' . $code, $result->get_error_code(), 'Error code' );
 	}
 
 	/**
@@ -240,7 +240,7 @@ final class WCSTA_IT {
 	 * @param string           $email        Email address.
 	 * @param int              $actor        Actor (plan holder by default).
 	 */
-	public function invite( \WC_Subscription $subscription, string $email, int $actor = 0 ): \WCSubscriptionTeamAccess\Repository\Seat {
+	public function invite( \WC_Subscription $subscription, string $email, int $actor = 0 ): \Exprime\TeamAccess\Repository\Seat {
 		$result = $this->success(
 			$this->plugin()->team()->invite( $subscription->get_id(), $email, $actor ?: (int) $subscription->get_customer_id() ),
 			"Invitation of {$email}"
@@ -281,7 +281,7 @@ final class WCSTA_IT {
 	 * @param \WC_Subscription $subscription Subscription.
 	 * @param int              $user_id      Invited account.
 	 */
-	public function invite_and_accept( \WC_Subscription $subscription, int $user_id ): \WCSubscriptionTeamAccess\Repository\Seat {
+	public function invite_and_accept( \WC_Subscription $subscription, int $user_id ): \Exprime\TeamAccess\Repository\Seat {
 		$email = $this->email( $user_id );
 		$this->invite( $subscription, $email );
 		return $this->success( $this->plugin()->team()->accept( $this->token_for( $email ), $user_id ), "Acceptance by {$email}" );
@@ -359,7 +359,7 @@ final class WCSTA_IT {
 	 *
 	 * @param int $seat_id Seat.
 	 */
-	public function seat( int $seat_id ): \WCSubscriptionTeamAccess\Repository\Seat {
+	public function seat( int $seat_id ): \Exprime\TeamAccess\Repository\Seat {
 		return $this->plugin()->seats()->find( $seat_id );
 	}
 
@@ -372,17 +372,17 @@ final class WCSTA_IT {
 		$this->reset_memberships_cache();
 		$previous = get_current_user_id();
 		wp_set_current_user( $user_id );
-		$html = do_shortcode( '[wcm_restrict]WCSTA_SECRET[/wcm_restrict]' );
+		$html = do_shortcode( '[wcm_restrict]EXPRIME_TEAM_ACCESS_SECRET[/wcm_restrict]' );
 		wp_set_current_user( $previous );
-		return str_contains( $html, 'WCSTA_SECRET' );
+		return str_contains( $html, 'EXPRIME_TEAM_ACCESS_SECRET' );
 	}
 
 	/** Deletes the data created by the scenarios. */
 	public function cleanup_created(): void {
 		global $wpdb;
-		$seats = $wpdb->prefix . 'wcsta_seats';
+		$seats = $wpdb->prefix . 'exprime_team_seats';
 		foreach ( array_unique( $this->created_orders ) as $id ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}wcsta_grants WHERE subscription_id = %d", $id ) ); // phpcs:ignore
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}exprime_team_grants WHERE subscription_id = %d", $id ) ); // phpcs:ignore
 			$wpdb->query( $wpdb->prepare( "DELETE FROM {$seats} WHERE subscription_id = %d", $id ) ); // phpcs:ignore
 			$order = wc_get_order( $id );
 			if ( $order ) {

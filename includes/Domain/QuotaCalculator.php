@@ -2,12 +2,12 @@
 /**
  * Computes a subscription's guest quota from its line items.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Domain;
+namespace Exprime\TeamAccess\Domain;
 
 /**
  * Rule: sum, for each line, of the product (or variation) quota multiplied

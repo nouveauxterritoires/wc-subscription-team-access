@@ -2,12 +2,12 @@
 /**
  * Conversion of stored dates (UTC, MySQL format).
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Support;
+namespace Exprime\TeamAccess\Support;
 
 /**
  * All of the plugin's dates are stored in UTC.

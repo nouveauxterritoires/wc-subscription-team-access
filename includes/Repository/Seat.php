@@ -1,16 +1,16 @@
 <?php
 /**
- * Guest seat (row of the wcsta_seats table).
+ * Guest seat (row of the exprime_team_seats table).
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Repository;
+namespace Exprime\TeamAccess\Repository;
 
-use WCSubscriptionTeamAccess\Domain\SeatStatus;
-use WCSubscriptionTeamAccess\Support\Dates;
+use Exprime\TeamAccess\Domain\SeatStatus;
+use Exprime\TeamAccess\Support\Dates;
 
 /**
  * Immutable read object.

@@ -4,7 +4,7 @@
  *
  * Usage: wp eval-file tests/integration/concurrency.php <fixtures-file.json> <n>
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 
@@ -16,5 +16,5 @@ $fixtures = (array) json_decode( (string) file_get_contents( (string) $args[0] )
 $n        = (int) ( $args[1] ?? 0 );
 $sub_id   = (int) $fixtures['concurrency_sub'];
 
-$result = \WCSubscriptionTeamAccess\Plugin::instance()->team()->invite( $sub_id, "race{$n}-{$sub_id}@example.test", (int) $fixtures['concurrency_owner'] );
+$result = \Exprime\TeamAccess\Plugin::instance()->team()->invite( $sub_id, "race{$n}-{$sub_id}@example.test", (int) $fixtures['concurrency_owner'] );
 WP_CLI::log( is_wp_error( $result ) ? 'REFUSED ' . $result->get_error_code() : 'INVITED #' . $result['seat']->id );

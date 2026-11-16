@@ -1,10 +1,12 @@
-# WC Subscription Team Access
+# Exprime Team Access for WooCommerce Subscriptions
 
 > *English version: [README.md](README.md).*
 
 Extension WordPress qui permet au titulaire d'un abonnement WooCommerce Subscriptions de partager les accès premium accordés par WooCommerce Memberships avec des invités, chacun disposant de son propre compte WordPress. Les invités ne sont pas facturés.
 
-- Slug et text domain : `wc-subscription-team-access`
+Extension indépendante réalisée pour Exprime.media, ni développée ni approuvée par l'éditeur de WooCommerce. Jusqu'à la version 1.1.0, elle s'appelait « WC Subscription Team Access » (slug `wc-subscription-team-access`, préfixe `wcsta_`).
+
+- Slug et text domain : `exprime-team-access`
 - Prérequis : WordPress 6.4+, PHP 8.1+, WooCommerce 8+, WooCommerce Subscriptions, WooCommerce Memberships
 - Testé avec : WooCommerce 11.3, Subscriptions 9.3, Memberships 1.26.10, PHP 8.2 et 8.4
 - Langues : anglais (langue source), français (`languages/`)
@@ -29,8 +31,8 @@ La documentation est aussi disponible dans l'administration WordPress, dans l'on
 
 ## Installation
 
-1. Copier le dossier `wc-subscription-team-access` dans `wp-content/plugins/` (ou téléverser le zip produit par `bin/build-zip.sh`, sans les tests ni les fichiers de développement).
-2. Activer l'extension. Les tables `{prefix}wcsta_seats`, `{prefix}wcsta_grants` et `{prefix}wcsta_log` sont créées, et les règles de réécriture sont régénérées au chargement suivant.
+1. Copier le dossier `exprime-team-access` dans `wp-content/plugins/` (ou téléverser le zip produit par `bin/build-zip.sh`, sans les tests ni les fichiers de développement).
+2. Activer l'extension. Les tables `{prefix}exprime_team_seats`, `{prefix}exprime_team_grants` et `{prefix}exprime_team_log` sont créées, et les règles de réécriture sont régénérées au chargement suivant.
 3. Si WooCommerce, Subscriptions ou Memberships manque, l'extension reste inactive et affiche un avertissement dans l'administration.
 
 Le dossier `tests/` n'est pas nécessaire en production. Ne le déployez pas dans un dossier accessible par le web : la suite d'intégration crée et supprime des comptes.
@@ -67,7 +69,7 @@ Le produit doit aussi accorder un plan WooCommerce Memberships (plan « à l'ac
 | Slug de la page d'invitation | `invitation-equipe` |
 | Slug de l'onglet Mon compte | `mes-invites` |
 
-Les e-mails « Invitation accès équipe » et « Invitation accès équipe acceptée » se configurent dans WooCommerce > Réglages > E-mails. Leurs gabarits peuvent être surchargés dans le thème (`woocommerce/emails/wcsta-team-invitation.php`, etc.).
+Les e-mails « Invitation accès équipe » et « Invitation accès équipe acceptée » se configurent dans WooCommerce > Réglages > E-mails. Leurs gabarits peuvent être surchargés dans le thème (`woocommerce/emails/exprime-team-invitation.php`, etc.).
 
 ## Utilisation
 
@@ -105,15 +107,15 @@ Memberships ne connaît qu'**une adhésion « logique » par utilisateur et pa
 
 ### Architecture retenue
 
-- Un **registre des sources** (`wcsta_grants`) contient une ligne par place acceptée et par plan partagé, avec l'état conféré (actif avec date de fin éventuelle, ou suspendu).
-- L'extension crée **au plus une adhésion « gérée »** par invité et par plan, marquée par la méta `_wcsta_managed`, sans commande ni abonnement liés. Son état est l'agrégat de toutes ses sources : actif l'emporte sur suspendu ; entre deux sources actives, la fin la plus tardive l'emporte, et une source sans fin rend l'accès illimité.
+- Un **registre des sources** (`exprime_team_grants`) contient une ligne par place acceptée et par plan partagé, avec l'état conféré (actif avec date de fin éventuelle, ou suspendu).
+- L'extension crée **au plus une adhésion « gérée »** par invité et par plan, marquée par la méta `_exprime_team_managed`, sans commande ni abonnement liés. Son état est l'agrégat de toutes ses sources : actif l'emporte sur suspendu ; entre deux sources actives, la fin la plus tardive l'emporte, et une source sans fin rend l'accès illimité.
 - Une adhésion indépendante (achetée, offerte par un administrateur, importée) n'est **jamais** créée, modifiée ni supprimée par l'extension. Si l'invité en a une active sur le plan, aucune adhésion gérée n'existe. Si elle s'interrompt (abonnement personnel suspendu, par exemple), l'adhésion gérée prend le relais. Quand elle redevient active, l'adhésion gérée est retirée.
 - Si un invité **achète lui-même** un abonnement donnant le plan, Memberships réutilise nativement l'adhésion gérée et la lie à son achat. L'extension la « libère » : elle devient personnelle et n'est plus jamais touchée.
 - La révocation d'une invitation retire uniquement la source correspondante. L'adhésion gérée n'est supprimée que s'il ne reste aucune source.
 
 ### Compromis documentés
 
-- **Pas de lien natif `_subscription_id`** entre l'adhésion de l'invité et l'abonnement du titulaire. Ce lien ne permettrait qu'une seule source. Il afficherait aussi dans l'espace membre de l'invité l'abonnement du titulaire (prix, actions). Le rattachement passe par le registre, et la méta `_wcsta_sources` mémorise les abonnements sources pour l'affichage.
+- **Pas de lien natif `_subscription_id`** entre l'adhésion de l'invité et l'abonnement du titulaire. Ce lien ne permettrait qu'une seule source. Il afficherait aussi dans l'espace membre de l'invité l'abonnement du titulaire (prix, actions). Le rattachement passe par le registre, et la méta `_exprime_team_sources` mémorise les abonnements sources pour l'affichage.
 - **Suppression plutôt qu'annulation** d'une adhésion gérée devenue inutile. Une adhésion annulée plus récente masquerait, dans `wc_memberships_is_user_active_member()`, une adhésion personnelle active plus ancienne. Avant la suppression, l'adhésion est annulée via `cancel_membership()` pour que Memberships recalcule le rôle du membre (option « attribuer des rôles aux membres »). L'historique reste consultable dans le journal de l'extension.
 - **Ancienneté** : l'adhésion gérée commence à la date d'acceptation. Les contenus programmés (« drip ») se calculent donc depuis cette date, et non depuis l'achat du titulaire.
 - **Rôles** : si Memberships attribue un rôle aux membres actifs (par exemple `membre` pour les membres actifs et `subscriber` pour les inactifs), les invités reçoivent et perdent ce rôle exactement comme les autres membres.
@@ -135,11 +137,11 @@ L'accès des invités suit le statut de l'abonnement du titulaire, lu via les AP
 
 Chaque événement (`woocommerce_subscription_status_updated`, changement de date de fin, `woocommerce_subscriptions_switch_completed`, mise à la corbeille ou suppression, changement de statut ou suppression d'une adhésion indépendante) déclenche une **synchronisation complète et idempotente** de l'abonnement. Elle recalcule l'état cible à partir de l'état courant : rejouer un événement ne crée ni doublon ni droit supplémentaire.
 
-Une **synchronisation de rattrapage** quotidienne (Action Scheduler, groupe `wc-subscription-team-access`) traite tous les abonnements partagés par lots de 100. Elle expire les invitations périmées, anonymise les anciennes invitations, purge le journal et corrige les adhésions gérées orphelines ou modifiées à la main. L'extension fait autorité sur les adhésions gérées : passez par ses écrans pour les modifier.
+Une **synchronisation de rattrapage** quotidienne (Action Scheduler, groupe `exprime-team-access`) traite tous les abonnements partagés par lots de 100. Elle expire les invitations périmées, anonymise les anciennes invitations, purge le journal et corrige les adhésions gérées orphelines ou modifiées à la main. L'extension fait autorité sur les adhésions gérées : passez par ses écrans pour les modifier.
 
 ## Quotas
 
-- Le quota est **figé dans l'abonnement à l'achat** (méta `_wcsta_quota`). Modifier ensuite le produit n'a aucun effet rétroactif.
+- Le quota est **figé dans l'abonnement à l'achat** (méta `_exprime_team_quota`). Modifier ensuite le produit n'a aucun effet rétroactif.
 - Calcul : somme, pour chaque ligne, du quota du produit ou de la variation multiplié par la quantité.
 - Il est **recalculé uniquement lors d'un changement de formule** (switch). Un administrateur peut aussi imposer un quota par abonnement. Chaque changement est historisé.
 - Le titulaire ne consomme pas de place. Les invitations en attente et les invités acceptés en consomment une. Annuler, supprimer ou laisser expirer libère la place.
@@ -181,23 +183,23 @@ Un encadré **Accès équipe** apparaît aussi sur l'écran d'édition de chaque
 ## WP-CLI
 
 ```bash
-wp team-access status <subscription_id>      # quota, droits, plans, places
-wp team-access invite <subscription_id> <email> [--as=<user_id>]
-wp team-access revoke <seat_id> [--as=<user_id>]
-wp team-access resend <seat_id> [--as=<user_id>]
-wp team-access sync [<subscription_id>]      # tous les abonnements partagés si aucun identifiant
-wp team-access schedule                      # resynchronisation complète en tâche de fond
-wp team-access maintenance                   # expirations, anonymisation, purge du journal
-wp team-access snapshot <subscription_id>    # recalcule le quota depuis le catalogue (à utiliser avec précaution)
+wp exprime-team status <subscription_id>      # quota, droits, plans, places
+wp exprime-team invite <subscription_id> <email> [--as=<user_id>]
+wp exprime-team revoke <seat_id> [--as=<user_id>]
+wp exprime-team resend <seat_id> [--as=<user_id>]
+wp exprime-team sync [<subscription_id>]      # tous les abonnements partagés si aucun identifiant
+wp exprime-team schedule                      # resynchronisation complète en tâche de fond
+wp exprime-team maintenance                   # expirations, anonymisation, purge du journal
+wp exprime-team snapshot <subscription_id>    # recalcule le quota depuis le catalogue (à utiliser avec précaution)
 ```
 
 Exemple de recette manuelle :
 
 ```bash
-wp team-access invite 1234 jeanne@example.org --as=56
-wp team-access status 1234
+wp exprime-team invite 1234 jeanne@example.org --as=56
+wp exprime-team status 1234
 wp eval 'var_dump( wc_memberships_is_user_active_member( get_user_by( "email", "jeanne@example.org" )->ID, <plan_id> ) );'
-wp team-access revoke 78
+wp exprime-team revoke 78
 ```
 
 ## Tests
@@ -213,11 +215,11 @@ composer test
 
 ### Suite d'intégration (WordPress, WooCommerce, Subscriptions et Memberships réels)
 
-Elle s'exécute sur un site de recette où l'extension est active. Elle crée un plan, des produits, des comptes et des abonnements de test (préfixe `wcsta-it-`), capture les e-mails (aucun n'est envoyé), puis nettoie tout.
+Elle s'exécute sur un site de recette où l'extension est active. Elle crée un plan, des produits, des comptes et des abonnements de test (préfixe `exprime-team-it-`), capture les e-mails (aucun n'est envoyé), puis nettoie tout.
 
 ```bash
 # depuis la racine WordPress du site de recette
-WP="wp" bash /chemin/vers/wc-subscription-team-access/tests/integration/run.sh
+WP="wp" bash /chemin/vers/exprime-team-access/tests/integration/run.sh
 # KEEP=1 pour conserver les données de test
 ```
 
@@ -230,22 +232,22 @@ Dernier résultat sur le site de recette (16/11/2026, WooCommerce 11.3, Subscrip
 Les chaînes sources sont en anglais. Le catalogue français se génère avec :
 
 ```bash
-wp i18n make-pot . languages/wc-subscription-team-access.pot --exclude=vendor,tests,node_modules,build,bin
+wp i18n make-pot . languages/exprime-team-access.pot --exclude=vendor,tests,node_modules,build,bin
 python3 bin/build-fr.py   # échoue si une chaîne n'est pas traduite
-msgfmt -o languages/wc-subscription-team-access-fr_FR.mo languages/wc-subscription-team-access-fr_FR.po
+msgfmt -o languages/exprime-team-access-fr_FR.mo languages/exprime-team-access-fr_FR.po
 ```
 
 ## Crochets pour les développeurs
 
 | Crochet | Type | Usage |
 |---|---|---|
-| `wcsta_computed_quota` | filtre | Modifier le quota calculé d'un abonnement (`$quota, $subscription`) |
-| `wcsta_subscription_plan_ids` | filtre | Plans partagés avec les invités (`$plan_ids, $subscription`) |
-| `wcsta_subscription_effective_access` | filtre | Droit effectif conféré par un abonnement (`AccessState $state, $subscription`) |
-| `wcsta_after_accept_redirect` | filtre | Page de destination après acceptation (`$url, Seat $seat`) |
-| `wcsta_client_ip` | filtre | Adresse IP du client pour la limitation de débit, à fournir derrière un proxy inverse ou un CDN (`$ip`) |
+| `exprime_team_computed_quota` | filtre | Modifier le quota calculé d'un abonnement (`$quota, $subscription`) |
+| `exprime_team_subscription_plan_ids` | filtre | Plans partagés avec les invités (`$plan_ids, $subscription`) |
+| `exprime_team_subscription_effective_access` | filtre | Droit effectif conféré par un abonnement (`AccessState $state, $subscription`) |
+| `exprime_team_after_accept_redirect` | filtre | Page de destination après acceptation (`$url, Seat $seat`) |
+| `exprime_team_client_ip` | filtre | Adresse IP du client pour la limitation de débit, à fournir derrière un proxy inverse ou un CDN (`$ip`) |
 
-Gabarits surchargeables dans le thème : `wc-subscription-team-access/my-account/team-access.php`, `wc-subscription-team-access/invitation/accept.php`, et les e-mails dans `woocommerce/emails/`.
+Gabarits surchargeables dans le thème : `exprime-team-access/my-account/team-access.php`, `exprime-team-access/invitation/accept.php`, et les e-mails dans `woocommerce/emails/`.
 
 ## Limites connues
 

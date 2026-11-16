@@ -2,9 +2,9 @@
 /**
  * Email to the plan holder: invitation accepted (plain text).
  *
- * Override: your-theme/woocommerce/emails/plain/wcsta-team-invitation-accepted.php
+ * Override: your-theme/woocommerce/emails/plain/exprime-team-invitation-accepted.php
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  *
  * @var string   $email_heading      Heading.
  * @var string   $additional_content Additional content.
@@ -18,20 +18,20 @@ defined( 'ABSPATH' ) || exit;
 
 echo '= ' . esc_html( wp_strip_all_tags( $email_heading ) ) . " =\n\n";
 
-esc_html_e( 'Hello,', 'wc-subscription-team-access' );
+esc_html_e( 'Hello,', 'exprime-team-access' );
 echo "\n\n";
 
 echo esc_html(
 	sprintf(
 		/* translators: 1: guest email, 2: subscription name. */
-		__( '%1$s accepted your invitation and now shares the premium access of your subscription %2$s.', 'wc-subscription-team-access' ),
+		__( '%1$s accepted your invitation and now shares the premium access of your subscription %2$s.', 'exprime-team-access' ),
 		$guest_email,
 		$subscription_name
 	)
 );
 echo "\n\n";
 
-esc_html_e( 'Manage my guests', 'wc-subscription-team-access' );
+esc_html_e( 'Manage my guests', 'exprime-team-access' );
 echo ': ' . esc_url_raw( $manage_url ) . "\n\n";
 
 if ( $additional_content ) {

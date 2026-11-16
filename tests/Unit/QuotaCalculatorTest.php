@@ -1,10 +1,10 @@
 <?php
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Tests\Unit;
+namespace Exprime\TeamAccess\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use WCSubscriptionTeamAccess\Domain\QuotaCalculator;
+use Exprime\TeamAccess\Domain\QuotaCalculator;
 
 /**
  * Quota of a subscription computed from its line items.

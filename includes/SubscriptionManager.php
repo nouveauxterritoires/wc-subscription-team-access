@@ -2,16 +2,16 @@
 /**
  * Reads subscriptions through the public APIs of WooCommerce Subscriptions and Memberships.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Domain\AccessState;
-use WCSubscriptionTeamAccess\Domain\SubscriptionAccessResolver;
-use WCSubscriptionTeamAccess\Repository\SeatRepository;
+use Exprime\TeamAccess\Domain\AccessState;
+use Exprime\TeamAccess\Domain\SubscriptionAccessResolver;
+use Exprime\TeamAccess\Repository\SeatRepository;
 
 /**
  * Effective rights, granted plans and ownership of a subscription.
@@ -54,7 +54,7 @@ final class SubscriptionManager {
 		 * @param AccessState      $state        Computed right.
 		 * @param \WC_Subscription $subscription Subscription.
 		 */
-		$filtered = apply_filters( 'wcsta_subscription_effective_access', $state, $subscription );
+		$filtered = apply_filters( 'exprime_team_subscription_effective_access', $state, $subscription );
 		return $filtered instanceof AccessState ? $filtered : $state;
 	}
 
@@ -117,7 +117,7 @@ final class SubscriptionManager {
 		 * @param int[]            $plan_ids     Plans.
 		 * @param \WC_Subscription $subscription Subscription.
 		 */
-		return array_values( array_map( 'intval', (array) apply_filters( 'wcsta_subscription_plan_ids', $plan_ids, $subscription ) ) );
+		return array_values( array_map( 'intval', (array) apply_filters( 'exprime_team_subscription_plan_ids', $plan_ids, $subscription ) ) );
 	}
 
 	/**
@@ -186,7 +186,7 @@ final class SubscriptionManager {
 		return $names
 			? implode( ' + ', $names )
 			/* translators: %s: subscription number. */
-			: sprintf( __( 'Subscription #%s', 'wc-subscription-team-access' ), $subscription->get_order_number() );
+			: sprintf( __( 'Subscription #%s', 'exprime-team-access' ), $subscription->get_order_number() );
 	}
 
 	/**

@@ -4,7 +4,7 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-SLUG="wc-subscription-team-access"
+SLUG="exprime-team-access"
 REF="${1:-HEAD}"
 OUT="build"
 

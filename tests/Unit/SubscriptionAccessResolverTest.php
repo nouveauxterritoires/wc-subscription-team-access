@@ -1,11 +1,11 @@
 <?php
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Tests\Unit;
+namespace Exprime\TeamAccess\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use WCSubscriptionTeamAccess\Domain\AccessState;
-use WCSubscriptionTeamAccess\Domain\SubscriptionAccessResolver;
+use Exprime\TeamAccess\Domain\AccessState;
+use Exprime\TeamAccess\Domain\SubscriptionAccessResolver;
 
 /**
  * Mapping of WooCommerce Subscriptions statuses to access entitlements.

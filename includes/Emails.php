@@ -2,16 +2,16 @@
 /**
  * Registration and sending of the plugin's WooCommerce emails.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Emails\InvitationAcceptedEmail;
-use WCSubscriptionTeamAccess\Emails\InvitationEmail;
-use WCSubscriptionTeamAccess\Repository\Seat;
+use Exprime\TeamAccess\Emails\InvitationAcceptedEmail;
+use Exprime\TeamAccess\Emails\InvitationEmail;
+use Exprime\TeamAccess\Repository\Seat;
 
 /**
  * The emails are WC_Email instances: they are configured under WooCommerce > Settings > Emails and
@@ -19,8 +19,8 @@ use WCSubscriptionTeamAccess\Repository\Seat;
  */
 final class Emails {
 
-	public const INVITATION = 'WCSTA_Invitation';
-	public const ACCEPTED   = 'WCSTA_Invitation_Accepted';
+	public const INVITATION = 'EXPRIME_TEAM_ACCESS_Invitation';
+	public const ACCEPTED   = 'EXPRIME_TEAM_ACCESS_Invitation_Accepted';
 
 	public function __construct( private readonly InvitationController $invitations ) {}
 

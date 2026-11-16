@@ -2,12 +2,12 @@
 /**
  * Deterministic split of live seats between "within quota" and "over quota".
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Domain;
+namespace Exprime\TeamAccess\Domain;
 
 /**
  * Priority rule (documented in the README):

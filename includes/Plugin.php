@@ -2,19 +2,19 @@
 /**
  * Entry point: checks the dependencies and wires the components.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Admin\AdminPage;
-use WCSubscriptionTeamAccess\Admin\SubscriptionMetaBox;
-use WCSubscriptionTeamAccess\CLI\Command;
-use WCSubscriptionTeamAccess\Repository\GrantRepository;
-use WCSubscriptionTeamAccess\Repository\Logger;
-use WCSubscriptionTeamAccess\Repository\SeatRepository;
+use Exprime\TeamAccess\Admin\AdminPage;
+use Exprime\TeamAccess\Admin\SubscriptionMetaBox;
+use Exprime\TeamAccess\CLI\Command;
+use Exprime\TeamAccess\Repository\GrantRepository;
+use Exprime\TeamAccess\Repository\Logger;
+use Exprime\TeamAccess\Repository\SeatRepository;
 
 /**
  * Service container (single instance).
@@ -51,7 +51,7 @@ final class Plugin {
 						esc_html(
 							sprintf(
 								/* translators: %s: list of missing plugins. */
-								__( 'WC Subscription Team Access is inactive: the following plugins are required: %s.', 'wc-subscription-team-access' ),
+								__( 'Exprime Team Access is inactive: the following plugins are required: %s.', 'exprime-team-access' ),
 								implode( ', ', $missing )
 							)
 						)
@@ -72,7 +72,7 @@ final class Plugin {
 	}
 
 	public static function load_textdomain(): void {
-		load_plugin_textdomain( 'wc-subscription-team-access', false, dirname( plugin_basename( WCSTA_FILE ) ) . '/languages' );
+		load_plugin_textdomain( 'exprime-team-access', false, dirname( plugin_basename( EXPRIME_TEAM_ACCESS_FILE ) ) . '/languages' );
 	}
 
 	/**
@@ -126,20 +126,20 @@ final class Plugin {
 		if ( is_admin() ) {
 			( new AdminPage( $this->team, $this->reconciler, $this->subscriptions, $this->quotas, $this->seats, $this->grants, $this->memberships, $this->logger ) )->register();
 			( new SubscriptionMetaBox( $this->team, $this->quotas ) )->register();
-			( new \WCSubscriptionTeamAccess\Admin\Help() )->register();
+			( new \Exprime\TeamAccess\Admin\Help() )->register();
 			add_filter(
 				'woocommerce_get_settings_pages',
 				static function ( $pages ) {
 					$pages   = is_array( $pages ) ? $pages : array();
-					$pages[] = new \WCSubscriptionTeamAccess\Admin\SettingsPage();
+					$pages[] = new \Exprime\TeamAccess\Admin\SettingsPage();
 					return $pages;
 				}
 			);
-			add_filter( 'plugin_action_links_' . plugin_basename( WCSTA_FILE ), array( self::class, 'action_links' ) );
+			add_filter( 'plugin_action_links_' . plugin_basename( EXPRIME_TEAM_ACCESS_FILE ), array( self::class, 'action_links' ) );
 		}
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			\WP_CLI::add_command( 'team-access', new Command( $this->team, $this->reconciler, $this->subscriptions, $this->quotas, $this->seats ) );
+			\WP_CLI::add_command( 'exprime-team', new Command( $this->team, $this->reconciler, $this->subscriptions, $this->quotas, $this->seats ) );
 		}
 	}
 
@@ -153,10 +153,10 @@ final class Plugin {
 		$links = is_array( $links ) ? $links : array();
 		array_unshift(
 			$links,
-			'<a href="' . esc_url( \WCSubscriptionTeamAccess\Admin\SettingsPage::url() ) . '">' . esc_html__( 'Settings', 'wc-subscription-team-access' ) . '</a>',
-			'<a href="' . esc_url( \WCSubscriptionTeamAccess\Admin\AdminPage::url() ) . '">' . esc_html__( 'Shared subscriptions', 'wc-subscription-team-access' ) . '</a>'
+			'<a href="' . esc_url( \Exprime\TeamAccess\Admin\SettingsPage::url() ) . '">' . esc_html__( 'Settings', 'exprime-team-access' ) . '</a>',
+			'<a href="' . esc_url( \Exprime\TeamAccess\Admin\AdminPage::url() ) . '">' . esc_html__( 'Shared subscriptions', 'exprime-team-access' ) . '</a>'
 		);
-		$links[] = '<a href="' . esc_url( \WCSubscriptionTeamAccess\Admin\Help::DOCUMENTATION_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Documentation', 'wc-subscription-team-access' ) . '</a>';
+		$links[] = '<a href="' . esc_url( \Exprime\TeamAccess\Admin\Help::DOCUMENTATION_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Documentation', 'exprime-team-access' ) . '</a>';
 		return $links;
 	}
 

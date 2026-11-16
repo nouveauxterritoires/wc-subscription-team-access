@@ -2,14 +2,14 @@
 /**
  * Listens to the public WooCommerce Subscriptions events and triggers synchronization.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Repository\SeatRepository;
+use Exprime\TeamAccess\Repository\SeatRepository;
 
 /**
  * Handled transitions: active, on-hold, pending-cancel, cancelled, expired, trash, deletion,

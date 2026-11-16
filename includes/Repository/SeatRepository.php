@@ -2,18 +2,18 @@
 /**
  * Access to guest seats. All queries are prepared.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Repository;
+namespace Exprime\TeamAccess\Repository;
 
-use WCSubscriptionTeamAccess\Domain\SeatStatus;
-use WCSubscriptionTeamAccess\Support\Dates;
+use Exprime\TeamAccess\Domain\SeatStatus;
+use Exprime\TeamAccess\Support\Dates;
 
 /**
- * Repository for the wcsta_seats table.
+ * Repository for the exprime_team_seats table.
  */
 final class SeatRepository {
 
@@ -40,7 +40,7 @@ final class SeatRepository {
 
 	public static function table(): string {
 		global $wpdb;
-		return $wpdb->prefix . 'wcsta_seats';
+		return $wpdb->prefix . 'exprime_team_seats';
 	}
 
 	/**
@@ -69,9 +69,9 @@ final class SeatRepository {
 		if ( false === $result ) {
 			$error = (string) $wpdb->last_error;
 			if ( str_contains( $error, 'Duplicate' ) ) {
-				return new \WP_Error( 'wcsta_duplicate', $error );
+				return new \WP_Error( 'exprime_team_duplicate', $error );
 			}
-			return new \WP_Error( 'wcsta_db_error', $error );
+			return new \WP_Error( 'exprime_team_db_error', $error );
 		}
 
 		return (int) $wpdb->insert_id;

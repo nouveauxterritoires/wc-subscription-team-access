@@ -5,7 +5,7 @@
  *
  * Usage: wp eval-file tests/integration/setup.php <fixtures-file.json>
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 
@@ -24,7 +24,7 @@ if ( '' === $file ) {
  */
 $make_simple = static function ( string $name, ?string $guests ): int {
 	$product = new WC_Product_Subscription();
-	$product->set_name( 'WCSTA IT ' . $name );
+	$product->set_name( 'Exprime Team IT ' . $name );
 	$product->set_status( 'publish' );
 	$product->set_catalog_visibility( 'hidden' );
 	$product->set_regular_price( '10' );
@@ -34,7 +34,7 @@ $make_simple = static function ( string $name, ?string $guests ): int {
 	$product->update_meta_data( '_subscription_period_interval', '1' );
 	$product->update_meta_data( '_subscription_length', '0' );
 	if ( null !== $guests ) {
-		$product->update_meta_data( '_wcsta_max_guests', $guests );
+		$product->update_meta_data( '_exprime_team_max_guests', $guests );
 	}
 	return $product->save();
 };
@@ -49,11 +49,11 @@ $attribute->set_name( 'Plan' );
 $attribute->set_options( array( 'Small', 'Large' ) );
 $attribute->set_visible( true );
 $attribute->set_variation( true );
-$parent->set_name( 'WCSTA IT Variable' );
+$parent->set_name( 'Exprime Team IT Variable' );
 $parent->set_status( 'publish' );
 $parent->set_catalog_visibility( 'hidden' );
 $parent->set_attributes( array( $attribute ) );
-$parent->update_meta_data( '_wcsta_max_guests', '10' );
+$parent->update_meta_data( '_exprime_team_max_guests', '10' );
 $pv = $parent->save();
 
 $make_variation = static function ( int $parent_id, string $option, ?string $guests ): int {
@@ -68,7 +68,7 @@ $make_variation = static function ( int $parent_id, string $option, ?string $gue
 	$variation->update_meta_data( '_subscription_period_interval', '1' );
 	$variation->update_meta_data( '_subscription_length', '0' );
 	if ( null !== $guests ) {
-		$variation->update_meta_data( '_wcsta_max_guests', $guests );
+		$variation->update_meta_data( '_exprime_team_max_guests', $guests );
 	}
 	return $variation->save();
 };
@@ -80,8 +80,8 @@ $plan_id = wp_insert_post(
 	array(
 		'post_type'   => 'wc_membership_plan',
 		'post_status' => 'publish',
-		'post_title'  => 'WCSTA IT Plan',
-		'post_name'   => 'wcsta-it-plan',
+		'post_title'  => 'Exprime Team IT Plan',
+		'post_name'   => 'exprime-team-it-plan',
 	)
 );
 update_post_meta( $plan_id, '_access_method', 'purchase' );

@@ -2,30 +2,30 @@
 /**
  * "Team access" tab in WooCommerce > Settings.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Admin;
+namespace Exprime\TeamAccess\Admin;
 
-use WCSubscriptionTeamAccess\Domain\SeatAllocator;
-use WCSubscriptionTeamAccess\Installer;
-use WCSubscriptionTeamAccess\Settings;
+use Exprime\TeamAccess\Domain\SeatAllocator;
+use Exprime\TeamAccess\Installer;
+use Exprime\TeamAccess\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Values are saved by WooCommerce in the array option "wcsta_settings"
- * (fields "wcsta_settings[key]"), then normalized and bounded by Settings::sanitize().
+ * Values are saved by WooCommerce in the array option "exprime_team_settings"
+ * (fields "exprime_team_settings[key]"), then normalized and bounded by Settings::sanitize().
  */
 class SettingsPage extends \WC_Settings_Page {
 
-	public const ID = 'wcsta';
+	public const ID = 'exprime_team_access';
 
 	public function __construct() {
 		$this->id    = self::ID;
-		$this->label = __( 'Team access', 'wc-subscription-team-access' );
+		$this->label = __( 'Team access', 'exprime-team-access' );
 		parent::__construct();
 	}
 
@@ -43,81 +43,81 @@ class SettingsPage extends \WC_Settings_Page {
 
 		return array(
 			array(
-				'id'    => 'wcsta_invitations',
+				'id'    => 'exprime_team_invitations',
 				'type'  => 'title',
-				'title' => __( 'Invitations', 'wc-subscription-team-access' ),
+				'title' => __( 'Invitations', 'exprime-team-access' ),
 				'desc'  => sprintf(
 					/* translators: %s: link to the shared subscriptions page. */
-					__( 'The maximum number of guests is set on each subscription product (General tab, or per variation). Shared subscriptions and the log are available in %s.', 'wc-subscription-team-access' ),
-					'<a href="' . esc_url( AdminPage::url() ) . '">' . esc_html__( 'WooCommerce > Team access', 'wc-subscription-team-access' ) . '</a>'
+					__( 'The maximum number of guests is set on each subscription product (General tab, or per variation). Shared subscriptions and the log are available in %s.', 'exprime-team-access' ),
+					'<a href="' . esc_url( AdminPage::url() ) . '">' . esc_html__( 'WooCommerce > Team access', 'exprime-team-access' ) . '</a>'
 				),
 			),
-			$this->number( 'invitation_expiry_days', __( 'Invitation validity (days)', 'wc-subscription-team-access' ), 1, 60, $defaults ),
-			$this->number( 'max_invites_per_hour', __( 'Invitation emails per holder per hour', 'wc-subscription-team-access' ), 1, 500, $defaults ),
-			$this->number( 'resend_min_interval', __( 'Minimum delay between two sends of an invitation (minutes)', 'wc-subscription-team-access' ), 0, 1440, $defaults ),
-			$this->number( 'max_resends', __( 'Maximum number of resends per invitation', 'wc-subscription-team-access' ), 0, 50, $defaults ),
+			$this->number( 'invitation_expiry_days', __( 'Invitation validity (days)', 'exprime-team-access' ), 1, 60, $defaults ),
+			$this->number( 'max_invites_per_hour', __( 'Invitation emails per holder per hour', 'exprime-team-access' ), 1, 500, $defaults ),
+			$this->number( 'resend_min_interval', __( 'Minimum delay between two sends of an invitation (minutes)', 'exprime-team-access' ), 0, 1440, $defaults ),
+			$this->number( 'max_resends', __( 'Maximum number of resends per invitation', 'exprime-team-access' ), 0, 50, $defaults ),
 			array(
 				'id'      => Settings::OPTION . '[notify_owner_on_accept]',
 				'type'    => 'checkbox',
-				'title'   => __( 'Holder notification', 'wc-subscription-team-access' ),
-				'desc'    => __( 'Notify the holder when a guest accepts an invitation', 'wc-subscription-team-access' ),
+				'title'   => __( 'Holder notification', 'exprime-team-access' ),
+				'desc'    => __( 'Notify the holder when a guest accepts an invitation', 'exprime-team-access' ),
 				'default' => $defaults['notify_owner_on_accept'],
 			),
 			array(
-				'id'   => 'wcsta_invitations',
+				'id'   => 'exprime_team_invitations',
 				'type' => 'sectionend',
 			),
 
 			array(
-				'id'    => 'wcsta_quota',
+				'id'    => 'exprime_team_quota',
 				'type'  => 'title',
-				'title' => __( 'Quota', 'wc-subscription-team-access' ),
+				'title' => __( 'Quota', 'exprime-team-access' ),
 			),
 			array(
 				'id'       => Settings::OPTION . '[overage_policy]',
 				'type'     => 'select',
-				'title'    => __( 'When the quota decreases', 'wc-subscription-team-access' ),
-				'desc'     => __( 'Guests are ranked by acceptance date (oldest first), then pending invitations by creation date. Nobody is deleted: suspended guests regain access automatically when a seat becomes available.', 'wc-subscription-team-access' ),
+				'title'    => __( 'When the quota decreases', 'exprime-team-access' ),
+				'desc'     => __( 'Guests are ranked by acceptance date (oldest first), then pending invitations by creation date. Nobody is deleted: suspended guests regain access automatically when a seat becomes available.', 'exprime-team-access' ),
 				'desc_tip' => false,
 				'default'  => $defaults['overage_policy'],
 				'class'    => 'wc-enhanced-select',
 				'options'  => array(
-					SeatAllocator::POLICY_SUSPEND_NEWEST => __( 'Suspend the most recent guests beyond the quota (default)', 'wc-subscription-team-access' ),
-					SeatAllocator::POLICY_KEEP_ALL       => __( 'Keep all guests, only block new invitations', 'wc-subscription-team-access' ),
+					SeatAllocator::POLICY_SUSPEND_NEWEST => __( 'Suspend the most recent guests beyond the quota (default)', 'exprime-team-access' ),
+					SeatAllocator::POLICY_KEEP_ALL       => __( 'Keep all guests, only block new invitations', 'exprime-team-access' ),
 				),
 			),
 			array(
-				'id'   => 'wcsta_quota',
+				'id'   => 'exprime_team_quota',
 				'type' => 'sectionend',
 			),
 
 			array(
-				'id'    => 'wcsta_memberships',
+				'id'    => 'exprime_team_memberships',
 				'type'  => 'title',
-				'title' => __( 'Memberships and privacy', 'wc-subscription-team-access' ),
+				'title' => __( 'Memberships and privacy', 'exprime-team-access' ),
 			),
 			array(
 				'id'      => Settings::OPTION . '[suppress_membership_emails]',
 				'type'    => 'checkbox',
-				'title'   => __( 'Memberships emails', 'wc-subscription-team-access' ),
-				'desc'    => __( 'Do not send the WooCommerce Memberships emails (activated, ending soon, ended, renewal reminder) for guest memberships', 'wc-subscription-team-access' ),
+				'title'   => __( 'Memberships emails', 'exprime-team-access' ),
+				'desc'    => __( 'Do not send the WooCommerce Memberships emails (activated, ending soon, ended, renewal reminder) for guest memberships', 'exprime-team-access' ),
 				'default' => $defaults['suppress_membership_emails'],
 			),
-			$this->number( 'anonymize_after_days', __( 'Anonymize the email of ended invitations after (days, 0 = never)', 'wc-subscription-team-access' ), 0, 3650, $defaults ),
+			$this->number( 'anonymize_after_days', __( 'Anonymize the email of ended invitations after (days, 0 = never)', 'exprime-team-access' ), 0, 3650, $defaults ),
 			array(
-				'id'   => 'wcsta_memberships',
+				'id'   => 'exprime_team_memberships',
 				'type' => 'sectionend',
 			),
 
 			array(
-				'id'    => 'wcsta_urls',
+				'id'    => 'exprime_team_urls',
 				'type'  => 'title',
-				'title' => __( 'Addresses', 'wc-subscription-team-access' ),
+				'title' => __( 'Addresses', 'exprime-team-access' ),
 			),
-			$this->text( 'invitation_slug', __( 'Invitation page slug', 'wc-subscription-team-access' ), $defaults ),
-			$this->text( 'account_endpoint', __( 'My account endpoint slug', 'wc-subscription-team-access' ), $defaults ),
+			$this->text( 'invitation_slug', __( 'Invitation page slug', 'exprime-team-access' ), $defaults ),
+			$this->text( 'account_endpoint', __( 'My account endpoint slug', 'exprime-team-access' ), $defaults ),
 			array(
-				'id'   => 'wcsta_urls',
+				'id'   => 'exprime_team_urls',
 				'type' => 'sectionend',
 			),
 		);

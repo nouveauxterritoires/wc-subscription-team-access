@@ -2,26 +2,26 @@
 /**
  * Admin: WooCommerce > Team access.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Admin;
+namespace Exprime\TeamAccess\Admin;
 
-use WCSubscriptionTeamAccess\Domain\SeatStatus;
-use WCSubscriptionTeamAccess\Labels;
-use WCSubscriptionTeamAccess\MembershipManager;
-use WCSubscriptionTeamAccess\QuotaManager;
-use WCSubscriptionTeamAccess\Reconciler;
-use WCSubscriptionTeamAccess\Repository\GrantRepository;
-use WCSubscriptionTeamAccess\Repository\Logger;
-use WCSubscriptionTeamAccess\Repository\Seat;
-use WCSubscriptionTeamAccess\Repository\SeatRepository;
-use WCSubscriptionTeamAccess\Scheduler;
-use WCSubscriptionTeamAccess\SubscriptionManager;
-use WCSubscriptionTeamAccess\Support\Dates;
-use WCSubscriptionTeamAccess\TeamManager;
+use Exprime\TeamAccess\Domain\SeatStatus;
+use Exprime\TeamAccess\Labels;
+use Exprime\TeamAccess\MembershipManager;
+use Exprime\TeamAccess\QuotaManager;
+use Exprime\TeamAccess\Reconciler;
+use Exprime\TeamAccess\Repository\GrantRepository;
+use Exprime\TeamAccess\Repository\Logger;
+use Exprime\TeamAccess\Repository\Seat;
+use Exprime\TeamAccess\Repository\SeatRepository;
+use Exprime\TeamAccess\Scheduler;
+use Exprime\TeamAccess\SubscriptionManager;
+use Exprime\TeamAccess\Support\Dates;
+use Exprime\TeamAccess\TeamManager;
 
 /**
  * Browsing of shared subscriptions, admin actions, log and settings.
@@ -29,7 +29,7 @@ use WCSubscriptionTeamAccess\TeamManager;
  */
 final class AdminPage {
 
-	public const SLUG       = 'wcsta';
+	public const SLUG       = 'exprime-team-access';
 	public const CAPABILITY = 'manage_woocommerce';
 	private const PER_PAGE  = 20;
 
@@ -46,15 +46,15 @@ final class AdminPage {
 
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'add_menu' ), 60 );
-		add_action( 'admin_post_wcsta_admin', array( $this, 'handle_action' ) );
+		add_action( 'admin_post_exprime_team_admin', array( $this, 'handle_action' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 	}
 
 	public function add_menu(): void {
 		add_submenu_page(
 			'woocommerce',
-			__( 'Team access', 'wc-subscription-team-access' ),
-			__( 'Team access', 'wc-subscription-team-access' ),
+			__( 'Team access', 'exprime-team-access' ),
+			__( 'Team access', 'exprime-team-access' ),
 			self::CAPABILITY,
 			self::SLUG,
 			array( $this, 'render' )
@@ -70,8 +70,8 @@ final class AdminPage {
 		if ( ! is_string( $hook ) || ! str_contains( $hook, self::SLUG ) ) {
 			return;
 		}
-		wp_enqueue_style( 'wcsta-admin', WCSTA_URL . 'assets/css/admin.css', array(), WCSTA_VERSION );
-		wp_enqueue_script( 'wcsta-front', WCSTA_URL . 'assets/js/team-access.js', array(), WCSTA_VERSION, true );
+		wp_enqueue_style( 'exprime-team-admin', EXPRIME_TEAM_ACCESS_URL . 'assets/css/admin.css', array(), EXPRIME_TEAM_ACCESS_VERSION );
+		wp_enqueue_script( 'exprime-team-front', EXPRIME_TEAM_ACCESS_URL . 'assets/js/team-access.js', array(), EXPRIME_TEAM_ACCESS_VERSION, true );
 	}
 
 	/**
@@ -85,7 +85,7 @@ final class AdminPage {
 
 	public function render(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to access this page.', 'wc-subscription-team-access' ) );
+			wp_die( esc_html__( 'You are not allowed to access this page.', 'exprime-team-access' ) );
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only.
@@ -93,14 +93,14 @@ final class AdminPage {
 		$subscription_id = isset( $_GET['subscription'] ) ? absint( wp_unslash( $_GET['subscription'] ) ) : 0;
 		// phpcs:enable
 
-		echo '<div class="wrap wcsta-admin">';
-		echo '<h1>' . esc_html__( 'Team access', 'wc-subscription-team-access' ) . '</h1>';
+		echo '<div class="wrap exprime-team-admin">';
+		echo '<h1>' . esc_html__( 'Team access', 'exprime-team-access' ) . '</h1>';
 		$this->print_notice();
 		$this->print_error_banner();
 
 		$tabs = array(
-			'subscriptions' => __( 'Shared subscriptions', 'wc-subscription-team-access' ),
-			'logs'          => __( 'Log', 'wc-subscription-team-access' ),
+			'subscriptions' => __( 'Shared subscriptions', 'exprime-team-access' ),
+			'logs'          => __( 'Log', 'exprime-team-access' ),
 		);
 		echo '<nav class="nav-tab-wrapper">';
 		foreach ( $tabs as $key => $label ) {
@@ -111,7 +111,7 @@ final class AdminPage {
 				esc_html( $label )
 			);
 		}
-		printf( '<a href="%s" class="nav-tab">%s</a>', esc_url( SettingsPage::url() ), esc_html__( 'Settings', 'wc-subscription-team-access' ) );
+		printf( '<a href="%s" class="nav-tab">%s</a>', esc_url( SettingsPage::url() ), esc_html__( 'Settings', 'exprime-team-access' ) );
 		echo '</nav>';
 
 		switch ( $tab ) {
@@ -132,9 +132,9 @@ final class AdminPage {
 	/** Handles actions (admin-post.php). */
 	public function handle_action(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to access this page.', 'wc-subscription-team-access' ), 403 );
+			wp_die( esc_html__( 'You are not allowed to access this page.', 'exprime-team-access' ), 403 );
 		}
-		check_admin_referer( 'wcsta_admin' );
+		check_admin_referer( 'exprime_team_admin' );
 
 		$op              = isset( $_POST['op'] ) ? sanitize_key( wp_unslash( $_POST['op'] ) ) : '';
 		$subscription_id = isset( $_POST['subscription_id'] ) ? absint( wp_unslash( $_POST['subscription_id'] ) ) : 0;
@@ -144,25 +144,25 @@ final class AdminPage {
 
 		switch ( $op ) {
 			case 'revoke':
-				$this->notice_result( $this->team->remove( $seat_id, $actor ), __( 'The seat has been ended.', 'wc-subscription-team-access' ) );
+				$this->notice_result( $this->team->remove( $seat_id, $actor ), __( 'The seat has been ended.', 'exprime-team-access' ) );
 				break;
 
 			case 'resend':
-				$this->notice_result( $this->team->resend( $seat_id, $actor ), __( 'The invitation has been sent again.', 'wc-subscription-team-access' ) );
+				$this->notice_result( $this->team->resend( $seat_id, $actor ), __( 'The invitation has been sent again.', 'exprime-team-access' ) );
 				break;
 
 			case 'invite':
 				$email = isset( $_POST['email'] ) ? sanitize_text_field( wp_unslash( $_POST['email'] ) ) : '';
-				$this->notice_result( $this->team->invite( $subscription_id, $email, $actor ), __( 'The invitation has been sent.', 'wc-subscription-team-access' ) );
+				$this->notice_result( $this->team->invite( $subscription_id, $email, $actor ), __( 'The invitation has been sent.', 'exprime-team-access' ) );
 				break;
 
 			case 'sync':
-				$this->notice_result( $this->reconciler->sync_subscription( $subscription_id, 'admin' ), __( 'The subscription has been synchronized.', 'wc-subscription-team-access' ) );
+				$this->notice_result( $this->reconciler->sync_subscription( $subscription_id, 'admin' ), __( 'The subscription has been synchronized.', 'exprime-team-access' ) );
 				break;
 
 			case 'sync_all':
 				( new Scheduler( $this->reconciler ) )->enqueue_batch( 0 );
-				$this->set_notice( __( 'A full synchronization has been scheduled. It runs in the background.', 'wc-subscription-team-access' ), 'success' );
+				$this->set_notice( __( 'A full synchronization has been scheduled. It runs in the background.', 'exprime-team-access' ), 'success' );
 				break;
 
 			case 'override':
@@ -170,7 +170,7 @@ final class AdminPage {
 				break;
 
 			default:
-				$this->set_notice( __( 'Unknown action.', 'wc-subscription-team-access' ), 'error' );
+				$this->set_notice( __( 'Unknown action.', 'exprime-team-access' ), 'error' );
 		}
 
 		wp_safe_redirect( $back );
@@ -186,32 +186,32 @@ final class AdminPage {
 
 		$result = $this->seats->admin_subscription_summary( array( 'search' => $search ), self::PER_PAGE, ( $paged - 1 ) * self::PER_PAGE );
 
-		echo '<form method="get" class="wcsta-search"><input type="hidden" name="page" value="' . esc_attr( self::SLUG ) . '">';
+		echo '<form method="get" class="exprime-team-search"><input type="hidden" name="page" value="' . esc_attr( self::SLUG ) . '">';
 		printf(
-			'<p class="search-box"><label class="screen-reader-text" for="wcsta-search">%1$s</label><input type="search" id="wcsta-search" name="s" value="%2$s" placeholder="%3$s"> <button class="button">%1$s</button></p>',
-			esc_html__( 'Search', 'wc-subscription-team-access' ),
+			'<p class="search-box"><label class="screen-reader-text" for="exprime-team-search">%1$s</label><input type="search" id="exprime-team-search" name="s" value="%2$s" placeholder="%3$s"> <button class="button">%1$s</button></p>',
+			esc_html__( 'Search', 'exprime-team-access' ),
 			esc_attr( $search ),
-			esc_attr__( 'Email or subscription number', 'wc-subscription-team-access' )
+			esc_attr__( 'Email or subscription number', 'exprime-team-access' )
 		);
 		echo '</form>';
 
-		echo '<table class="widefat striped wcsta-table"><thead><tr>';
+		echo '<table class="widefat striped exprime-team-table"><thead><tr>';
 		foreach ( array(
-			__( 'Subscription', 'wc-subscription-team-access' ),
-			__( 'Holder', 'wc-subscription-team-access' ),
-			__( 'Status', 'wc-subscription-team-access' ),
-			__( 'Quota', 'wc-subscription-team-access' ),
-			__( 'Used', 'wc-subscription-team-access' ),
-			__( 'Available', 'wc-subscription-team-access' ),
-			__( 'Pending / accepted / suspended', 'wc-subscription-team-access' ),
-			__( 'Actions', 'wc-subscription-team-access' ),
+			__( 'Subscription', 'exprime-team-access' ),
+			__( 'Holder', 'exprime-team-access' ),
+			__( 'Status', 'exprime-team-access' ),
+			__( 'Quota', 'exprime-team-access' ),
+			__( 'Used', 'exprime-team-access' ),
+			__( 'Available', 'exprime-team-access' ),
+			__( 'Pending / accepted / suspended', 'exprime-team-access' ),
+			__( 'Actions', 'exprime-team-access' ),
 		) as $heading ) {
 			echo '<th scope="col">' . esc_html( $heading ) . '</th>';
 		}
 		echo '</tr></thead><tbody>';
 
 		if ( ! $result['rows'] ) {
-			echo '<tr><td colspan="8">' . esc_html__( 'No subscription has guests yet.', 'wc-subscription-team-access' ) . '</td></tr>';
+			echo '<tr><td colspan="8">' . esc_html__( 'No subscription has guests yet.', 'exprime-team-access' ) . '</td></tr>';
 		}
 
 		foreach ( $result['rows'] as $row ) {
@@ -221,34 +221,34 @@ final class AdminPage {
 			$detail_url      = self::url( array( 'subscription' => $subscription_id ) );
 
 			echo '<tr>';
-			printf( '<td><a href="%s"><strong>#%d</strong></a> %s</td>', esc_url( $detail_url ), (int) $subscription_id, $subscription ? esc_html( $this->subscriptions->display_name( $subscription ) ) : '<em>' . esc_html__( 'deleted', 'wc-subscription-team-access' ) . '</em>' );
+			printf( '<td><a href="%s"><strong>#%d</strong></a> %s</td>', esc_url( $detail_url ), (int) $subscription_id, $subscription ? esc_html( $this->subscriptions->display_name( $subscription ) ) : '<em>' . esc_html__( 'deleted', 'exprime-team-access' ) . '</em>' );
 			echo '<td>' . wp_kses_post( $this->user_link( (int) $row['owner_id'] ) ) . '</td>';
 			echo '<td>' . esc_html( $subscription ? $this->subscriptions->status_label( $subscription ) : '—' ) . '</td>';
 			echo '<td>' . esc_html( $allocation ? (string) $allocation->quota : '—' );
 			if ( $subscription && null !== $this->quotas->override( $subscription ) ) {
-				echo ' <span class="wcsta-badge">' . esc_html__( 'forced', 'wc-subscription-team-access' ) . '</span>';
+				echo ' <span class="exprime-team-badge">' . esc_html__( 'forced', 'exprime-team-access' ) . '</span>';
 			}
 			echo '</td>';
 			echo '<td>' . esc_html( $allocation ? (string) $allocation->used : '—' ) . '</td>';
 			echo '<td>';
 			if ( $allocation && $allocation->is_over_quota() ) {
 				/* translators: %d: number of guests over quota. */
-				echo '<span class="wcsta-badge wcsta-badge--error">' . esc_html( sprintf( __( 'Over quota: %d', 'wc-subscription-team-access' ), $allocation->overage() ) ) . '</span>';
+				echo '<span class="exprime-team-badge exprime-team-badge--error">' . esc_html( sprintf( __( 'Over quota: %d', 'exprime-team-access' ), $allocation->overage() ) ) . '</span>';
 			} else {
 				echo esc_html( $allocation ? (string) $allocation->available() : '—' );
 			}
 			echo '</td>';
 			printf( '<td>%d / %d / %d</td>', (int) $row['pending'], (int) $row['accepted'], (int) $row['suspended'] );
-			echo '<td><a class="button button-small" href="' . esc_url( $detail_url ) . '">' . esc_html__( 'Details', 'wc-subscription-team-access' ) . '</a> ';
-			$this->action_button( 'sync', __( 'Resynchronize', 'wc-subscription-team-access' ), $subscription_id );
+			echo '<td><a class="button button-small" href="' . esc_url( $detail_url ) . '">' . esc_html__( 'Details', 'exprime-team-access' ) . '</a> ';
+			$this->action_button( 'sync', __( 'Resynchronize', 'exprime-team-access' ), $subscription_id );
 			echo '</td></tr>';
 		}
 		echo '</tbody></table>';
 
 		$this->pagination( $result['total'], $paged, array( 's' => $search ) );
 
-		echo '<p class="description">' . esc_html__( 'A catch-up synchronization runs every day. You can start one now.', 'wc-subscription-team-access' ) . '</p>';
-		$this->action_button( 'sync_all', __( 'Resynchronize all shared subscriptions', 'wc-subscription-team-access' ), 0, 0, 'button' );
+		echo '<p class="description">' . esc_html__( 'A catch-up synchronization runs every day. You can start one now.', 'exprime-team-access' ) . '</p>';
+		$this->action_button( 'sync_all', __( 'Resynchronize all shared subscriptions', 'exprime-team-access' ), 0, 0, 'button' );
 	}
 
 	/**
@@ -260,10 +260,10 @@ final class AdminPage {
 		$subscription = $this->subscriptions->get( $subscription_id );
 		$all_seats    = $this->seats->for_subscription( $subscription_id );
 
-		echo '<p><a href="' . esc_url( self::url() ) . '">&larr; ' . esc_html__( 'All shared subscriptions', 'wc-subscription-team-access' ) . '</a></p>';
+		echo '<p><a href="' . esc_url( self::url() ) . '">&larr; ' . esc_html__( 'All shared subscriptions', 'exprime-team-access' ) . '</a></p>';
 
 		if ( ! $subscription ) {
-			echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'This subscription no longer exists. Its seats have been ended.', 'wc-subscription-team-access' ) . '</p></div>';
+			echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'This subscription no longer exists. Its seats have been ended.', 'exprime-team-access' ) . '</p></div>';
 		} else {
 			$summary = $this->team->summary( $subscription );
 			$access  = $this->subscriptions->effective_access( $subscription );
@@ -276,24 +276,24 @@ final class AdminPage {
 				(int) $subscription_id
 			);
 
-			echo '<table class="form-table wcsta-facts"><tbody>';
-			$this->fact( __( 'Holder', 'wc-subscription-team-access' ), $this->user_link( (int) $subscription->get_customer_id() ) );
-			$this->fact( __( 'Subscription status', 'wc-subscription-team-access' ), esc_html( $this->subscriptions->status_label( $subscription ) ) );
-			$this->fact( __( 'Guest access', 'wc-subscription-team-access' ), esc_html( $this->access_label( $access->state, $access->end_ts ) ) );
-			$this->fact( __( 'Shared membership plans', 'wc-subscription-team-access' ), $this->plan_links( $plans ) );
+			echo '<table class="form-table exprime-team-facts"><tbody>';
+			$this->fact( __( 'Holder', 'exprime-team-access' ), $this->user_link( (int) $subscription->get_customer_id() ) );
+			$this->fact( __( 'Subscription status', 'exprime-team-access' ), esc_html( $this->subscriptions->status_label( $subscription ) ) );
+			$this->fact( __( 'Guest access', 'exprime-team-access' ), esc_html( $this->access_label( $access->state, $access->end_ts ) ) );
+			$this->fact( __( 'Shared membership plans', 'exprime-team-access' ), $this->plan_links( $plans ) );
 			$this->fact(
-				__( 'Seats', 'wc-subscription-team-access' ),
+				__( 'Seats', 'exprime-team-access' ),
 				esc_html(
 					sprintf(
 						/* translators: 1: used seats, 2: quota, 3: available seats. */
-						__( '%1$d used of %2$d (%3$d available)', 'wc-subscription-team-access' ),
+						__( '%1$d used of %2$d (%3$d available)', 'exprime-team-access' ),
 						$summary['used'],
 						$summary['quota'],
 						$summary['available']
 					)
-				) . ( $summary['over'] > 0 ? ' <span class="wcsta-badge wcsta-badge--error">' . esc_html(
+				) . ( $summary['over'] > 0 ? ' <span class="exprime-team-badge exprime-team-badge--error">' . esc_html(
 					/* translators: %d: number of guests over quota. */
-					sprintf( __( 'Over quota: %d', 'wc-subscription-team-access' ), $summary['over'] )
+					sprintf( __( 'Over quota: %d', 'exprime-team-access' ), $summary['over'] )
 				) . '</span>' : '' )
 			);
 			echo '</tbody></table>';
@@ -301,41 +301,41 @@ final class AdminPage {
 			$this->render_quota_form( $subscription );
 
 			echo '<p>';
-			$this->action_button( 'sync', __( 'Resynchronize this subscription', 'wc-subscription-team-access' ), $subscription_id, 0, 'button' );
+			$this->action_button( 'sync', __( 'Resynchronize this subscription', 'exprime-team-access' ), $subscription_id, 0, 'button' );
 			echo '</p>';
 		}
 
-		echo '<h3>' . esc_html__( 'Guests', 'wc-subscription-team-access' ) . '</h3>';
-		echo '<table class="widefat striped wcsta-table"><thead><tr>';
+		echo '<h3>' . esc_html__( 'Guests', 'exprime-team-access' ) . '</h3>';
+		echo '<table class="widefat striped exprime-team-table"><thead><tr>';
 		foreach ( array(
-			__( 'Email', 'wc-subscription-team-access' ),
-			__( 'Account', 'wc-subscription-team-access' ),
-			__( 'Status', 'wc-subscription-team-access' ),
-			__( 'Invited on', 'wc-subscription-team-access' ),
-			__( 'Accepted on', 'wc-subscription-team-access' ),
-			__( 'Memberships', 'wc-subscription-team-access' ),
-			__( 'Actions', 'wc-subscription-team-access' ),
+			__( 'Email', 'exprime-team-access' ),
+			__( 'Account', 'exprime-team-access' ),
+			__( 'Status', 'exprime-team-access' ),
+			__( 'Invited on', 'exprime-team-access' ),
+			__( 'Accepted on', 'exprime-team-access' ),
+			__( 'Memberships', 'exprime-team-access' ),
+			__( 'Actions', 'exprime-team-access' ),
 		) as $heading ) {
 			echo '<th scope="col">' . esc_html( $heading ) . '</th>';
 		}
 		echo '</tr></thead><tbody>';
 
 		if ( ! $all_seats ) {
-			echo '<tr><td colspan="7">' . esc_html__( 'No guest.', 'wc-subscription-team-access' ) . '</td></tr>';
+			echo '<tr><td colspan="7">' . esc_html__( 'No guest.', 'exprime-team-access' ) . '</td></tr>';
 		}
 
 		foreach ( array_reverse( $all_seats ) as $seat ) {
 			echo '<tr>';
 			echo '<td>' . esc_html( $seat->email ) . '</td>';
 			echo '<td>' . wp_kses_post( $seat->user_id > 0 ? $this->user_link( $seat->user_id ) : '—' ) . '</td>';
-			echo '<td><span class="wcsta-status wcsta-status--' . esc_attr( Labels::display_status( $seat ) ) . '">' . esc_html( Labels::status( $seat ) ) . '</span>';
+			echo '<td><span class="exprime-team-status exprime-team-status--' . esc_attr( Labels::display_status( $seat ) ) . '">' . esc_html( Labels::status( $seat ) ) . '</span>';
 			$reason = Labels::reason( $seat );
 			if ( '' !== $reason ) {
 				echo '<br><small>' . esc_html( $reason ) . '</small>';
 			}
 			if ( $seat->is_pending() && $seat->token_expires_at ) {
 				/* translators: %s: date. */
-				echo '<br><small>' . esc_html( sprintf( __( 'Expires on %s', 'wc-subscription-team-access' ), Dates::display( $seat->token_expires_at, true ) ) ) . '</small>';
+				echo '<br><small>' . esc_html( sprintf( __( 'Expires on %s', 'exprime-team-access' ), Dates::display( $seat->token_expires_at, true ) ) ) . '</small>';
 			}
 			echo '</td>';
 			echo '<td>' . esc_html( Dates::display( $seat->created_at, true ) ) . '</td>';
@@ -343,27 +343,27 @@ final class AdminPage {
 			echo '<td>' . wp_kses_post( $this->seat_memberships( $seat ) ) . '</td>';
 			echo '<td>';
 			if ( $seat->is_live() ) {
-				$label = $seat->is_pending() ? __( 'Cancel invitation', 'wc-subscription-team-access' ) : __( 'Revoke access', 'wc-subscription-team-access' );
-				$this->action_button( 'revoke', $label, $subscription_id, $seat->id, 'button button-small', __( 'Confirm?', 'wc-subscription-team-access' ) );
+				$label = $seat->is_pending() ? __( 'Cancel invitation', 'exprime-team-access' ) : __( 'Revoke access', 'exprime-team-access' );
+				$this->action_button( 'revoke', $label, $subscription_id, $seat->id, 'button button-small', __( 'Confirm?', 'exprime-team-access' ) );
 			}
 			if ( in_array( $seat->status, array( SeatStatus::PENDING, SeatStatus::EXPIRED ), true ) ) {
 				echo ' ';
-				$this->action_button( 'resend', __( 'Resend', 'wc-subscription-team-access' ), $subscription_id, $seat->id, 'button button-small' );
+				$this->action_button( 'resend', __( 'Resend', 'exprime-team-access' ), $subscription_id, $seat->id, 'button button-small' );
 			}
 			echo '</td></tr>';
 		}
 		echo '</tbody></table>';
 
 		if ( $subscription ) {
-			echo '<h3>' . esc_html__( 'Invite on behalf of the holder', 'wc-subscription-team-access' ) . '</h3>';
-			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="wcsta-inline-form">';
+			echo '<h3>' . esc_html__( 'Invite on behalf of the holder', 'exprime-team-access' ) . '</h3>';
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="exprime-team-inline-form">';
 			$this->hidden_fields( 'invite', $subscription_id );
-			echo '<input type="email" name="email" required class="regular-text" placeholder="' . esc_attr__( 'Email address', 'wc-subscription-team-access' ) . '"> ';
-			submit_button( __( 'Send invitation', 'wc-subscription-team-access' ), 'secondary', 'submit', false );
+			echo '<input type="email" name="email" required class="regular-text" placeholder="' . esc_attr__( 'Email address', 'exprime-team-access' ) . '"> ';
+			submit_button( __( 'Send invitation', 'exprime-team-access' ), 'secondary', 'submit', false );
 			echo '</form>';
 		}
 
-		$this->render_log_table( $this->logger->query( '', 20, 0, $subscription_id )['rows'], __( 'Recent events', 'wc-subscription-team-access' ) );
+		$this->render_log_table( $this->logger->query( '', 20, 0, $subscription_id )['rows'], __( 'Recent events', 'exprime-team-access' ) );
 	}
 
 	/**
@@ -375,15 +375,15 @@ final class AdminPage {
 		$override = $this->quotas->override( $subscription );
 		$snapshot = $this->quotas->snapshot_value( $subscription );
 
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="wcsta-inline-form">';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="exprime-team-inline-form">';
 		$this->hidden_fields( 'override', $subscription->get_id() );
-		echo '<label for="wcsta-override"><strong>' . esc_html__( 'Forced quota', 'wc-subscription-team-access' ) . '</strong></label> ';
-		printf( '<input type="number" min="0" step="1" id="wcsta-override" name="quota_override" value="%s" class="small-text"> ', esc_attr( null === $override ? '' : (string) $override ) );
-		submit_button( __( 'Save', 'wc-subscription-team-access' ), 'secondary', 'submit', false );
+		echo '<label for="exprime-team-override"><strong>' . esc_html__( 'Forced quota', 'exprime-team-access' ) . '</strong></label> ';
+		printf( '<input type="number" min="0" step="1" id="exprime-team-override" name="quota_override" value="%s" class="small-text"> ', esc_attr( null === $override ? '' : (string) $override ) );
+		submit_button( __( 'Save', 'exprime-team-access' ), 'secondary', 'submit', false );
 		echo ' <span class="description">' . esc_html(
 			sprintf(
 				/* translators: %s: quota stored at purchase. */
-				__( 'Leave empty to use the quota recorded at purchase or at the last plan change (%s).', 'wc-subscription-team-access' ),
+				__( 'Leave empty to use the quota recorded at purchase or at the last plan change (%s).', 'exprime-team-access' ),
 				null === $snapshot ? '—' : (string) $snapshot
 			)
 		) . '</span>';
@@ -397,8 +397,8 @@ final class AdminPage {
 		// phpcs:enable
 
 		$filters = array(
-			'problems' => __( 'Errors and warnings', 'wc-subscription-team-access' ),
-			''         => __( 'All events', 'wc-subscription-team-access' ),
+			'problems' => __( 'Errors and warnings', 'exprime-team-access' ),
+			''         => __( 'All events', 'exprime-team-access' ),
 		);
 		echo '<ul class="subsubsub">';
 		$links = array();
@@ -428,26 +428,26 @@ final class AdminPage {
 		if ( '' !== $title ) {
 			echo '<h3>' . esc_html( $title ) . '</h3>';
 		}
-		echo '<table class="widefat striped wcsta-table"><thead><tr>';
+		echo '<table class="widefat striped exprime-team-table"><thead><tr>';
 		foreach ( array(
-			__( 'Date', 'wc-subscription-team-access' ),
-			__( 'Level', 'wc-subscription-team-access' ),
-			__( 'Event', 'wc-subscription-team-access' ),
-			__( 'Subscription', 'wc-subscription-team-access' ),
-			__( 'User', 'wc-subscription-team-access' ),
-			__( 'Message', 'wc-subscription-team-access' ),
+			__( 'Date', 'exprime-team-access' ),
+			__( 'Level', 'exprime-team-access' ),
+			__( 'Event', 'exprime-team-access' ),
+			__( 'Subscription', 'exprime-team-access' ),
+			__( 'User', 'exprime-team-access' ),
+			__( 'Message', 'exprime-team-access' ),
 		) as $heading ) {
 			echo '<th scope="col">' . esc_html( $heading ) . '</th>';
 		}
 		echo '</tr></thead><tbody>';
 		if ( ! $rows ) {
-			echo '<tr><td colspan="6">' . esc_html__( 'Nothing to show.', 'wc-subscription-team-access' ) . '</td></tr>';
+			echo '<tr><td colspan="6">' . esc_html__( 'Nothing to show.', 'exprime-team-access' ) . '</td></tr>';
 		}
 		foreach ( $rows as $row ) {
 			$subscription_id = (int) $row['subscription_id'];
 			echo '<tr>';
 			echo '<td>' . esc_html( Dates::display( Dates::from_mysql( (string) $row['created_at'] ), true ) ) . '</td>';
-			echo '<td><span class="wcsta-level wcsta-level--' . esc_attr( (string) $row['level'] ) . '">' . esc_html( (string) $row['level'] ) . '</span></td>';
+			echo '<td><span class="exprime-team-level exprime-team-level--' . esc_attr( (string) $row['level'] ) . '">' . esc_html( (string) $row['level'] ) . '</span></td>';
 			echo '<td><code>' . esc_html( (string) $row['event'] ) . '</code></td>';
 			echo '<td>' . ( $subscription_id > 0 ? '<a href="' . esc_url( self::url( array( 'subscription' => $subscription_id ) ) ) . '">#' . (int) $subscription_id . '</a>' : '—' ) . '</td>';
 			echo '<td>' . wp_kses_post( (int) $row['user_id'] > 0 ? $this->user_link( (int) $row['user_id'] ) : '—' ) . '</td>';
@@ -477,7 +477,7 @@ final class AdminPage {
 
 		$this->quotas->set_override( $subscription, $value, $actor );
 		$this->reconciler->sync_subscription( $subscription_id, 'admin_override' );
-		$this->set_notice( __( 'The quota has been updated.', 'wc-subscription-team-access' ), 'success' );
+		$this->set_notice( __( 'The quota has been updated.', 'exprime-team-access' ), 'success' );
 	}
 
 	/**
@@ -498,7 +498,7 @@ final class AdminPage {
 				$parts[] = sprintf( '<a href="%s">%s</a> (%s)', esc_url( (string) get_edit_post_link( $managed->get_id() ) ), esc_html( $name ), esc_html( (string) wc_memberships_get_user_membership_status_name( $managed->get_status() ) ) );
 			} else {
 				/* translators: %s: plan name. */
-				$parts[] = esc_html( sprintf( __( '%s (covered by the guest\'s own membership)', 'wc-subscription-team-access' ), $name ) );
+				$parts[] = esc_html( sprintf( __( '%s (covered by the guest\'s own membership)', 'exprime-team-access' ), $name ) );
 			}
 		}
 		return $parts ? implode( '<br>', $parts ) : '—';
@@ -524,7 +524,7 @@ final class AdminPage {
 	 */
 	private function plan_links( array $plan_ids ): string {
 		if ( ! $plan_ids ) {
-			return '<em>' . esc_html__( 'None: this subscription does not grant any membership plan.', 'wc-subscription-team-access' ) . '</em>';
+			return '<em>' . esc_html__( 'None: this subscription does not grant any membership plan.', 'exprime-team-access' ) . '</em>';
 		}
 		$links = array();
 		foreach ( $plan_ids as $plan_id ) {
@@ -543,11 +543,11 @@ final class AdminPage {
 	private function access_label( string $state, ?int $end_ts ): string {
 		if ( 'active' === $state ) {
 			return null === $end_ts
-				? __( 'Active', 'wc-subscription-team-access' )
+				? __( 'Active', 'exprime-team-access' )
 				/* translators: %s: date. */
-				: sprintf( __( 'Active until %s', 'wc-subscription-team-access' ), Dates::display( $end_ts, true ) );
+				: sprintf( __( 'Active until %s', 'exprime-team-access' ), Dates::display( $end_ts, true ) );
 		}
-		return 'paused' === $state ? __( 'Suspended', 'wc-subscription-team-access' ) : __( 'None', 'wc-subscription-team-access' );
+		return 'paused' === $state ? __( 'Suspended', 'exprime-team-access' ) : __( 'None', 'exprime-team-access' );
 	}
 
 	/**
@@ -571,7 +571,7 @@ final class AdminPage {
 	 * @param string $confirm         Confirmation message.
 	 */
 	private function action_button( string $op, string $label, int $subscription_id, int $seat_id = 0, string $class = 'button button-small', string $confirm = '' ): void {
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="wcsta-inline-form"' . ( '' !== $confirm ? ' data-wcsta-confirm="' . esc_attr( $confirm ) . '"' : '' ) . '>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="exprime-team-inline-form"' . ( '' !== $confirm ? ' data-exprime-team-confirm="' . esc_attr( $confirm ) . '"' : '' ) . '>';
 		$this->hidden_fields( $op, $subscription_id, $seat_id );
 		echo '<button type="submit" class="' . esc_attr( $class ) . '">' . esc_html( $label ) . '</button>';
 		echo '</form>';
@@ -585,8 +585,8 @@ final class AdminPage {
 	 * @param int    $seat_id         Seat.
 	 */
 	private function hidden_fields( string $op, int $subscription_id, int $seat_id = 0 ): void {
-		wp_nonce_field( 'wcsta_admin' );
-		echo '<input type="hidden" name="action" value="wcsta_admin">';
+		wp_nonce_field( 'exprime_team_admin' );
+		echo '<input type="hidden" name="action" value="exprime_team_admin">';
 		echo '<input type="hidden" name="op" value="' . esc_attr( $op ) . '">';
 		echo '<input type="hidden" name="subscription_id" value="' . esc_attr( (string) $subscription_id ) . '">';
 		if ( $seat_id > 0 ) {
@@ -646,7 +646,7 @@ final class AdminPage {
 	 */
 	private function set_notice( string $message, string $type ): void {
 		set_transient(
-			'wcsta_admin_notice_' . get_current_user_id(),
+			'exprime_team_admin_notice_' . get_current_user_id(),
 			array(
 				'message' => $message,
 				'type'    => $type,
@@ -656,7 +656,7 @@ final class AdminPage {
 	}
 
 	private function print_notice(): void {
-		$key    = 'wcsta_admin_notice_' . get_current_user_id();
+		$key    = 'exprime_team_admin_notice_' . get_current_user_id();
 		$notice = get_transient( $key );
 		if ( ! is_array( $notice ) ) {
 			return;
@@ -680,12 +680,12 @@ final class AdminPage {
 			esc_html(
 				sprintf(
 					/* translators: %d: number of errors. */
-					_n( '%d synchronization error in the last 7 days.', '%d synchronization errors in the last 7 days.', $count, 'wc-subscription-team-access' ),
+					_n( '%d synchronization error in the last 7 days.', '%d synchronization errors in the last 7 days.', $count, 'exprime-team-access' ),
 					$count
 				)
 			),
 			esc_url( self::url( array( 'tab' => 'logs' ) ) ),
-			esc_html__( 'See the log', 'wc-subscription-team-access' )
+			esc_html__( 'See the log', 'exprime-team-access' )
 		);
 	}
 }

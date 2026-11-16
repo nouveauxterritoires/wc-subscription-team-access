@@ -1,10 +1,10 @@
 <?php
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Tests\Unit;
+namespace Exprime\TeamAccess\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use WCSubscriptionTeamAccess\Domain\Token;
+use Exprime\TeamAccess\Domain\Token;
 
 /**
  * Invitation tokens.

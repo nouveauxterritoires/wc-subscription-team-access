@@ -2,15 +2,15 @@
 /**
  * Invitation email sent to the invited person.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Emails;
+namespace Exprime\TeamAccess\Emails;
 
-use WCSubscriptionTeamAccess\Repository\Seat;
-use WCSubscriptionTeamAccess\Settings;
+use Exprime\TeamAccess\Repository\Seat;
+use Exprime\TeamAccess\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -30,13 +30,13 @@ class InvitationEmail extends \WC_Email {
 	public int $expires_at = 0;
 
 	public function __construct() {
-		$this->id             = 'wcsta_team_invitation';
+		$this->id             = 'exprime_team_invitation';
 		$this->customer_email = true;
-		$this->title          = __( 'Team access invitation', 'wc-subscription-team-access' );
-		$this->description    = __( 'Sent to a person invited by a subscription holder to share their premium access.', 'wc-subscription-team-access' );
-		$this->template_html  = 'emails/wcsta-team-invitation.php';
-		$this->template_plain = 'emails/plain/wcsta-team-invitation.php';
-		$this->template_base  = WCSTA_DIR . 'templates/';
+		$this->title          = __( 'Team access invitation', 'exprime-team-access' );
+		$this->description    = __( 'Sent to a person invited by a subscription holder to share their premium access.', 'exprime-team-access' );
+		$this->template_html  = 'emails/exprime-team-invitation.php';
+		$this->template_plain = 'emails/plain/exprime-team-invitation.php';
+		$this->template_base  = EXPRIME_TEAM_ACCESS_DIR . 'templates/';
 		$this->placeholders   = array(
 			'{inviter_name}'      => '',
 			'{subscription_name}' => '',
@@ -46,15 +46,15 @@ class InvitationEmail extends \WC_Email {
 	}
 
 	public function get_default_subject() {
-		return __( '{inviter_name} invites you to share their access on {site_title}', 'wc-subscription-team-access' );
+		return __( '{inviter_name} invites you to share their access on {site_title}', 'exprime-team-access' );
 	}
 
 	public function get_default_heading() {
-		return __( 'You are invited', 'wc-subscription-team-access' );
+		return __( 'You are invited', 'exprime-team-access' );
 	}
 
 	public function get_default_additional_content() {
-		return __( 'If you were not expecting this invitation, you can ignore this email: nothing will happen without your action.', 'wc-subscription-team-access' );
+		return __( 'If you were not expecting this invitation, you can ignore this email: nothing will happen without your action.', 'exprime-team-access' );
 	}
 
 	/**

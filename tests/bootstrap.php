@@ -5,7 +5,7 @@
  * The end-to-end scenarios (real WooCommerce, Subscriptions, Memberships) live in
  * tests/integration and run on a WordPress site through WP-CLI.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );

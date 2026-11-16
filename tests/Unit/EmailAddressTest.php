@@ -1,10 +1,10 @@
 <?php
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Tests\Unit;
+namespace Exprime\TeamAccess\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use WCSubscriptionTeamAccess\Domain\EmailAddress;
+use Exprime\TeamAccess\Domain\EmailAddress;
 
 /**
  * Email address comparison and masking.

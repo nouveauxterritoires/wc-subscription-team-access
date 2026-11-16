@@ -2,12 +2,12 @@
 /**
  * Lifecycle statuses of a guest seat.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Domain;
+namespace Exprime\TeamAccess\Domain;
 
 /**
  * A seat is "live" (it consumes quota) as long as it is pending or accepted.

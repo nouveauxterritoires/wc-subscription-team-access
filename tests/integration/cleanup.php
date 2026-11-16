@@ -4,7 +4,7 @@
  *
  * Usage: wp eval-file tests/integration/cleanup.php <fixtures-file.json>
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 
@@ -17,12 +17,12 @@ $fixtures = is_readable( $file ) ? (array) json_decode( (string) file_get_conten
 
 global $wpdb;
 
-$t                 = new WCSTA_IT();
+$t                 = new EXPRIME_TEAM_ACCESS_IT();
 $t->created_users  = array_map( 'intval', (array) ( $fixtures['created_users'] ?? array() ) );
 $t->created_orders = array_map( 'intval', (array) ( $fixtures['created_orders'] ?? array() ) );
 
 // Test accounts created outside tracking (e.g. acceptance with account creation, concurrency).
-$extra = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->users} WHERE user_email LIKE %s", $wpdb->esc_like( WCSTA_IT::PREFIX ) . '%' ) ); // phpcs:ignore
+$extra = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->users} WHERE user_email LIKE %s", $wpdb->esc_like( EXPRIME_TEAM_ACCESS_IT::PREFIX ) . '%' ) ); // phpcs:ignore
 $t->created_users = array_merge( $t->created_users, array_map( 'intval', $extra ) );
 
 // Subscriptions and orders of these accounts.
@@ -50,7 +50,7 @@ if ( ! empty( $fixtures['plan_id'] ) ) {
 }
 
 // Suite log.
-$wpdb->query( "DELETE l FROM {$wpdb->prefix}wcsta_log l LEFT JOIN {$wpdb->prefix}wcsta_seats s ON s.subscription_id = l.subscription_id WHERE l.subscription_id > 0 AND s.id IS NULL" ); // phpcs:ignore
+$wpdb->query( "DELETE l FROM {$wpdb->prefix}exprime_team_log l LEFT JOIN {$wpdb->prefix}exprime_team_seats s ON s.subscription_id = l.subscription_id WHERE l.subscription_id > 0 AND s.id IS NULL" ); // phpcs:ignore
 
 if ( is_file( $file ) ) {
 	unlink( $file );

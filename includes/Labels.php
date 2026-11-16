@@ -2,15 +2,15 @@
 /**
  * Translated status labels (customer area and admin).
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Domain\SeatStatus;
-use WCSubscriptionTeamAccess\Repository\Seat;
+use Exprime\TeamAccess\Domain\SeatStatus;
+use Exprime\TeamAccess\Repository\Seat;
 
 /**
  * Displayed seat status: one of the four statuses shown to users
@@ -37,12 +37,12 @@ final class Labels {
 	 */
 	public static function status( Seat $seat ): string {
 		$labels = array(
-			'pending'   => __( 'Invitation pending', 'wc-subscription-team-access' ),
-			'accepted'  => __( 'Invitation accepted', 'wc-subscription-team-access' ),
-			'suspended' => __( 'Access suspended', 'wc-subscription-team-access' ),
-			'revoked'   => __( 'Access revoked', 'wc-subscription-team-access' ),
-			'cancelled' => __( 'Invitation cancelled', 'wc-subscription-team-access' ),
-			'expired'   => __( 'Invitation expired', 'wc-subscription-team-access' ),
+			'pending'   => __( 'Invitation pending', 'exprime-team-access' ),
+			'accepted'  => __( 'Invitation accepted', 'exprime-team-access' ),
+			'suspended' => __( 'Access suspended', 'exprime-team-access' ),
+			'revoked'   => __( 'Access revoked', 'exprime-team-access' ),
+			'cancelled' => __( 'Invitation cancelled', 'exprime-team-access' ),
+			'expired'   => __( 'Invitation expired', 'exprime-team-access' ),
 		);
 		$key = self::display_status( $seat );
 		return $labels[ $key ] ?? $key;
@@ -58,10 +58,10 @@ final class Labels {
 			return '';
 		}
 		return match ( $seat->access_reason ) {
-			SeatStatus::REASON_OVER_QUOTA            => __( 'The number of guests exceeds the subscription quota.', 'wc-subscription-team-access' ),
-			SeatStatus::REASON_SUBSCRIPTION_PAUSED   => __( 'The subscription is on hold.', 'wc-subscription-team-access' ),
-			SeatStatus::REASON_SUBSCRIPTION_INACTIVE => __( 'The subscription is no longer active.', 'wc-subscription-team-access' ),
-			SeatStatus::REASON_NO_PLAN               => __( 'The subscription does not grant any membership plan.', 'wc-subscription-team-access' ),
+			SeatStatus::REASON_OVER_QUOTA            => __( 'The number of guests exceeds the subscription quota.', 'exprime-team-access' ),
+			SeatStatus::REASON_SUBSCRIPTION_PAUSED   => __( 'The subscription is on hold.', 'exprime-team-access' ),
+			SeatStatus::REASON_SUBSCRIPTION_INACTIVE => __( 'The subscription is no longer active.', 'exprime-team-access' ),
+			SeatStatus::REASON_NO_PLAN               => __( 'The subscription does not grant any membership plan.', 'exprime-team-access' ),
 			default                                  => '',
 		};
 	}

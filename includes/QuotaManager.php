@@ -2,15 +2,15 @@
 /**
  * Snapshot of the guest quota on the subscription, and controlled updates.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Domain\QuotaCalculator;
-use WCSubscriptionTeamAccess\Repository\Logger;
+use Exprime\TeamAccess\Domain\QuotaCalculator;
+use Exprime\TeamAccess\Repository\Logger;
 
 /**
  * The applicable quota is frozen in the subscription's metadata at purchase time, so that later
@@ -19,10 +19,10 @@ use WCSubscriptionTeamAccess\Repository\Logger;
  */
 final class QuotaManager {
 
-	public const META_QUOTA       = '_wcsta_quota';
-	public const META_OVERRIDE    = '_wcsta_quota_override';
-	public const META_SNAPSHOT_AT = '_wcsta_quota_snapshot_at';
-	public const META_HISTORY     = '_wcsta_quota_history';
+	public const META_QUOTA       = '_exprime_team_quota';
+	public const META_OVERRIDE    = '_exprime_team_quota_override';
+	public const META_SNAPSHOT_AT = '_exprime_team_quota_snapshot_at';
+	public const META_HISTORY     = '_exprime_team_quota_history';
 
 	private const HISTORY_MAX = 20;
 
@@ -175,7 +175,7 @@ final class QuotaManager {
 		 * @param int              $quota        Computed quota.
 		 * @param \WC_Subscription $subscription Subscription.
 		 */
-		return max( 0, (int) apply_filters( 'wcsta_computed_quota', QuotaCalculator::total( $lines ), $subscription ) );
+		return max( 0, (int) apply_filters( 'exprime_team_computed_quota', QuotaCalculator::total( $lines ), $subscription ) );
 	}
 
 	/**

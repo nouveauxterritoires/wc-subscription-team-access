@@ -2,14 +2,14 @@
 /**
  * Checks that the quota is not exceeded after the concurrent invitations.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 
 defined( 'WP_CLI' ) && WP_CLI || exit( 1 );
 
 $fixtures = (array) json_decode( (string) file_get_contents( (string) $args[0] ), true );
-$live     = \WCSubscriptionTeamAccess\Plugin::instance()->seats()->live_for_subscription( (int) $fixtures['concurrency_sub'] );
+$live     = \Exprime\TeamAccess\Plugin::instance()->seats()->live_for_subscription( (int) $fixtures['concurrency_sub'] );
 
 if ( 5 !== count( $live ) ) {
 	WP_CLI::error( sprintf( 'Concurrent invitations: %d live seats for a quota of 5.', count( $live ) ) );

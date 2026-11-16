@@ -2,12 +2,12 @@
 /**
  * MySQL/MariaDB application locks (GET_LOCK) to serialize concurrent operations.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Support;
+namespace Exprime\TeamAccess\Support;
 
 /**
  * GET_LOCK is shared across all connections to the database server: two
@@ -43,8 +43,8 @@ final class Lock {
 
 		if ( ! self::acquire( $name ) ) {
 			return new \WP_Error(
-				'wcsta_busy',
-				__( 'Another operation is in progress on this subscription. Please try again in a moment.', 'wc-subscription-team-access' )
+				'exprime_team_busy',
+				__( 'Another operation is in progress on this subscription. Please try again in a moment.', 'exprime-team-access' )
 			);
 		}
 
@@ -64,7 +64,7 @@ final class Lock {
 	 */
 	private static function name( string $key ): string {
 		global $wpdb;
-		return 'wcsta_' . substr( md5( DB_NAME . '|' . $wpdb->prefix . '|' . $key ), 0, 32 );
+		return 'exprime_team_' . substr( md5( DB_NAME . '|' . $wpdb->prefix . '|' . $key ), 0, 32 );
 	}
 
 	/**

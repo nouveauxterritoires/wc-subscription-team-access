@@ -2,12 +2,12 @@
 /**
  * Invitation tokens: random, opaque, stored only as a hash.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Domain;
+namespace Exprime\TeamAccess\Domain;
 
 /**
  * 32 bytes from random_bytes(), base64url-encoded (43 characters).

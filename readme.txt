@@ -1,9 +1,9 @@
-=== WC Subscription Team Access ===
+=== Exprime Team Access for WooCommerce Subscriptions ===
 Tags: woocommerce, subscriptions, memberships, team, invitations
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,8 @@ Subscribers invite guests by email. Each guest gets the WooCommerce Memberships 
 You sell a subscription that unlocks members-only content, and some customers buy it for a small team. This plugin lets the subscriber share that access with a set number of guests. Each guest signs in with their own WordPress account and is not billed.
 
 **Requires two commercial extensions:** WooCommerce Subscriptions and WooCommerce Memberships. They are not available on WordPress.org and must be installed and active. Without them the plugin does nothing except display a notice in the admin.
+
+Exprime Team Access is an independent extension made for Exprime.media. It is not developed or endorsed by the publisher of WooCommerce.
 
 = How it works =
 
@@ -44,7 +46,7 @@ A membership the guest bought or was given by an administrator is never modified
 * Settings under WooCommerce > Settings > Team access.
 * Two WooCommerce emails (invitation, invitation accepted) with overridable templates.
 * Documentation in the Help tab of each screen.
-* WP-CLI commands: `wp team-access status|invite|revoke|resend|sync|schedule|maintenance|snapshot`.
+* WP-CLI commands: `wp exprime-team status|invite|revoke|resend|sync|schedule|maintenance|snapshot`.
 
 = Security and privacy =
 
@@ -106,11 +108,16 @@ In the Help tab of the plugin screens, and in the README of the GitHub repositor
 
 == Changelog ==
 
+= 1.2.0 =
+* Renamed to Exprime Team Access: new slug and text domain (`exprime-team-access`), `exprime_team_` prefix for options, tables, meta keys and hooks, `Exprime\TeamAccess` namespace, WP-CLI command `wp exprime-team`.
+* Stricter SQL placeholders.
+* Help texts reworded.
+
 = 1.1.0 =
 * Help tabs on the plugin screens, the settings tab and the product and subscription edit screens.
 * English source strings, French translation included.
 * Failed synchronizations are retried in the background.
-* Per-IP limits no longer lock out guests sharing an IP address (new `wcsta_client_ip` filter).
+* Per-IP limits no longer lock out guests sharing an IP address (new `exprime_team_client_ip` filter).
 * Token and subscription are checked again under lock when an invitation is accepted.
 * Pending-cancel access ends with the paid period.
 * Resending to an anonymized address is refused.
@@ -119,6 +126,9 @@ In the Help tab of the plugin screens, and in the README of the GitHub repositor
 * First release.
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+New slug, prefixes and hook names. Settings and data from 1.1.0 are not migrated: reinstall and reconfigure.
 
 = 1.1.0 =
 Security fixes and background retry of failed synchronizations. Recommended for all sites.

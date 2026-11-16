@@ -2,23 +2,23 @@
 /**
  * Background jobs via Action Scheduler (bundled with WooCommerce).
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
 /**
  * Schedules the catch-up sync and asynchronous jobs.
  */
 final class Scheduler {
 
-	public const GROUP              = 'wc-subscription-team-access';
-	public const DAILY_HOOK         = 'wcsta_daily_maintenance';
-	public const SYNC_SUBSCRIPTION  = 'wcsta_sync_subscription';
-	public const SYNC_USER_PLAN     = 'wcsta_sync_user_plan';
-	public const SYNC_BATCH         = 'wcsta_sync_batch';
+	public const GROUP              = 'exprime-team-access';
+	public const DAILY_HOOK         = 'exprime_team_daily_maintenance';
+	public const SYNC_SUBSCRIPTION  = 'exprime_team_sync_subscription';
+	public const SYNC_USER_PLAN     = 'exprime_team_sync_user_plan';
+	public const SYNC_BATCH         = 'exprime_team_sync_batch';
 	private const BATCH_SIZE        = 100;
 
 	public function __construct( private readonly Reconciler $reconciler ) {}

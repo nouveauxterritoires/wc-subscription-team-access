@@ -31,4 +31,4 @@ jobs:
       - name: Every string of the POT is translated in French
         run: python3 bin/build-fr.py
       - name: The French catalogue compiles
-        run: msgfmt --check -o /tmp/fr.mo languages/wc-subscription-team-access-fr_FR.po
+        run: msgfmt --check -o /tmp/fr.mo languages/exprime-team-access-fr_FR.po

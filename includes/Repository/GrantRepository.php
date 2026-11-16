@@ -2,24 +2,24 @@
 /**
  * Entitlement source registry: one row per (seat, plan) granting active or suspended access.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Repository;
+namespace Exprime\TeamAccess\Repository;
 
-use WCSubscriptionTeamAccess\Domain\AccessState;
-use WCSubscriptionTeamAccess\Support\Dates;
+use Exprime\TeamAccess\Domain\AccessState;
+use Exprime\TeamAccess\Support\Dates;
 
 /**
- * Repository for the wcsta_grants table.
+ * Repository for the exprime_team_grants table.
  */
 final class GrantRepository {
 
 	public static function table(): string {
 		global $wpdb;
-		return $wpdb->prefix . 'wcsta_grants';
+		return $wpdb->prefix . 'exprime_team_grants';
 	}
 
 	/**

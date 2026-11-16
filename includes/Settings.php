@@ -2,21 +2,21 @@
 /**
  * Plugin settings (a single serialized option).
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Domain\SeatAllocator;
+use Exprime\TeamAccess\Domain\SeatAllocator;
 
 /**
  * Typed access to settings, with default values and bounds.
  */
 final class Settings {
 
-	public const OPTION = 'wcsta_settings';
+	public const OPTION = 'exprime_team_settings';
 
 	/**
 	 * Default values.

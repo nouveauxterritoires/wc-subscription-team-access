@@ -1,7 +1,15 @@
 # Changelog
 
-## Unreleased
+## 1.2.0 - 2026-11-16
 
+- Renamed to **Exprime Team Access** (Exprime Team Access for WooCommerce Subscriptions on WordPress.org), so the name and slug follow the WordPress.org trademark rules:
+  - slug, folder, main file and text domain: `exprime-team-access` (was `wc-subscription-team-access`);
+  - prefix `exprime_team_` / `exprime-team-` / `EXPRIME_TEAM_ACCESS_` (was `wcsta_` / `wcsta-` / `WCSTA_`) for options, tables, meta keys, hooks and filters, nonces, cookie, CSS classes and handles, constants;
+  - PHP namespace `Exprime\TeamAccess` (was `WCSubscriptionTeamAccess`);
+  - WP-CLI command `wp exprime-team` (was `wp team-access`);
+  - Action Scheduler group `exprime-team-access`;
+  - email templates `exprime-team-invitation.php` and `exprime-team-invitation-accepted.php`.
+  No migration: data and settings from 1.1.0 are not carried over.
 - WordPress.org packaging: `readme.txt`, `.distignore`, `bin/build-zip.sh`, banner and icon in `.wordpress-org/`.
 - The log query and the anonymization query use stricter placeholders.
 - Help texts reworded.

@@ -2,10 +2,10 @@
 /**
  * Invitation page template: theme header and footer around the content.
  *
- * Overriding by copying this file into your-theme/wc-subscription-team-access/invitation/page.php
+ * Overriding by copying this file into your-theme/exprime-team-access/invitation/page.php
  * is not supported (page template); override invitation/accept.php instead.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -17,7 +17,7 @@ if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ) {
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<?php wp_head(); ?>
 </head>
-<body <?php body_class( 'wcsta-invitation-page' ); ?>>
+<body <?php body_class( 'exprime-team-invitation-page' ); ?>>
 	<?php wp_body_open(); ?>
 	<div class="wp-site-blocks">
 		<?php block_template_part( 'header' ); ?>
@@ -26,13 +26,13 @@ if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ) {
 	get_header();
 }
 ?>
-<main id="primary" class="site-main wcsta-invitation-main">
-	<div class="woocommerce wcsta-invitation">
+<main id="primary" class="site-main exprime-team-invitation-main">
+	<div class="woocommerce exprime-team-invitation">
 		<?php
 		if ( function_exists( 'wc_print_notices' ) ) {
 			wc_print_notices();
 		}
-		\WCSubscriptionTeamAccess\Plugin::instance()->invitations()->render();
+		\Exprime\TeamAccess\Plugin::instance()->invitations()->render();
 		?>
 	</div>
 </main>

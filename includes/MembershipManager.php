@@ -2,18 +2,18 @@
 /**
  * Management of guests' WooCommerce Memberships memberships, through the public APIs.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Domain\AccessAggregator;
-use WCSubscriptionTeamAccess\Domain\AccessState;
-use WCSubscriptionTeamAccess\Repository\GrantRepository;
-use WCSubscriptionTeamAccess\Repository\Logger;
-use WCSubscriptionTeamAccess\Support\Lock;
+use Exprime\TeamAccess\Domain\AccessAggregator;
+use Exprime\TeamAccess\Domain\AccessState;
+use Exprime\TeamAccess\Repository\GrantRepository;
+use Exprime\TeamAccess\Repository\Logger;
+use Exprime\TeamAccess\Support\Lock;
 
 /**
  * Assignment model (see README, "Access rights model"):
@@ -21,8 +21,8 @@ use WCSubscriptionTeamAccess\Support\Lock;
  * - Memberships only knows one "logical" membership per (user, plan): the most recent one
  *   (wc_memberships_get_user_membership / is_user_active_member); a later purchase reuses it.
  * - The plugin therefore creates at most ONE "managed" membership per (guest, plan), flagged by the
- *   _wcsta_managed meta, with no linked order or subscription. Its state is the aggregate of all
- *   rights sources (accepted seats) stored in the wcsta_grants table.
+ *   _exprime_team_managed meta, with no linked order or subscription. Its state is the aggregate of all
+ *   rights sources (accepted seats) stored in the exprime_team_grants table.
  * - An independent membership (purchased, granted by an administrator...) is never modified.
  *   If it is active, the managed membership is deleted: it must never hide an older personal
  *   membership.
@@ -31,9 +31,9 @@ use WCSubscriptionTeamAccess\Support\Lock;
  */
 final class MembershipManager {
 
-	public const META_MANAGED  = '_wcsta_managed';
-	public const META_SOURCES  = '_wcsta_sources';
-	public const META_RELEASED = '_wcsta_released_at';
+	public const META_MANAGED  = '_exprime_team_managed';
+	public const META_SOURCES  = '_exprime_team_sources';
+	public const META_RELEASED = '_exprime_team_released_at';
 
 	public const RESULT_NONE      = 'none';
 	public const RESULT_CREATED   = 'created';
@@ -408,7 +408,7 @@ final class MembershipManager {
 		}
 
 		update_post_meta( $membership->get_id(), self::META_MANAGED, '1' );
-		$membership->add_note( __( 'Guest membership created by WC Subscription Team Access: access is shared by a subscription holder.', 'wc-subscription-team-access' ) );
+		$membership->add_note( __( 'Guest membership created by Exprime Team Access: access is shared by a subscription holder.', 'exprime-team-access' ) );
 
 		$this->logger->info(
 			'membership_created',
@@ -444,10 +444,10 @@ final class MembershipManager {
 		$status = (string) $membership->get_status();
 
 		if ( $desired->is_active() && 'active' !== $status ) {
-			$membership->activate_membership( __( 'Guest access activated: the sharing subscription grants access.', 'wc-subscription-team-access' ) );
+			$membership->activate_membership( __( 'Guest access activated: the sharing subscription grants access.', 'exprime-team-access' ) );
 			$changed = true;
 		} elseif ( $desired->is_paused() && 'paused' !== $status ) {
-			$membership->pause_membership( __( 'Guest access suspended: the sharing subscription is on hold or the seat is over quota.', 'wc-subscription-team-access' ) );
+			$membership->pause_membership( __( 'Guest access suspended: the sharing subscription is on hold or the seat is over quota.', 'exprime-team-access' ) );
 			$changed = true;
 		}
 
@@ -469,7 +469,7 @@ final class MembershipManager {
 		// member's role there (the "assign roles to members" option), taking their other active
 		// memberships into account. A direct deletion would leave the member role in place.
 		if ( ! in_array( (string) $membership->get_status(), array( 'cancelled', 'expired' ), true ) ) {
-			$membership->cancel_membership( __( 'Guest access ended: no active sharing subscription for this member.', 'wc-subscription-team-access' ) );
+			$membership->cancel_membership( __( 'Guest access ended: no active sharing subscription for this member.', 'exprime-team-access' ) );
 		}
 
 		wp_delete_post( $id, true );
@@ -496,7 +496,7 @@ final class MembershipManager {
 
 		++self::$applying;
 		try {
-			$membership->add_note( __( 'This membership is now linked to the member\'s own purchase and is no longer managed by WC Subscription Team Access.', 'wc-subscription-team-access' ) );
+			$membership->add_note( __( 'This membership is now linked to the member\'s own purchase and is no longer managed by Exprime Team Access.', 'exprime-team-access' ) );
 		} finally {
 			--self::$applying;
 		}

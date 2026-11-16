@@ -1,5 +1,5 @@
 /**
- * WC Subscription Team Access — confirmations before destructive actions.
+ * Exprime Team Access — confirmations before destructive actions.
  * No dependencies: the forms also work without JavaScript.
  */
 ( function () {
@@ -10,7 +10,7 @@
 		if ( ! form || ! form.getAttribute ) {
 			return;
 		}
-		var message = form.getAttribute( 'data-wcsta-confirm' );
+		var message = form.getAttribute( 'data-exprime-team-confirm' );
 		if ( message && ! window.confirm( message ) ) {
 			event.preventDefault();
 			return;

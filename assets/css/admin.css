@@ -1,13 +1,13 @@
-/* WC Subscription Team Access — admin. */
-.wcsta-admin .wcsta-table { margin-top: 1rem; }
-.wcsta-admin .wcsta-inline-form { display: inline-block; margin: 0 .25rem .25rem 0; }
-.wcsta-admin .wcsta-badge { display: inline-block; padding: 0 .5em; border-radius: 3px; background: #f0f0f1; font-size: 12px; }
-.wcsta-admin .wcsta-badge--error { background: #fcf0f1; color: #b32d2e; font-weight: 600; }
-.wcsta-admin .wcsta-status { display: inline-block; padding: 0 .5em; border-radius: 3px; background: #f0f0f1; font-weight: 600; }
-.wcsta-admin .wcsta-status--accepted { background: #edfaef; color: #00691a; }
-.wcsta-admin .wcsta-status--pending { background: #f0f6fc; color: #0a4b78; }
-.wcsta-admin .wcsta-status--suspended { background: #fcf9e8; color: #8a4b00; }
-.wcsta-admin .wcsta-level--error { color: #b32d2e; font-weight: 600; }
-.wcsta-admin .wcsta-level--warning { color: #8a4b00; font-weight: 600; }
-.wcsta-admin .wcsta-facts th { width: 220px; }
-.wcsta-admin .search-box { float: none; margin: 1rem 0 0; }
+/* Exprime Team Access — admin. */
+.exprime-team-admin .exprime-team-table { margin-top: 1rem; }
+.exprime-team-admin .exprime-team-inline-form { display: inline-block; margin: 0 .25rem .25rem 0; }
+.exprime-team-admin .exprime-team-badge { display: inline-block; padding: 0 .5em; border-radius: 3px; background: #f0f0f1; font-size: 12px; }
+.exprime-team-admin .exprime-team-badge--error { background: #fcf0f1; color: #b32d2e; font-weight: 600; }
+.exprime-team-admin .exprime-team-status { display: inline-block; padding: 0 .5em; border-radius: 3px; background: #f0f0f1; font-weight: 600; }
+.exprime-team-admin .exprime-team-status--accepted { background: #edfaef; color: #00691a; }
+.exprime-team-admin .exprime-team-status--pending { background: #f0f6fc; color: #0a4b78; }
+.exprime-team-admin .exprime-team-status--suspended { background: #fcf9e8; color: #8a4b00; }
+.exprime-team-admin .exprime-team-level--error { color: #b32d2e; font-weight: 600; }
+.exprime-team-admin .exprime-team-level--warning { color: #8a4b00; font-weight: 600; }
+.exprime-team-admin .exprime-team-facts th { width: 220px; }
+.exprime-team-admin .search-box { float: none; margin: 1rem 0 0; }

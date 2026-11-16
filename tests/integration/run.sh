@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Integration suite for WC Subscription Team Access.
+# Integration suite for Exprime Team Access.
 #
 # Run on a staging site with WooCommerce, WooCommerce Subscriptions and
 # WooCommerce Memberships, with the plugin active. No email is sent (captured).
@@ -11,7 +11,7 @@ set -uo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WP="${WP:-wp}"
-FIXTURES="${FIXTURES:-$(mktemp -t wcsta-it-XXXXXX).json}"
+FIXTURES="${FIXTURES:-$(mktemp -t exprime-team-it-XXXXXX).json}"
 STATUS=0
 
 echo "== Preparing fixtures"

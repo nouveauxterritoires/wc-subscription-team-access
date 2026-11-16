@@ -2,12 +2,12 @@
 /**
  * Immutable access state: active (with an optional end date), paused or none.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Domain;
+namespace Exprime\TeamAccess\Domain;
 
 /**
  * Value object describing an access entitlement at a given point in time.

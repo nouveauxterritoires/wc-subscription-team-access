@@ -1,11 +1,11 @@
 <?php
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Tests\Unit;
+namespace Exprime\TeamAccess\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use WCSubscriptionTeamAccess\Domain\AccessAggregator;
-use WCSubscriptionTeamAccess\Domain\AccessState;
+use Exprime\TeamAccess\Domain\AccessAggregator;
+use Exprime\TeamAccess\Domain\AccessState;
 
 /**
  * Combination of several access sources (guest invited by several subscriptions).

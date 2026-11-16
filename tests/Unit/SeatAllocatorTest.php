@@ -1,11 +1,11 @@
 <?php
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess\Tests\Unit;
+namespace Exprime\TeamAccess\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use WCSubscriptionTeamAccess\Domain\SeatAllocator;
-use WCSubscriptionTeamAccess\Domain\SeatStatus;
+use Exprime\TeamAccess\Domain\SeatAllocator;
+use Exprime\TeamAccess\Domain\SeatStatus;
 
 /**
  * Seat allocation and quota overflow rule.

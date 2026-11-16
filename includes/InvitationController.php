@@ -2,17 +2,17 @@
 /**
  * Public page for accepting invitations (/invitation-equipe/).
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Domain\EmailAddress;
-use WCSubscriptionTeamAccess\Domain\Token;
-use WCSubscriptionTeamAccess\Repository\Seat;
-use WCSubscriptionTeamAccess\Support\RateLimiter;
+use Exprime\TeamAccess\Domain\EmailAddress;
+use Exprime\TeamAccess\Domain\Token;
+use Exprime\TeamAccess\Repository\Seat;
+use Exprime\TeamAccess\Support\RateLimiter;
 
 /**
  * Flow:
@@ -26,8 +26,8 @@ use WCSubscriptionTeamAccess\Support\RateLimiter;
  */
 final class InvitationController {
 
-	public const QUERY_VAR = 'wcsta_invitation';
-	public const COOKIE    = 'wcsta_invitation';
+	public const QUERY_VAR = 'exprime_team_invitation';
+	public const COOKIE    = 'exprime_team_invitation';
 
 	private const MIN_PASSWORD_LENGTH = 8;
 	// Tokens (256 bits) cannot be guessed: these limits protect the database and the sign-up
@@ -62,7 +62,7 @@ final class InvitationController {
 
 	public function enqueue_assets(): void {
 		if ( $this->is_request() ) {
-			wp_enqueue_style( 'wcsta-front', WCSTA_URL . 'assets/css/team-access.css', array(), WCSTA_VERSION );
+			wp_enqueue_style( 'exprime-team-front', EXPRIME_TEAM_ACCESS_URL . 'assets/css/team-access.css', array(), EXPRIME_TEAM_ACCESS_VERSION );
 		}
 	}
 
@@ -75,7 +75,7 @@ final class InvitationController {
 		if ( ! $this->is_request() ) {
 			return $title;
 		}
-		return __( 'Invitation', 'wc-subscription-team-access' ) . ' – ' . get_bloginfo( 'name' );
+		return __( 'Invitation', 'exprime-team-access' ) . ' – ' . get_bloginfo( 'name' );
 	}
 
 	/** Rewrite rule for the invitation page. */
@@ -152,7 +152,7 @@ final class InvitationController {
 	 */
 	public function document_title( $parts ) {
 		if ( $this->is_request() ) {
-			$parts['title'] = __( 'Invitation', 'wc-subscription-team-access' );
+			$parts['title'] = __( 'Invitation', 'exprime-team-access' );
 		}
 		return $parts;
 	}
@@ -178,11 +178,11 @@ final class InvitationController {
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- routing only; each handler checks its own nonce.
-		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || empty( $_POST['wcsta_invitation_action'] ) ) {
+		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || empty( $_POST['exprime_team_invitation_action'] ) ) {
 			return;
 		}
 
-		$action = sanitize_key( wp_unslash( $_POST['wcsta_invitation_action'] ) );
+		$action = sanitize_key( wp_unslash( $_POST['exprime_team_invitation_action'] ) );
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		$token  = $this->token();
 
@@ -203,12 +203,12 @@ final class InvitationController {
 			return $template;
 		}
 		status_header( 200 );
-		return WCSTA_DIR . 'templates/invitation/page.php';
+		return EXPRIME_TEAM_ACCESS_DIR . 'templates/invitation/page.php';
 	}
 
 	/** Renders the page content (called by the template). */
 	public function render(): void {
-		wc_get_template( 'invitation/accept.php', $this->view(), 'wc-subscription-team-access/', WCSTA_DIR . 'templates/' );
+		wc_get_template( 'invitation/accept.php', $this->view(), 'exprime-team-access/', EXPRIME_TEAM_ACCESS_DIR . 'templates/' );
 	}
 
 	/**
@@ -244,7 +244,7 @@ final class InvitationController {
 		$seat = $this->team->find_invitation( $token );
 		if ( is_wp_error( $seat ) ) {
 			RateLimiter::hit( 'bad_token_' . RateLimiter::client_fingerprint(), self::BAD_TOKEN_LIMIT, HOUR_IN_SECONDS );
-			$view['state']   = 'wcsta_expired_token' === $seat->get_error_code() ? 'expired' : 'invalid';
+			$view['state']   = 'exprime_team_expired_token' === $seat->get_error_code() ? 'expired' : 'invalid';
 			$view['message'] = $seat->get_error_message();
 			return $view;
 		}
@@ -283,8 +283,8 @@ final class InvitationController {
 			wp_safe_redirect( self::url() );
 			exit;
 		}
-		if ( ! $this->verify_nonce( 'wcsta_accept' ) ) {
-			self::notice( __( 'Your session has expired. Please try again.', 'wc-subscription-team-access' ), 'error' );
+		if ( ! $this->verify_nonce( 'exprime_team_accept' ) ) {
+			self::notice( __( 'Your session has expired. Please try again.', 'exprime-team-access' ), 'error' );
 			wp_safe_redirect( self::url() );
 			exit;
 		}
@@ -297,7 +297,7 @@ final class InvitationController {
 	 * @param string $token Token.
 	 */
 	private function handle_register( string $token ): void {
-		if ( is_user_logged_in() || ! $this->verify_nonce( 'wcsta_register' ) ) {
+		if ( is_user_logged_in() || ! $this->verify_nonce( 'exprime_team_register' ) ) {
 			wp_safe_redirect( self::url() );
 			exit;
 		}
@@ -334,27 +334,27 @@ final class InvitationController {
 	 */
 	private function create_account( Seat $seat ): int|\WP_Error {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce verified in handle_register().
-		$password   = isset( $_POST['wcsta_password'] ) ? (string) wp_unslash( $_POST['wcsta_password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a password must not be altered.
-		$confirm    = isset( $_POST['wcsta_password_confirm'] ) ? (string) wp_unslash( $_POST['wcsta_password_confirm'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$first_name = isset( $_POST['wcsta_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wcsta_first_name'] ) ) : '';
-		$last_name  = isset( $_POST['wcsta_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wcsta_last_name'] ) ) : '';
+		$password   = isset( $_POST['exprime_team_password'] ) ? (string) wp_unslash( $_POST['exprime_team_password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a password must not be altered.
+		$confirm    = isset( $_POST['exprime_team_password_confirm'] ) ? (string) wp_unslash( $_POST['exprime_team_password_confirm'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$first_name = isset( $_POST['exprime_team_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['exprime_team_first_name'] ) ) : '';
+		$last_name  = isset( $_POST['exprime_team_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['exprime_team_last_name'] ) ) : '';
 		// phpcs:enable
 
 		if ( strlen( $password ) < self::MIN_PASSWORD_LENGTH ) {
 			/* translators: %d: minimum number of characters. */
-			return new \WP_Error( 'wcsta_password', sprintf( __( 'Your password must contain at least %d characters.', 'wc-subscription-team-access' ), self::MIN_PASSWORD_LENGTH ) );
+			return new \WP_Error( 'exprime_team_password', sprintf( __( 'Your password must contain at least %d characters.', 'exprime-team-access' ), self::MIN_PASSWORD_LENGTH ) );
 		}
 		if ( ! hash_equals( $password, $confirm ) ) {
-			return new \WP_Error( 'wcsta_password', __( 'The two passwords do not match.', 'wc-subscription-team-access' ) );
+			return new \WP_Error( 'exprime_team_password', __( 'The two passwords do not match.', 'exprime-team-access' ) );
 		}
 		if ( email_exists( $seat->email ) ) {
-			return new \WP_Error( 'wcsta_account_exists', __( 'An account may already exist for this email address: please log in to accept the invitation.', 'wc-subscription-team-access' ) );
+			return new \WP_Error( 'exprime_team_account_exists', __( 'An account may already exist for this email address: please log in to accept the invitation.', 'exprime-team-access' ) );
 		}
 
 		$args = array(
 			'first_name' => $first_name,
 			'last_name'  => $last_name,
-			'source'     => 'wcsta-invitation',
+			'source'     => 'exprime-team-invitation',
 		);
 
 		$username = function_exists( 'wc_create_new_customer_username' )
@@ -392,7 +392,7 @@ final class InvitationController {
 		}
 
 		$this->clear_cookie();
-		self::notice( __( 'Welcome! Your invitation is accepted: you now have access to the premium content.', 'wc-subscription-team-access' ), 'success' );
+		self::notice( __( 'Welcome! Your invitation is accepted: you now have access to the premium content.', 'exprime-team-access' ), 'success' );
 
 		/**
 		 * Filters the destination page after an invitation is accepted.
@@ -400,7 +400,7 @@ final class InvitationController {
 		 * @param string $url  URL (default: My Account).
 		 * @param Seat   $seat Accepted seat.
 		 */
-		$url = (string) apply_filters( 'wcsta_after_accept_redirect', wc_get_page_permalink( 'myaccount' ), $result );
+		$url = (string) apply_filters( 'exprime_team_after_accept_redirect', wc_get_page_permalink( 'myaccount' ), $result );
 		wp_safe_redirect( $url );
 		exit;
 	}
@@ -425,7 +425,7 @@ final class InvitationController {
 	 * @param string $action Action.
 	 */
 	private function verify_nonce( string $action ): bool {
-		$nonce = isset( $_POST['_wcsta_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_wcsta_nonce'] ) ) : '';
+		$nonce = isset( $_POST['_exprime_team_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_exprime_team_nonce'] ) ) : '';
 		return (bool) wp_verify_nonce( $nonce, $action );
 	}
 

@@ -2,17 +2,17 @@
 /**
  * WordPress privacy tools: export and erasure of personal data.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Domain\EmailAddress;
-use WCSubscriptionTeamAccess\Repository\Seat;
-use WCSubscriptionTeamAccess\Repository\SeatRepository;
-use WCSubscriptionTeamAccess\Support\Dates;
+use Exprime\TeamAccess\Domain\EmailAddress;
+use Exprime\TeamAccess\Repository\Seat;
+use Exprime\TeamAccess\Repository\SeatRepository;
+use Exprime\TeamAccess\Support\Dates;
 
 /**
  * Data processed: invited email address, guest account, invitation and acceptance dates.
@@ -38,8 +38,8 @@ final class Privacy {
 	 * @return array<string, array<string, mixed>>
 	 */
 	public function register_exporter( $exporters ) {
-		$exporters['wc-subscription-team-access'] = array(
-			'exporter_friendly_name' => __( 'Shared subscription access', 'wc-subscription-team-access' ),
+		$exporters['exprime-team-access'] = array(
+			'exporter_friendly_name' => __( 'Shared subscription access', 'exprime-team-access' ),
 			'callback'               => array( $this, 'export' ),
 		);
 		return $exporters;
@@ -52,8 +52,8 @@ final class Privacy {
 	 * @return array<string, array<string, mixed>>
 	 */
 	public function register_eraser( $erasers ) {
-		$erasers['wc-subscription-team-access'] = array(
-			'eraser_friendly_name' => __( 'Shared subscription access', 'wc-subscription-team-access' ),
+		$erasers['exprime-team-access'] = array(
+			'eraser_friendly_name' => __( 'Shared subscription access', 'exprime-team-access' ),
 			'callback'             => array( $this, 'erase' ),
 		);
 		return $erasers;
@@ -69,24 +69,24 @@ final class Privacy {
 		$data = array();
 		foreach ( $this->seats_for( (string) $email ) as $seat ) {
 			$data[] = array(
-				'group_id'    => 'wcsta-seats',
-				'group_label' => __( 'Shared subscription access', 'wc-subscription-team-access' ),
-				'item_id'     => 'wcsta-seat-' . $seat->id,
+				'group_id'    => 'exprime-team-seats',
+				'group_label' => __( 'Shared subscription access', 'exprime-team-access' ),
+				'item_id'     => 'exprime-team-seat-' . $seat->id,
 				'data'        => array(
 					array(
-						'name'  => __( 'Invited email address', 'wc-subscription-team-access' ),
+						'name'  => __( 'Invited email address', 'exprime-team-access' ),
 						'value' => $seat->email,
 					),
 					array(
-						'name'  => __( 'Status', 'wc-subscription-team-access' ),
+						'name'  => __( 'Status', 'exprime-team-access' ),
 						'value' => Labels::status( $seat ),
 					),
 					array(
-						'name'  => __( 'Invited on', 'wc-subscription-team-access' ),
+						'name'  => __( 'Invited on', 'exprime-team-access' ),
 						'value' => Dates::display( $seat->created_at, true ),
 					),
 					array(
-						'name'  => __( 'Accepted on', 'wc-subscription-team-access' ),
+						'name'  => __( 'Accepted on', 'exprime-team-access' ),
 						'value' => Dates::display( $seat->accepted_at, true ),
 					),
 				),
@@ -129,10 +129,10 @@ final class Privacy {
 			return;
 		}
 		wp_add_privacy_policy_content(
-			'WC Subscription Team Access',
+			'Exprime Team Access',
 			wp_kses_post(
 				wpautop(
-					__( 'When a subscription holder invites someone to share their access, we store the invited email address, the date of the invitation and, once accepted, the account of the guest. This data is used only to send the invitation and to grant access to the content covered by the subscription. The subscription holder can see the email addresses they invited. The email addresses of ended invitations are anonymized automatically.', 'wc-subscription-team-access' )
+					__( 'When a subscription holder invites someone to share their access, we store the invited email address, the date of the invitation and, once accepted, the account of the guest. This data is used only to send the invitation and to grant access to the content covered by the subscription. The subscription holder can see the email addresses they invited. The email addresses of ended invitations are anonymized automatically.', 'exprime-team-access' )
 				)
 			)
 		);

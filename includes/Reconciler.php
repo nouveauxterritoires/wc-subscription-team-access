@@ -2,22 +2,22 @@
 /**
  * Idempotent synchronization: subscription -> seats -> rights sources -> memberships.
  *
- * @package WCSubscriptionTeamAccess
+ * @package ExprimeTeamAccess
  */
 
 declare( strict_types=1 );
 
-namespace WCSubscriptionTeamAccess;
+namespace Exprime\TeamAccess;
 
-use WCSubscriptionTeamAccess\Domain\AccessState;
-use WCSubscriptionTeamAccess\Domain\SeatAllocator;
-use WCSubscriptionTeamAccess\Domain\SeatStatus;
-use WCSubscriptionTeamAccess\Repository\GrantRepository;
-use WCSubscriptionTeamAccess\Repository\Logger;
-use WCSubscriptionTeamAccess\Repository\Seat;
-use WCSubscriptionTeamAccess\Repository\SeatRepository;
-use WCSubscriptionTeamAccess\Support\Dates;
-use WCSubscriptionTeamAccess\Support\Lock;
+use Exprime\TeamAccess\Domain\AccessState;
+use Exprime\TeamAccess\Domain\SeatAllocator;
+use Exprime\TeamAccess\Domain\SeatStatus;
+use Exprime\TeamAccess\Repository\GrantRepository;
+use Exprime\TeamAccess\Repository\Logger;
+use Exprime\TeamAccess\Repository\Seat;
+use Exprime\TeamAccess\Repository\SeatRepository;
+use Exprime\TeamAccess\Support\Dates;
+use Exprime\TeamAccess\Support\Lock;
 
 /**
  * Each synchronization recomputes the target state from the current state (not from an
@@ -60,7 +60,7 @@ final class Reconciler {
 							'trigger'         => $trigger,
 						)
 					);
-					return new \WP_Error( 'wcsta_sync_failed', $e->getMessage() );
+					return new \WP_Error( 'exprime_team_sync_failed', $e->getMessage() );
 				}
 			}
 		);
@@ -90,7 +90,7 @@ final class Reconciler {
 	 * @param \WC_Subscription $subscription Subscription.
 	 * @param Seat[]|null      $live_seats   Live seats (read if null).
 	 */
-	public function allocation( \WC_Subscription $subscription, ?array $live_seats = null ): \WCSubscriptionTeamAccess\Domain\Allocation {
+	public function allocation( \WC_Subscription $subscription, ?array $live_seats = null ): \Exprime\TeamAccess\Domain\Allocation {
 		$live_seats = $live_seats ?? $this->seats->live_for_subscription( $subscription->get_id() );
 		return SeatAllocator::allocate(
 			array_map( static fn( Seat $seat ): array => $seat->to_allocation_row(), $live_seats ),

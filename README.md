@@ -1,10 +1,12 @@
-# WC Subscription Team Access
+# Exprime Team Access for WooCommerce Subscriptions
 
 > *Version française : [README.fr.md](README.fr.md).*
 
 WordPress plugin that lets the holder of a WooCommerce Subscriptions subscription share the premium access granted by WooCommerce Memberships with guests, each using their own WordPress account. Guests are not billed.
 
-- Slug and text domain: `wc-subscription-team-access`
+Independent extension made for Exprime.media, not developed or endorsed by the publisher of WooCommerce. Until version 1.1.0 it was called "WC Subscription Team Access" (slug `wc-subscription-team-access`, prefix `wcsta_`).
+
+- Slug and text domain: `exprime-team-access`
 - Requirements: WordPress 6.4+, PHP 8.1+, WooCommerce 8+, WooCommerce Subscriptions, WooCommerce Memberships
 - Tested with: WooCommerce 11.3, Subscriptions 9.3, Memberships 1.26.10, PHP 8.2 and 8.4
 - Languages: English, French (`languages/`)
@@ -29,8 +31,8 @@ The documentation is also available in the WordPress admin, in the **Help** tab 
 
 ## Installation
 
-1. Copy the `wc-subscription-team-access` folder into `wp-content/plugins/` (or upload the zip built by `bin/build-zip.sh`, which leaves out tests and development files).
-2. Activate the plugin. The tables `{prefix}wcsta_seats`, `{prefix}wcsta_grants` and `{prefix}wcsta_log` are created, and rewrite rules are flushed on the next page load.
+1. Copy the `exprime-team-access` folder into `wp-content/plugins/` (or upload the zip built by `bin/build-zip.sh`, which leaves out tests and development files).
+2. Activate the plugin. The tables `{prefix}exprime_team_seats`, `{prefix}exprime_team_grants` and `{prefix}exprime_team_log` are created, and rewrite rules are flushed on the next page load.
 3. If WooCommerce, Subscriptions or Memberships is missing, the plugin stays inactive and shows a notice in the admin.
 
 The `tests/` folder is not needed in production. Do not deploy it in a web-accessible folder: the integration suite creates and deletes accounts.
@@ -67,7 +69,7 @@ The product must also grant a WooCommerce Memberships plan (a "product purchase"
 | Invitation page slug | `invitation-equipe` |
 | My account endpoint slug | `mes-invites` |
 
-The "Team access invitation" and "Team access invitation accepted" emails are configured in WooCommerce > Settings > Emails. Their templates can be overridden in the theme (`woocommerce/emails/wcsta-team-invitation.php`, etc.).
+The "Team access invitation" and "Team access invitation accepted" emails are configured in WooCommerce > Settings > Emails. Their templates can be overridden in the theme (`woocommerce/emails/exprime-team-invitation.php`, etc.).
 
 ## Usage
 
@@ -105,15 +107,15 @@ Memberships only knows **one "logical" membership per user and plan**: `wc_membe
 
 ### Chosen architecture
 
-- A **grant registry** (`wcsta_grants`) stores one row per accepted seat and shared plan, with the state it grants (active with an optional end date, or suspended).
-- The plugin creates **at most one "managed" membership** per guest and plan, flagged with the `_wcsta_managed` meta, without linked order or subscription. Its state aggregates all its sources: active wins over suspended; between two active sources, the latest end wins, and a source without an end makes the access unlimited.
+- A **grant registry** (`exprime_team_grants`) stores one row per accepted seat and shared plan, with the state it grants (active with an optional end date, or suspended).
+- The plugin creates **at most one "managed" membership** per guest and plan, flagged with the `_exprime_team_managed` meta, without linked order or subscription. Its state aggregates all its sources: active wins over suspended; between two active sources, the latest end wins, and a source without an end makes the access unlimited.
 - An independent membership (bought, granted by an administrator, imported) is **never** created, modified or deleted by the plugin. If the guest has an active one on the plan, no managed membership exists. If it stops (personal subscription on hold, for example), the managed membership takes over. When it becomes active again, the managed membership is removed.
 - If a guest **buys** a subscription granting the plan, Memberships natively reuses the managed membership and links it to their purchase. The plugin "releases" it: it becomes a personal membership and is never touched again.
 - Revoking an invitation only removes the matching source. The managed membership is deleted only when no source remains.
 
 ### Documented trade-offs
 
-- **No native `_subscription_id` link** between the guest membership and the holder's subscription. Such a link would allow a single source only. It would also show the holder's subscription (price, actions) in the guest's members area. The link goes through the registry, and the `_wcsta_sources` meta stores the source subscriptions for display.
+- **No native `_subscription_id` link** between the guest membership and the holder's subscription. Such a link would allow a single source only. It would also show the holder's subscription (price, actions) in the guest's members area. The link goes through the registry, and the `_exprime_team_sources` meta stores the source subscriptions for display.
 - **Deletion rather than cancellation** of a managed membership that is no longer needed. A more recent cancelled membership would hide, in `wc_memberships_is_user_active_member()`, an older active personal membership. Before deletion, the membership is cancelled through `cancel_membership()` so that Memberships recalculates the member role ("assign roles to members" option). The history stays available in the plugin log.
 - **Seniority**: the managed membership starts on the acceptance date. Dripped content is therefore scheduled from that date, not from the holder's purchase.
 - **Roles**: if Memberships assigns a role to active members (for example `membre` for active members and `subscriber` for inactive ones), guests get and lose that role exactly like other members.
@@ -135,11 +137,11 @@ The guests' access follows the status of the holder's subscription, read through
 
 Each event (`woocommerce_subscription_status_updated`, end date change, `woocommerce_subscriptions_switch_completed`, trash or deletion, status change or deletion of an independent membership) triggers a **complete and idempotent synchronization** of the subscription. It recomputes the target state from the current state: replaying an event creates neither duplicates nor extra rights. A failed synchronization is retried in the background.
 
-A daily **catch-up synchronization** (Action Scheduler, group `wc-subscription-team-access`) processes all shared subscriptions in batches of 100. It expires outdated invitations, anonymizes old invitations, prunes the log, and fixes orphaned or manually modified managed memberships. The plugin is authoritative over managed memberships: use its screens to change them.
+A daily **catch-up synchronization** (Action Scheduler, group `exprime-team-access`) processes all shared subscriptions in batches of 100. It expires outdated invitations, anonymizes old invitations, prunes the log, and fixes orphaned or manually modified managed memberships. The plugin is authoritative over managed memberships: use its screens to change them.
 
 ## Quotas
 
-- The quota is **recorded in the subscription at purchase** (`_wcsta_quota` meta). Changing the product later has no retroactive effect.
+- The quota is **recorded in the subscription at purchase** (`_exprime_team_quota` meta). Changing the product later has no retroactive effect.
 - Calculation: sum, for each line, of the product or variation quota multiplied by the quantity.
 - It is **recalculated only on a plan switch**. An administrator can also force a quota per subscription. Every change is kept in a history.
 - The holder does not use a seat. Pending invitations and accepted guests use one each. Cancelling, removing or letting an invitation expire frees the seat.
@@ -161,7 +163,7 @@ The "Keep all guests" setting suspends nobody: it only reports the overage and b
 
 - **Tokens**: 32 bytes from `random_bytes()`, only their SHA-256 is stored. They are single use (cleared on acceptance, replaced on each resend) and expire after 7 days by default.
 - **Checks before sending**: ownership of the subscription (or `manage_woocommerce` capability), positive quota, active subscription, valid address different from the holder's, address not already invited nor member, available seat.
-- **Rate limiting**: emails per holder per hour, minimum delay and maximum number of resends, invalid token attempts and account creations limited per (hashed) IP address. Behind a reverse proxy, use the `wcsta_client_ip` filter.
+- **Rate limiting**: emails per holder per hour, minimum delay and maximum number of resends, invalid token attempts and account creations limited per (hashed) IP address. Behind a reverse proxy, use the `exprime_team_client_ip` filter.
 - **Forms**: nonces everywhere, input validation and sanitization, output escaping, prepared SQL queries.
 - **Privacy**: a non-existent subscription and someone else's subscription return the same message. The invited address is masked on the invitation page, except to prefill the account creation form for the link holder. The page is not indexable (`noindex`, `Referrer-Policy: no-referrer`).
 - **GDPR**: WordPress exporter and eraser (*Tools > Export / Erase Personal Data*), suggested privacy policy text, automatic anonymization of the addresses of ended invitations. Only the invited address, the guest account and the dates are kept.
@@ -181,23 +183,23 @@ A **Team access** box is also shown on each subscription edit screen.
 ## WP-CLI
 
 ```bash
-wp team-access status <subscription_id>      # quota, rights, plans, seats
-wp team-access invite <subscription_id> <email> [--as=<user_id>]
-wp team-access revoke <seat_id> [--as=<user_id>]
-wp team-access resend <seat_id> [--as=<user_id>]
-wp team-access sync [<subscription_id>]      # every shared subscription when no id is given
-wp team-access schedule                      # full background resynchronization
-wp team-access maintenance                   # expirations, anonymization, log pruning
-wp team-access snapshot <subscription_id>    # recompute the quota from the catalog (use with care)
+wp exprime-team status <subscription_id>      # quota, rights, plans, seats
+wp exprime-team invite <subscription_id> <email> [--as=<user_id>]
+wp exprime-team revoke <seat_id> [--as=<user_id>]
+wp exprime-team resend <seat_id> [--as=<user_id>]
+wp exprime-team sync [<subscription_id>]      # every shared subscription when no id is given
+wp exprime-team schedule                      # full background resynchronization
+wp exprime-team maintenance                   # expirations, anonymization, log pruning
+wp exprime-team snapshot <subscription_id>    # recompute the quota from the catalog (use with care)
 ```
 
 Manual check example:
 
 ```bash
-wp team-access invite 1234 jane@example.org --as=56
-wp team-access status 1234
+wp exprime-team invite 1234 jane@example.org --as=56
+wp exprime-team status 1234
 wp eval 'var_dump( wc_memberships_is_user_active_member( get_user_by( "email", "jane@example.org" )->ID, <plan_id> ) );'
-wp team-access revoke 78
+wp exprime-team revoke 78
 ```
 
 ## Tests
@@ -213,11 +215,11 @@ composer test
 
 ### Integration suite (real WordPress, WooCommerce, Subscriptions and Memberships)
 
-It runs on a staging site where the plugin is active. It creates a plan, products, accounts and test subscriptions (prefix `wcsta-it-`), captures emails (none is sent), then cleans everything up.
+It runs on a staging site where the plugin is active. It creates a plan, products, accounts and test subscriptions (prefix `exprime-team-it-`), captures emails (none is sent), then cleans everything up.
 
 ```bash
 # from the WordPress root of the staging site
-WP="wp" bash /path/to/wc-subscription-team-access/tests/integration/run.sh
+WP="wp" bash /path/to/exprime-team-access/tests/integration/run.sh
 # KEEP=1 to keep the test data
 ```
 
@@ -230,22 +232,22 @@ Last result on the staging site (2026-11-16, WooCommerce 11.3, Subscriptions 9.3
 Source strings are in English. The French catalogue is built with:
 
 ```bash
-wp i18n make-pot . languages/wc-subscription-team-access.pot --exclude=vendor,tests,node_modules,build,bin
+wp i18n make-pot . languages/exprime-team-access.pot --exclude=vendor,tests,node_modules,build,bin
 python3 bin/build-fr.py   # fails if a string is not translated
-msgfmt -o languages/wc-subscription-team-access-fr_FR.mo languages/wc-subscription-team-access-fr_FR.po
+msgfmt -o languages/exprime-team-access-fr_FR.mo languages/exprime-team-access-fr_FR.po
 ```
 
 ## Developer hooks
 
 | Hook | Type | Usage |
 |---|---|---|
-| `wcsta_computed_quota` | filter | Change the computed quota of a subscription (`$quota, $subscription`) |
-| `wcsta_subscription_plan_ids` | filter | Plans shared with guests (`$plan_ids, $subscription`) |
-| `wcsta_subscription_effective_access` | filter | Effective right granted by a subscription (`AccessState $state, $subscription`) |
-| `wcsta_after_accept_redirect` | filter | Destination page after acceptance (`$url, Seat $seat`) |
-| `wcsta_client_ip` | filter | Client IP address used for rate limiting, to provide behind a reverse proxy or CDN (`$ip`) |
+| `exprime_team_computed_quota` | filter | Change the computed quota of a subscription (`$quota, $subscription`) |
+| `exprime_team_subscription_plan_ids` | filter | Plans shared with guests (`$plan_ids, $subscription`) |
+| `exprime_team_subscription_effective_access` | filter | Effective right granted by a subscription (`AccessState $state, $subscription`) |
+| `exprime_team_after_accept_redirect` | filter | Destination page after acceptance (`$url, Seat $seat`) |
+| `exprime_team_client_ip` | filter | Client IP address used for rate limiting, to provide behind a reverse proxy or CDN (`$ip`) |
 
-Templates that can be overridden in the theme: `wc-subscription-team-access/my-account/team-access.php`, `wc-subscription-team-access/invitation/accept.php`, and the emails in `woocommerce/emails/`.
+Templates that can be overridden in the theme: `exprime-team-access/my-account/team-access.php`, `exprime-team-access/invitation/accept.php`, and the emails in `woocommerce/emails/`.
 
 ## Known limitations
 
