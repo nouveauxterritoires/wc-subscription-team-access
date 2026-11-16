@@ -513,7 +513,7 @@ final class TeamManager {
 			'not_resendable'        => __( 'Only pending or expired invitations can be sent again.', 'wc-subscription-team-access' ),
 			'invalid_token'         => __( 'This invitation link is no longer valid: it may have already been used, cancelled or replaced by a more recent invitation.', 'wc-subscription-team-access' ),
 			'expired_token'         => __( 'This invitation has expired. Ask the person who invited you to send it again.', 'wc-subscription-team-access' ),
-			'email_mismatch'        => __( 'This invitation was sent to a different email address than the one of your account.', 'wc-subscription-team-access' ),
+			'email_mismatch'        => __( 'This invitation was sent to an address other than your account\'s email.', 'wc-subscription-team-access' ),
 			'not_logged_in'         => __( 'Please log in to accept this invitation.', 'wc-subscription-team-access' ),
 			'mail_failed'           => __( 'The invitation was saved but the email could not be sent. Use "Resend" to try again.', 'wc-subscription-team-access' ),
 		);

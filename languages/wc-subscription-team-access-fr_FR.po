@@ -3,14 +3,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WC Subscription Team Access 1.1.0\n"
-"Report-Msgid-Bugs-To: https://github.com/nouveauxterritoires/wc-subscription-team-access/issues\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wc-subscription-team-access\n"
 "Last-Translator: Nouveaux Territoires\n"
 "Language-Team: Français\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-16T10:52:55+00:00\n"
-"PO-Revision-Date: 2026-11-16 10:53+0000\n"
+"POT-Creation-Date: 2026-11-16T11:17:43+00:00\n"
+"PO-Revision-Date: 2026-11-16 11:17+0000\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wc-subscription-team-access\n"
 "Language: fr_FR\n"
@@ -47,7 +47,7 @@ msgid "My guests"
 msgstr "Mes invités"
 
 #: includes/AccountEndpoint.php:135
-#: includes/InvitationController.php:290
+#: includes/InvitationController.php:292
 msgid "Your session has expired. Please try again."
 msgstr "Votre session a expiré. Veuillez réessayer."
 
@@ -464,7 +464,7 @@ msgid "The holder invites guests by email from My account > My guests. A guest a
 msgstr "Le titulaire invite des personnes par e-mail depuis Mon compte > Mes invités. L’invité accepte l’invitation, se connecte ou crée un compte, et obtient immédiatement le même accès aux contenus premium que le titulaire, via WooCommerce Memberships."
 
 #: includes/Admin/Help.php:144
-msgid "The access of guests follows the subscription of the holder: suspended when it is on hold, kept until the end of the paid period when it is cancelled, removed when it expires."
+msgid "Guest access follows the holder's subscription: suspended while it is on hold, kept until the end of the paid period when it is cancelled, removed when it expires."
 msgstr "L’accès des invités suit l’abonnement du titulaire : suspendu quand il est en attente, conservé jusqu’à la fin de la période payée quand il est annulé, retiré quand il expire."
 
 #: includes/Admin/Help.php:147
@@ -480,7 +480,7 @@ msgid "<strong>WooCommerce > Settings > Team access</strong>: invitation validit
 msgstr "<strong>WooCommerce > Réglages > Accès équipe</strong> : validité des invitations, limites d’envoi, règle de quota, e-mails, adresses."
 
 #: includes/Admin/Help.php:151
-msgid "<strong>Product edit screen</strong>: maximum number of guests of each subscription product."
+msgid "<strong>Product edit screen</strong>: maximum number of guests for each subscription product."
 msgstr "<strong>Écran d’édition d’un produit</strong> : nombre maximal d’invités de chaque produit d’abonnement."
 
 #: includes/Admin/Help.php:152
@@ -532,8 +532,8 @@ msgid "For the guest"
 msgstr "Pour l’invité"
 
 #: includes/Admin/Help.php:188
-msgid "Without an account: the guest chooses a password; the email address is the one of the invitation. This works even if registration is disabled on My account."
-msgstr "Sans compte : l’invité choisit un mot de passe ; l’adresse e-mail est celle de l’invitation. Cela fonctionne même si l’inscription est désactivée sur Mon compte."
+msgid "Without an account: the guest chooses a password and the account is created with the invited email address. This works even if registration is disabled on My account."
+msgstr "Sans compte : l’invité choisit un mot de passe et le compte est créé avec l’adresse invitée. Cela fonctionne même si l’inscription est désactivée sur Mon compte."
 
 #: includes/Admin/Help.php:189
 msgid "With an account: the guest logs in with the account that uses the invited email address, then accepts. An invitation sent to another address cannot be accepted."
@@ -645,7 +645,7 @@ msgid "New quota and new plans applied."
 msgstr "Nouveau quota et nouveaux plans appliqués."
 
 #: includes/Admin/Help.php:235
-msgid "The access of guests follows the status of the subscription of the holder:"
+msgid "Guest access follows the status of the holder's subscription:"
 msgstr "L’accès des invités suit le statut de l’abonnement du titulaire :"
 
 #: includes/Admin/Help.php:245
@@ -657,8 +657,8 @@ msgid "How guests get access"
 msgstr "Comment les invités obtiennent l’accès"
 
 #: includes/Admin/Help.php:255
-msgid "Content restriction stays entirely handled by WooCommerce Memberships: the plugin creates a \"guest membership\" on the shared plan for each guest."
-msgstr "La restriction des contenus reste entièrement gérée par WooCommerce Memberships : l’extension crée une « adhésion invitée » sur le plan partagé pour chaque invité."
+msgid "WooCommerce Memberships still handles all content restriction. The plugin only creates a \"guest membership\" on the shared plan for each guest."
+msgstr "WooCommerce Memberships gère toujours seul la restriction des contenus. L’extension se contente de créer une « adhésion invitée » sur le plan partagé pour chaque invité."
 
 #: includes/Admin/Help.php:256
 msgid "A guest has at most one guest membership per plan, even when invited by several subscriptions: it stays active as long as one of them grants access."
@@ -751,7 +751,7 @@ msgid "The \"Team access\" box shows the guest seats used by this subscription. 
 msgstr "L’encadré « Accès équipe » indique les places d’invités utilisées par cet abonnement. « Gérer les invités » permet de voir les invités, d’imposer le quota, de révoquer ou renvoyer des invitations, ou de resynchroniser."
 
 #: includes/Admin/Help.php:315
-msgid "Changing the status of the subscription updates the access of its guests: on hold suspends it, reactivation restores it, cancellation keeps it until the end of the paid period, expiration removes it."
+msgid "Changing the subscription status updates its guests' access: on hold suspends it, reactivation restores it, cancellation keeps it until the end of the paid period, expiration removes it."
 msgstr "Changer le statut de l’abonnement met à jour l’accès de ses invités : la mise en attente le suspend, la réactivation le rétablit, l’annulation le conserve jusqu’à la fin de la période payée, l’expiration le retire."
 
 #. translators: %s: link to the shared subscriptions page.
@@ -885,20 +885,20 @@ msgid "Invitation"
 msgstr "Invitation"
 
 #. translators: %d: minimum number of characters.
-#: includes/InvitationController.php:348
+#: includes/InvitationController.php:350
 #, php-format
 msgid "Your password must contain at least %d characters."
 msgstr "Votre mot de passe doit contenir au moins %d caractères."
 
-#: includes/InvitationController.php:351
+#: includes/InvitationController.php:353
 msgid "The two passwords do not match."
 msgstr "Les deux mots de passe ne correspondent pas."
 
-#: includes/InvitationController.php:354
+#: includes/InvitationController.php:356
 msgid "An account may already exist for this email address: please log in to accept the invitation."
 msgstr "Un compte existe peut-être déjà pour cette adresse e-mail : connectez-vous pour accepter l’invitation."
 
-#: includes/InvitationController.php:398
+#: includes/InvitationController.php:400
 msgid "Welcome! Your invitation is accepted: you now have access to the premium content."
 msgstr "Bienvenue ! Votre invitation est acceptée : vous avez désormais accès aux contenus premium."
 
@@ -1070,7 +1070,7 @@ msgid "This invitation has expired. Ask the person who invited you to send it ag
 msgstr "Cette invitation a expiré. Demandez à la personne qui vous a invité de vous la renvoyer."
 
 #: includes/TeamManager.php:516
-msgid "This invitation was sent to a different email address than the one of your account."
+msgid "This invitation was sent to an address other than your account's email."
 msgstr "Cette invitation a été envoyée à une autre adresse e-mail que celle de votre compte."
 
 #: includes/TeamManager.php:517

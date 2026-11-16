@@ -191,7 +191,7 @@ FR = {
     'This invitation link is no longer valid: it may have already been used, cancelled or replaced by a more recent invitation.':
         'Ce lien d’invitation n’est plus valide : il a peut-être déjà été utilisé, annulé ou remplacé par une invitation plus récente.',
     'This invitation has expired. Ask the person who invited you to send it again.': 'Cette invitation a expiré. Demandez à la personne qui vous a invité de vous la renvoyer.',
-    'This invitation was sent to a different email address than the one of your account.': 'Cette invitation a été envoyée à une autre adresse e-mail que celle de votre compte.',
+    "This invitation was sent to an address other than your account's email.": 'Cette invitation a été envoyée à une autre adresse e-mail que celle de votre compte.',
     'Please log in to accept this invitation.': 'Connectez-vous pour accepter cette invitation.',
     'The invitation was saved but the email could not be sent. Use \\"Resend\\" to try again.':
         'L’invitation a été enregistrée mais l’e-mail n’a pas pu être envoyé. Utilisez « Renvoyer » pour réessayer.',
@@ -267,14 +267,14 @@ FR = {
         'Accès équipe permet au titulaire d’un abonnement WooCommerce de partager les accès premium de son abonnement avec des invités. Chaque invité utilise son propre compte WordPress et n’est pas facturé.',
     'The holder invites guests by email from My account > My guests. A guest accepts the invitation, logs in or creates an account, and immediately gets the same access to premium content as the holder, through WooCommerce Memberships.':
         'Le titulaire invite des personnes par e-mail depuis Mon compte > Mes invités. L’invité accepte l’invitation, se connecte ou crée un compte, et obtient immédiatement le même accès aux contenus premium que le titulaire, via WooCommerce Memberships.',
-    'The access of guests follows the subscription of the holder: suspended when it is on hold, kept until the end of the paid period when it is cancelled, removed when it expires.':
+    "Guest access follows the holder's subscription: suspended while it is on hold, kept until the end of the paid period when it is cancelled, removed when it expires.":
         'L’accès des invités suit l’abonnement du titulaire : suspendu quand il est en attente, conservé jusqu’à la fin de la période payée quand il est annulé, retiré quand il expire.',
     'Where to find what': 'Où trouver quoi',
     '<strong>WooCommerce > Team access</strong>: shared subscriptions, their guests, actions and log.':
         '<strong>WooCommerce > Accès équipe</strong> : abonnements partagés, leurs invités, actions et journal.',
     '<strong>WooCommerce > Settings > Team access</strong>: invitation validity, sending limits, quota policy, emails, addresses.':
         '<strong>WooCommerce > Réglages > Accès équipe</strong> : validité des invitations, limites d’envoi, règle de quota, e-mails, adresses.',
-    '<strong>Product edit screen</strong>: maximum number of guests of each subscription product.':
+    '<strong>Product edit screen</strong>: maximum number of guests for each subscription product.':
         '<strong>Écran d’édition d’un produit</strong> : nombre maximal d’invités de chaque produit d’abonnement.',
     '<strong>Subscription edit screen</strong>: "Team access" box with the seats of the subscription.':
         '<strong>Écran d’édition d’un abonnement</strong> : encadré « Accès équipe » avec les places de l’abonnement.',
@@ -297,8 +297,8 @@ FR = {
     '<strong>Cancel / Remove</strong>: the seat is freed and the guest immediately loses the access shared by the subscription. Their other rights (own subscription, other invitations) are kept.':
         '<strong>Annuler / Supprimer</strong> : la place est libérée et l’invité perd immédiatement l’accès partagé par l’abonnement. Ses autres droits (abonnement personnel, autres invitations) sont conservés.',
     'For the guest': 'Pour l’invité',
-    'Without an account: the guest chooses a password; the email address is the one of the invitation. This works even if registration is disabled on My account.':
-        'Sans compte : l’invité choisit un mot de passe ; l’adresse e-mail est celle de l’invitation. Cela fonctionne même si l’inscription est désactivée sur Mon compte.',
+    'Without an account: the guest chooses a password and the account is created with the invited email address. This works even if registration is disabled on My account.':
+        'Sans compte : l’invité choisit un mot de passe et le compte est créé avec l’adresse invitée. Cela fonctionne même si l’inscription est désactivée sur Mon compte.',
     'With an account: the guest logs in with the account that uses the invited email address, then accepts. An invitation sent to another address cannot be accepted.':
         'Avec un compte : l’invité se connecte avec le compte qui utilise l’adresse invitée, puis accepte. Une invitation envoyée à une autre adresse ne peut pas être acceptée.',
     'No password is ever sent by email, and an invitation can never set the password of an existing account.':
@@ -335,12 +335,12 @@ FR = {
     'Access removed.': 'Accès retiré.',
     'Plan switch': 'Changement de formule',
     'New quota and new plans applied.': 'Nouveau quota et nouveaux plans appliqués.',
-    'The access of guests follows the status of the subscription of the holder:': 'L’accès des invités suit le statut de l’abonnement du titulaire :',
+    "Guest access follows the status of the holder's subscription:": 'L’accès des invités suit le statut de l’abonnement du titulaire :',
     'Every change is applied immediately, and a catch-up synchronization runs every day in case an event was missed. Running the same synchronization several times never creates duplicates.':
         'Chaque changement est appliqué immédiatement, et une synchronisation de rattrapage s’exécute chaque jour au cas où un événement aurait été manqué. Lancer plusieurs fois la même synchronisation ne crée jamais de doublon.',
     'How guests get access': 'Comment les invités obtiennent l’accès',
-    'Content restriction stays entirely handled by WooCommerce Memberships: the plugin creates a "guest membership" on the shared plan for each guest.':
-        'La restriction des contenus reste entièrement gérée par WooCommerce Memberships : l’extension crée une « adhésion invitée » sur le plan partagé pour chaque invité.',
+    'WooCommerce Memberships still handles all content restriction. The plugin only creates a "guest membership" on the shared plan for each guest.':
+        'WooCommerce Memberships gère toujours seul la restriction des contenus. L’extension se contente de créer une « adhésion invitée » sur le plan partagé pour chaque invité.',
     'A guest has at most one guest membership per plan, even when invited by several subscriptions: it stays active as long as one of them grants access.':
         'Un invité a au plus une adhésion invitée par plan, même s’il est invité par plusieurs abonnements : elle reste active tant que l’un d’eux donne accès.',
     'Memberships bought or granted independently are never modified or deleted. If the guest already has an active membership on the plan, no guest membership is created; if it stops, the invitation takes over.':
@@ -377,7 +377,7 @@ FR = {
         'La valeur est enregistrée dans chaque abonnement à l’achat : la modifier n’a pas d’effet sur les abonnements existants. Le produit doit accorder un plan WooCommerce Memberships.',
     'The "Team access" box shows the guest seats used by this subscription. Use "Manage guests" to see the guests, force the quota, revoke or resend invitations, or resynchronize.':
         'L’encadré « Accès équipe » indique les places d’invités utilisées par cet abonnement. « Gérer les invités » permet de voir les invités, d’imposer le quota, de révoquer ou renvoyer des invitations, ou de resynchroniser.',
-    'Changing the status of the subscription updates the access of its guests: on hold suspends it, reactivation restores it, cancellation keeps it until the end of the paid period, expiration removes it.':
+    "Changing the subscription status updates its guests' access: on hold suspends it, reactivation restores it, cancellation keeps it until the end of the paid period, expiration removes it.":
         'Changer le statut de l’abonnement met à jour l’accès de ses invités : la mise en attente le suspend, la réactivation le rétablit, l’annulation le conserve jusqu’à la fin de la période payée, l’expiration le retire.',
     'Documentation': 'Documentation',
 }

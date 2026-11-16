@@ -141,14 +141,14 @@ final class Help {
 			array(
 				__( 'Team access lets the holder of a WooCommerce subscription share the premium access of their subscription with guests. Each guest uses their own WordPress account and is not billed.', 'wc-subscription-team-access' ),
 				__( 'The holder invites guests by email from My account > My guests. A guest accepts the invitation, logs in or creates an account, and immediately gets the same access to premium content as the holder, through WooCommerce Memberships.', 'wc-subscription-team-access' ),
-				__( 'The access of guests follows the subscription of the holder: suspended when it is on hold, kept until the end of the paid period when it is cancelled, removed when it expires.', 'wc-subscription-team-access' ),
+				__( 'Guest access follows the holder\'s subscription: suspended while it is on hold, kept until the end of the paid period when it is cancelled, removed when it expires.', 'wc-subscription-team-access' ),
 			)
 		) . self::items(
 			__( 'Where to find what', 'wc-subscription-team-access' ),
 			array(
 				__( '<strong>WooCommerce > Team access</strong>: shared subscriptions, their guests, actions and log.', 'wc-subscription-team-access' ),
 				__( '<strong>WooCommerce > Settings > Team access</strong>: invitation validity, sending limits, quota policy, emails, addresses.', 'wc-subscription-team-access' ),
-				__( '<strong>Product edit screen</strong>: maximum number of guests of each subscription product.', 'wc-subscription-team-access' ),
+				__( '<strong>Product edit screen</strong>: maximum number of guests for each subscription product.', 'wc-subscription-team-access' ),
 				__( '<strong>Subscription edit screen</strong>: "Team access" box with the seats of the subscription.', 'wc-subscription-team-access' ),
 			)
 		);
@@ -185,7 +185,7 @@ final class Help {
 		) . self::items(
 			__( 'For the guest', 'wc-subscription-team-access' ),
 			array(
-				__( 'Without an account: the guest chooses a password; the email address is the one of the invitation. This works even if registration is disabled on My account.', 'wc-subscription-team-access' ),
+				__( 'Without an account: the guest chooses a password and the account is created with the invited email address. This works even if registration is disabled on My account.', 'wc-subscription-team-access' ),
 				__( 'With an account: the guest logs in with the account that uses the invited email address, then accepts. An invitation sent to another address cannot be accepted.', 'wc-subscription-team-access' ),
 				__( 'No password is ever sent by email, and an invitation can never set the password of an existing account.', 'wc-subscription-team-access' ),
 			)
@@ -232,7 +232,7 @@ final class Help {
 			array( __( 'Plan switch', 'wc-subscription-team-access' ), __( 'New quota and new plans applied.', 'wc-subscription-team-access' ) ),
 		);
 
-		$html  = '<p>' . esc_html__( 'The access of guests follows the status of the subscription of the holder:', 'wc-subscription-team-access' ) . '</p>';
+		$html  = '<p>' . esc_html__( 'Guest access follows the status of the holder\'s subscription:', 'wc-subscription-team-access' ) . '</p>';
 		$html .= '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Subscription status', 'wc-subscription-team-access' ) . '</th><th>' . esc_html__( 'Guest access', 'wc-subscription-team-access' ) . '</th></tr></thead><tbody>';
 		foreach ( $rows as [ $status, $effect ] ) {
 			$html .= '<tr><td>' . esc_html( $status ) . '</td><td>' . esc_html( $effect ) . '</td></tr>';
@@ -252,7 +252,7 @@ final class Help {
 		return self::items(
 			__( 'How guests get access', 'wc-subscription-team-access' ),
 			array(
-				__( 'Content restriction stays entirely handled by WooCommerce Memberships: the plugin creates a "guest membership" on the shared plan for each guest.', 'wc-subscription-team-access' ),
+				__( 'WooCommerce Memberships still handles all content restriction. The plugin only creates a "guest membership" on the shared plan for each guest.', 'wc-subscription-team-access' ),
 				__( 'A guest has at most one guest membership per plan, even when invited by several subscriptions: it stays active as long as one of them grants access.', 'wc-subscription-team-access' ),
 				__( 'Memberships bought or granted independently are never modified or deleted. If the guest already has an active membership on the plan, no guest membership is created; if it stops, the invitation takes over.', 'wc-subscription-team-access' ),
 				__( 'If a guest later buys their own subscription, WooCommerce Memberships reuses the guest membership for the purchase: it then becomes a regular membership.', 'wc-subscription-team-access' ),
@@ -312,7 +312,7 @@ final class Help {
 			__( 'Team access', 'wc-subscription-team-access' ),
 			array(
 				__( 'The "Team access" box shows the guest seats used by this subscription. Use "Manage guests" to see the guests, force the quota, revoke or resend invitations, or resynchronize.', 'wc-subscription-team-access' ),
-				__( 'Changing the status of the subscription updates the access of its guests: on hold suspends it, reactivation restores it, cancellation keeps it until the end of the paid period, expiration removes it.', 'wc-subscription-team-access' ),
+				__( 'Changing the subscription status updates its guests\' access: on hold suspends it, reactivation restores it, cancellation keeps it until the end of the paid period, expiration removes it.', 'wc-subscription-team-access' ),
 			)
 		);
 	}
