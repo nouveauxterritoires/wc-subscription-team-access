@@ -12,6 +12,8 @@ Independent extension made for Exprime.media, not developed or endorsed by the p
 - Languages: English, French (`languages/`)
 - HPOS compatible, no external dependency in production
 
+Why two paid extensions: Subscriptions takes the payments and handles renewals, Memberships decides who can read what. This plugin only connects them, so it does not duplicate billing or content restriction. Without them it creates its tables on activation and stays idle, with an admin notice listing what is missing. The plugin itself has no paid version.
+
 The documentation is also available in the WordPress admin, in the **Help** tab (top right) of WooCommerce > Team access, WooCommerce > Settings > Team access, and the product and subscription edit screens.
 
 ## Contents

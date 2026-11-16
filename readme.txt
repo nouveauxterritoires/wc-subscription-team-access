@@ -14,7 +14,7 @@ Team access for WooCommerce Subscriptions: the subscriber invites guests, who ge
 
 You sell a subscription that unlocks members-only content, and some customers buy it for a small team. This plugin lets the subscriber share that access with a set number of guests. Each guest signs in with their own WordPress account and is not billed.
 
-**Requires two commercial extensions:** WooCommerce Subscriptions and WooCommerce Memberships. They are not available on WordPress.org and must be installed and active. Without them the plugin does nothing except display a notice in the admin.
+**Requires two commercial extensions:** WooCommerce Subscriptions and WooCommerce Memberships, sold on WooCommerce.com and not available on WordPress.org. The FAQ explains why, and what the plugin does when they are missing.
 
 Exprime Team Access is an independent extension made for Exprime.media. It is not developed or endorsed by the publisher of WooCommerce.
 
@@ -71,9 +71,15 @@ English and French are included.
 
 == Frequently Asked Questions ==
 
-= Does it work without WooCommerce Subscriptions or WooCommerce Memberships? =
+= Why does it need two paid extensions? =
 
-No. Both are required. The plugin stays inactive and shows a notice until they are active.
+Because it builds on them instead of redoing their job. WooCommerce Subscriptions takes the payments and handles renewals. WooCommerce Memberships decides who can read what. This plugin sits in between: it watches the subscription status and gives or takes back a membership for each guest. Rewriting billing or content restriction would mean shipping a second copy of code most of these stores already run.
+
+The plugin itself has no paid version, no license key and no locked feature.
+
+= What happens if one of them is missing? =
+
+On activation the plugin creates its three database tables, then stays idle: no menu, no hook on orders or subscriptions, no scheduled task. An admin notice lists the missing extensions. Uninstalling removes the tables.
 
 = Does the subscriber use a seat? =
 

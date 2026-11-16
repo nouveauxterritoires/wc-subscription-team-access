@@ -12,6 +12,8 @@ Extension indépendante réalisée pour Exprime.media, ni développée ni approu
 - Langues : anglais (langue source), français (`languages/`)
 - Compatible HPOS, aucune dépendance externe en production
 
+Pourquoi deux extensions payantes : Subscriptions encaisse les paiements et gère les renouvellements, Memberships décide qui peut lire quoi. L'extension ne fait que les relier, elle ne refait ni la facturation ni la restriction des contenus. Sans elles, elle crée ses tables à l'activation puis reste inactive, avec un avis d'administration qui liste ce qui manque. Elle n'a pas de version payante.
+
 La documentation est aussi disponible dans l'administration WordPress, dans l'onglet **Aide** (en haut à droite) de WooCommerce > Accès équipe, WooCommerce > Réglages > Accès équipe et des écrans d'édition des produits et des abonnements.
 
 ## Sommaire
