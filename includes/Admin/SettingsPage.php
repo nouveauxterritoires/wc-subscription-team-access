@@ -23,14 +23,12 @@ class SettingsPage extends \WC_Settings_Page {
 
 	public const ID = 'wcsta';
 
-	/** Constructor. */
 	public function __construct() {
 		$this->id    = self::ID;
 		$this->label = __( 'Team access', 'wc-subscription-team-access' );
 		parent::__construct();
 	}
 
-	/** Tab URL. */
 	public static function url(): string {
 		return admin_url( 'admin.php?page=wc-settings&tab=' . self::ID );
 	}

@@ -18,7 +18,6 @@ final class ProductSettings {
 
 	public const META = '_wcsta_max_guests';
 
-	/** Registers the admin hooks. */
 	public function register(): void {
 		add_action( 'woocommerce_product_options_general_product_data', array( $this, 'render_product_field' ) );
 		add_action( 'woocommerce_admin_process_product_object', array( $this, 'save_product_field' ) );

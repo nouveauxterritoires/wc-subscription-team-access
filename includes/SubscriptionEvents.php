@@ -18,14 +18,6 @@ use WCSubscriptionTeamAccess\Repository\SeatRepository;
  */
 final class SubscriptionEvents {
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Reconciler          $reconciler    Synchronization.
-	 * @param QuotaManager        $quotas        Quotas.
-	 * @param SeatRepository      $seats         Seats.
-	 * @param SubscriptionManager $subscriptions Subscriptions.
-	 */
 	public function __construct(
 		private readonly Reconciler $reconciler,
 		private readonly QuotaManager $quotas,
@@ -33,7 +25,6 @@ final class SubscriptionEvents {
 		private readonly SubscriptionManager $subscriptions
 	) {}
 
-	/** Registers the hooks. */
 	public function register(): void {
 		add_action( 'woocommerce_subscription_status_updated', array( $this, 'on_status_updated' ), 20, 3 );
 		add_action( 'woocommerce_subscription_date_updated', array( $this, 'on_date_changed' ), 20, 2 );

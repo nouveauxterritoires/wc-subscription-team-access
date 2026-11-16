@@ -13,7 +13,7 @@ use WCSubscriptionTeamAccess\Domain\SeatStatus;
 use WCSubscriptionTeamAccess\Repository\Seat;
 
 /**
- * Displayed seat status: one of the four statuses from the specification
+ * Displayed seat status: one of the four statuses shown to users
  * (pending, accepted, suspended, revoked), plus the history (cancelled, expired).
  */
 final class Labels {

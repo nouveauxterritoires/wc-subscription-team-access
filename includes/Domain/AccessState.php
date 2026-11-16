@@ -43,7 +43,6 @@ final class AccessState {
 		return new self( self::PAUSED, null );
 	}
 
-	/** No access. */
 	public static function none(): self {
 		return new self( self::NONE, null );
 	}
@@ -62,17 +61,14 @@ final class AccessState {
 		};
 	}
 
-	/** Active access. */
 	public function is_active(): bool {
 		return self::ACTIVE === $this->state;
 	}
 
-	/** Suspended access. */
 	public function is_paused(): bool {
 		return self::PAUSED === $this->state;
 	}
 
-	/** No access. */
 	public function is_none(): bool {
 		return self::NONE === $this->state;
 	}

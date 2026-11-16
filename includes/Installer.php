@@ -18,7 +18,6 @@ final class Installer {
 	public const DB_VERSION_OPTION = 'wcsta_db_version';
 	public const FLUSH_OPTION      = 'wcsta_flush_rewrite';
 
-	/** Plugin activation. */
 	public static function activate(): void {
 		self::install();
 		// Rewrite rules are registered on "init": flush the cache on the next load.

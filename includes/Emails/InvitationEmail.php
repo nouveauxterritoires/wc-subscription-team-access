@@ -19,19 +19,16 @@ defined( 'ABSPATH' ) || exit;
  */
 class InvitationEmail extends \WC_Email {
 
-	/** Acceptance link. */
 	public string $accept_url = '';
 
 	/** Holder name. */
 	public string $inviter_name = '';
 
-	/** Subscription name. */
 	public string $subscription_name = '';
 
 	/** Expiry date (timestamp). */
 	public int $expires_at = 0;
 
-	/** Constructor. */
 	public function __construct() {
 		$this->id             = 'wcsta_team_invitation';
 		$this->customer_email = true;
@@ -48,17 +45,14 @@ class InvitationEmail extends \WC_Email {
 		parent::__construct();
 	}
 
-	/** Default subject. */
 	public function get_default_subject() {
 		return __( '{inviter_name} invites you to share their access on {site_title}', 'wc-subscription-team-access' );
 	}
 
-	/** Default heading. */
 	public function get_default_heading() {
 		return __( 'You are invited', 'wc-subscription-team-access' );
 	}
 
-	/** Default additional content. */
 	public function get_default_additional_content() {
 		return __( 'If you were not expecting this invitation, you can ignore this email: nothing will happen without your action.', 'wc-subscription-team-access' );
 	}
@@ -91,12 +85,10 @@ class InvitationEmail extends \WC_Email {
 		return $sent;
 	}
 
-	/** HTML content. */
 	public function get_content_html() {
 		return wc_get_template_html( $this->template_html, $this->template_args( false ), '', $this->template_base );
 	}
 
-	/** Plain-text content. */
 	public function get_content_plain() {
 		return wc_get_template_html( $this->template_plain, $this->template_args( true ), '', $this->template_base );
 	}

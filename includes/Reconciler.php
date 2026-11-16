@@ -29,16 +29,6 @@ final class Reconciler {
 	/** Triggers that are already retries: no new queuing on failure. */
 	private const RETRY_TRIGGERS = array( 'async', 'catch_up' );
 
-	/**
-	 * Constructor.
-	 *
-	 * @param SeatRepository      $seats         Seats.
-	 * @param GrantRepository     $grants        Rights sources.
-	 * @param SubscriptionManager $subscriptions Subscriptions.
-	 * @param QuotaManager        $quotas        Quotas.
-	 * @param MembershipManager   $memberships   Memberships.
-	 * @param Logger              $logger        Logger.
-	 */
 	public function __construct(
 		private readonly SeatRepository $seats,
 		private readonly GrantRepository $grants,

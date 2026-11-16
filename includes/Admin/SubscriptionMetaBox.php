@@ -18,18 +18,11 @@ use WCSubscriptionTeamAccess\TeamManager;
  */
 final class SubscriptionMetaBox {
 
-	/**
-	 * Constructor.
-	 *
-	 * @param TeamManager  $team   Operations.
-	 * @param QuotaManager $quotas Quotas.
-	 */
 	public function __construct(
 		private readonly TeamManager $team,
 		private readonly QuotaManager $quotas
 	) {}
 
-	/** Hooks into WordPress. */
 	public function register(): void {
 		add_action( 'add_meta_boxes', array( $this, 'add' ), 40 );
 	}

@@ -22,14 +22,8 @@ final class Emails {
 	public const INVITATION = 'WCSTA_Invitation';
 	public const ACCEPTED   = 'WCSTA_Invitation_Accepted';
 
-	/**
-	 * Constructor.
-	 *
-	 * @param InvitationController $invitations Builds the acceptance links.
-	 */
 	public function __construct( private readonly InvitationController $invitations ) {}
 
-	/** Registers the hooks. */
 	public function register(): void {
 		add_filter( 'woocommerce_email_classes', array( $this, 'register_classes' ) );
 	}

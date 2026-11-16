@@ -23,15 +23,6 @@ use WCSubscriptionTeamAccess\TeamManager;
  */
 final class Command {
 
-	/**
-	 * Constructor.
-	 *
-	 * @param TeamManager         $team          Operations.
-	 * @param Reconciler          $reconciler    Synchronization.
-	 * @param SubscriptionManager $subscriptions Subscriptions.
-	 * @param QuotaManager        $quotas        Quotas.
-	 * @param SeatRepository      $seats         Seats.
-	 */
 	public function __construct(
 		private readonly TeamManager $team,
 		private readonly Reconciler $reconciler,

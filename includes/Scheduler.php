@@ -21,14 +21,8 @@ final class Scheduler {
 	public const SYNC_BATCH         = 'wcsta_sync_batch';
 	private const BATCH_SIZE        = 100;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Reconciler $reconciler Reconciler.
-	 */
 	public function __construct( private readonly Reconciler $reconciler ) {}
 
-	/** Registers the hooks. */
 	public function register(): void {
 		add_action( 'action_scheduler_init', array( $this, 'ensure_daily' ) );
 		add_action( self::DAILY_HOOK, array( $this, 'run_daily' ) );

@@ -19,7 +19,6 @@ final class Token {
 	private const BYTES  = 32;
 	private const LENGTH = 43;
 
-	/** Generates a token. */
 	public static function generate(): string {
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- URL-safe encoding of random bytes.
 		return rtrim( strtr( base64_encode( random_bytes( self::BYTES ) ), '+/', '-_' ), '=' );

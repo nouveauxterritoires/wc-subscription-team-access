@@ -16,7 +16,7 @@ use WCSubscriptionTeamAccess\Repository\Logger;
 use WCSubscriptionTeamAccess\Support\Lock;
 
 /**
- * Assignment model (see README, "Rights model"):
+ * Assignment model (see README, "Access rights model"):
  *
  * - Memberships only knows one "logical" membership per (user, plan): the most recent one
  *   (wc_memberships_get_user_membership / is_user_active_member); a later purchase reuses it.
@@ -58,12 +58,6 @@ final class MembershipManager {
 	/** Managed membership creation in progress (the meta is not set yet). */
 	private static bool $creating = false;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param GrantRepository $grants Rights sources.
-	 * @param Logger          $logger Logger.
-	 */
 	public function __construct(
 		private readonly GrantRepository $grants,
 		private readonly Logger $logger

@@ -47,7 +47,6 @@ final class InvitationController {
 		$this->team = $team;
 	}
 
-	/** Registers the hooks. */
 	public function register(): void {
 		add_action( 'init', array( $this, 'add_rewrite_rule' ) );
 		add_filter( 'query_vars', array( $this, 'add_query_var' ) );
@@ -61,7 +60,6 @@ final class InvitationController {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
-	/** Stylesheet of the invitation page. */
 	public function enqueue_assets(): void {
 		if ( $this->is_request() ) {
 			wp_enqueue_style( 'wcsta-front', WCSTA_URL . 'assets/css/team-access.css', array(), WCSTA_VERSION );
@@ -97,7 +95,6 @@ final class InvitationController {
 		return $vars;
 	}
 
-	/** URL of the invitation page. */
 	public static function url(): string {
 		return home_url( user_trailingslashit( self::slug() ) );
 	}
@@ -111,12 +108,10 @@ final class InvitationController {
 		return add_query_arg( 'token', rawurlencode( $token ), self::url() );
 	}
 
-	/** Page slug. */
 	private static function slug(): string {
 		return (string) Settings::get( 'invitation_slug' );
 	}
 
-	/** The current request targets the invitation page. */
 	public function is_request(): bool {
 		return (bool) get_query_var( self::QUERY_VAR );
 	}
@@ -172,7 +167,7 @@ final class InvitationController {
 		header( 'Referrer-Policy: no-referrer' );
 		header( 'X-Robots-Tag: noindex, nofollow' );
 
-		// 1. Token in the URL -> cookie, then redirect to the clean URL.
+		// Token in the URL: move it to a cookie and redirect to the clean URL.
 		if ( isset( $_GET['token'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$token = sanitize_text_field( wp_unslash( $_GET['token'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( Token::is_well_formed( $token ) ) {

@@ -18,12 +18,6 @@ use WCSubscriptionTeamAccess\Repository\SeatRepository;
  */
 final class SubscriptionManager {
 
-	/**
-	 * Constructor.
-	 *
-	 * @param QuotaManager   $quotas Quotas.
-	 * @param SeatRepository $seats  Seats.
-	 */
 	public function __construct(
 		private readonly QuotaManager $quotas,
 		private readonly SeatRepository $seats

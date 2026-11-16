@@ -26,11 +26,6 @@ final class QuotaManager {
 
 	private const HISTORY_MAX = 20;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Logger $logger Logger.
-	 */
 	public function __construct( private readonly Logger $logger ) {}
 
 	/** Registers the WooCommerce Subscriptions hooks. */

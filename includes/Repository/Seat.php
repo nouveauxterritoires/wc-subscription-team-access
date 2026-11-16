@@ -18,8 +18,6 @@ use WCSubscriptionTeamAccess\Support\Dates;
 final class Seat {
 
 	/**
-	 * Constructor.
-	 *
 	 * @param int      $id               ID.
 	 * @param int      $subscription_id  Subscription.
 	 * @param int      $owner_id         Owner.
@@ -87,12 +85,10 @@ final class Seat {
 		return SeatStatus::is_live( $this->status );
 	}
 
-	/** Pending invitation. */
 	public function is_pending(): bool {
 		return SeatStatus::PENDING === $this->status;
 	}
 
-	/** Accepted invitation. */
 	public function is_accepted(): bool {
 		return SeatStatus::ACCEPTED === $this->status;
 	}

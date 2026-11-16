@@ -27,15 +27,6 @@ use WCSubscriptionTeamAccess\Support\RateLimiter;
  */
 final class TeamManager {
 
-	/**
-	 * Constructor.
-	 *
-	 * @param SeatRepository      $seats         Seats.
-	 * @param SubscriptionManager $subscriptions Subscriptions.
-	 * @param Reconciler          $reconciler    Synchronization.
-	 * @param Emails              $emails        Emails.
-	 * @param Logger              $logger        Logger.
-	 */
 	public function __construct(
 		private readonly SeatRepository $seats,
 		private readonly SubscriptionManager $subscriptions,
@@ -44,7 +35,6 @@ final class TeamManager {
 		private readonly Logger $logger
 	) {}
 
-	/** Registers the hooks. */
 	public function register(): void {
 		add_action( 'delete_user', array( $this, 'on_user_deleted' ) );
 	}

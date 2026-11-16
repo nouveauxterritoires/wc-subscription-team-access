@@ -64,7 +64,6 @@ final class Plugin {
 		self::instance()->register();
 	}
 
-	/** Single instance. */
 	public static function instance(): self {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -72,7 +71,6 @@ final class Plugin {
 		return self::$instance;
 	}
 
-	/** Loads the translations. */
 	public static function load_textdomain(): void {
 		load_plugin_textdomain( 'wc-subscription-team-access', false, dirname( plugin_basename( WCSTA_FILE ) ) . '/languages' );
 	}
@@ -96,7 +94,6 @@ final class Plugin {
 		return $missing;
 	}
 
-	/** Builds the services. */
 	private function __construct() {
 		$this->seats         = new SeatRepository();
 		$this->grants        = new GrantRepository();
@@ -111,7 +108,6 @@ final class Plugin {
 		$this->invitations->set_team( $this->team );
 	}
 
-	/** Hooks every component into WordPress. */
 	private function register(): void {
 		Installer::maybe_upgrade();
 		add_action( 'init', array( Installer::class, 'maybe_flush_rewrite_rules' ), 99 );
@@ -164,52 +160,42 @@ final class Plugin {
 		return $links;
 	}
 
-	/** Seat repository. */
 	public function seats(): SeatRepository {
 		return $this->seats;
 	}
 
-	/** Grant repository. */
 	public function grants(): GrantRepository {
 		return $this->grants;
 	}
 
-	/** Log. */
 	public function logger(): Logger {
 		return $this->logger;
 	}
 
-	/** Quotas. */
 	public function quotas(): QuotaManager {
 		return $this->quotas;
 	}
 
-	/** Subscriptions. */
 	public function subscriptions(): SubscriptionManager {
 		return $this->subscriptions;
 	}
 
-	/** Memberships. */
 	public function memberships(): MembershipManager {
 		return $this->memberships;
 	}
 
-	/** Synchronization. */
 	public function reconciler(): Reconciler {
 		return $this->reconciler;
 	}
 
-	/** Emails. */
 	public function emails(): Emails {
 		return $this->emails;
 	}
 
-	/** Team operations. */
 	public function team(): TeamManager {
 		return $this->team;
 	}
 
-	/** Invitation page. */
 	public function invitations(): InvitationController {
 		return $this->invitations;
 	}

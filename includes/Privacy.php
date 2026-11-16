@@ -20,18 +20,11 @@ use WCSubscriptionTeamAccess\Support\Dates;
  */
 final class Privacy {
 
-	/**
-	 * Constructor.
-	 *
-	 * @param SeatRepository $seats      Seats.
-	 * @param TeamManager    $team       Operations.
-	 */
 	public function __construct(
 		private readonly SeatRepository $seats,
 		private readonly TeamManager $team
 	) {}
 
-	/** Registers the hooks. */
 	public function register(): void {
 		add_filter( 'wp_privacy_personal_data_exporters', array( $this, 'register_exporter' ) );
 		add_filter( 'wp_privacy_personal_data_erasers', array( $this, 'register_eraser' ) );

@@ -17,7 +17,6 @@ use WCSubscriptionTeamAccess\Support\Dates;
  */
 final class GrantRepository {
 
-	/** Table name. */
 	public static function table(): string {
 		global $wpdb;
 		return $wpdb->prefix . 'wcsta_grants';

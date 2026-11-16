@@ -19,18 +19,11 @@ final class AccountEndpoint {
 	/** @var array<int, \WC_Subscription[]> Per-request cache. */
 	private array $cache = array();
 
-	/**
-	 * Constructor.
-	 *
-	 * @param TeamManager         $team          Operations.
-	 * @param SubscriptionManager $subscriptions Subscriptions.
-	 */
 	public function __construct(
 		private readonly TeamManager $team,
 		private readonly SubscriptionManager $subscriptions
 	) {}
 
-	/** Registers the hooks. */
 	public function register(): void {
 		add_filter( 'woocommerce_get_query_vars', array( $this, 'add_query_var' ) );
 		add_filter( 'woocommerce_account_menu_items', array( $this, 'menu_items' ), 20 );
@@ -40,7 +33,6 @@ final class AccountEndpoint {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
-	/** Endpoint URL. */
 	public static function url(): string {
 		return function_exists( 'wc_get_account_endpoint_url' ) ? wc_get_account_endpoint_url( self::KEY ) : home_url( '/' );
 	}
@@ -81,12 +73,10 @@ final class AccountEndpoint {
 		return $added ? $result : $result + $entry;
 	}
 
-	/** Page title. */
 	public function title(): string {
 		return __( 'My guests', 'wc-subscription-team-access' );
 	}
 
-	/** Endpoint content. */
 	public function render(): void {
 		$user_id = get_current_user_id();
 		$blocks  = array();

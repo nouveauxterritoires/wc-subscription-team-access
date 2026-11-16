@@ -17,7 +17,6 @@ final class Help {
 
 	public const DOCUMENTATION_URL = 'https://github.com/nouveauxterritoires/wc-subscription-team-access#readme';
 
-	/** Registers the hooks. */
 	public function register(): void {
 		add_action( 'current_screen', array( $this, 'add_help' ) );
 	}
@@ -134,7 +133,6 @@ final class Help {
 		$screen->set_help_sidebar( $this->sidebar() );
 	}
 
-	/** "Overview" tab. */
 	private function overview(): string {
 		return self::section(
 			__( 'Team access', 'wc-subscription-team-access' ),
@@ -154,7 +152,6 @@ final class Help {
 		);
 	}
 
-	/** "Setting up" tab. */
 	private function setup(): string {
 		return self::items(
 			__( 'Setting up a team subscription', 'wc-subscription-team-access' ),
@@ -172,7 +169,6 @@ final class Help {
 		);
 	}
 
-	/** "Invitations" tab. */
 	private function invitations(): string {
 		return self::items(
 			__( 'For the holder (My account > My guests)', 'wc-subscription-team-access' ),
@@ -200,7 +196,6 @@ final class Help {
 		);
 	}
 
-	/** "Quotas" tab. */
 	private function quotas(): string {
 		return self::section(
 			__( 'Counting seats', 'wc-subscription-team-access' ),
@@ -221,7 +216,6 @@ final class Help {
 		);
 	}
 
-	/** "Subscription statuses" tab. */
 	private function statuses(): string {
 		$rows = array(
 			array( __( 'Active', 'wc-subscription-team-access' ), __( 'Guests have access.', 'wc-subscription-team-access' ) ),
@@ -247,7 +241,6 @@ final class Help {
 		);
 	}
 
-	/** "Access rights" tab. */
 	private function memberships(): string {
 		return self::items(
 			__( 'How guests get access', 'wc-subscription-team-access' ),
@@ -267,7 +260,6 @@ final class Help {
 		);
 	}
 
-	/** "Tools and troubleshooting" tab. */
 	private function tools(): string {
 		return self::items(
 			__( 'Administration', 'wc-subscription-team-access' ),
@@ -295,7 +287,6 @@ final class Help {
 			. '<p><a href="' . esc_url( self::DOCUMENTATION_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Full documentation', 'wc-subscription-team-access' ) . '</a></p>';
 	}
 
-	/** Product screen help. */
 	private function product_help(): string {
 		return self::section(
 			__( 'Maximum number of guests', 'wc-subscription-team-access' ),
@@ -306,7 +297,6 @@ final class Help {
 		) . '<p><a href="' . esc_url( AdminPage::url() ) . '">' . esc_html__( 'Shared subscriptions', 'wc-subscription-team-access' ) . '</a></p>';
 	}
 
-	/** Subscription screen help. */
 	private function subscription_help(): string {
 		return self::section(
 			__( 'Team access', 'wc-subscription-team-access' ),

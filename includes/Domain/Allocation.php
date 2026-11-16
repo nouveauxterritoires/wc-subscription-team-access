@@ -15,8 +15,6 @@ namespace WCSubscriptionTeamAccess\Domain;
 final class Allocation {
 
 	/**
-	 * Constructor.
-	 *
 	 * @param int   $quota  Guest quota.
 	 * @param int   $used   Live seats (pending + accepted).
 	 * @param int[] $within IDs of the seats within the quota.
@@ -29,7 +27,6 @@ final class Allocation {
 		public readonly array $over
 	) {}
 
-	/** Seats still available. */
 	public function available(): int {
 		return max( 0, $this->quota - $this->used );
 	}
@@ -39,12 +36,10 @@ final class Allocation {
 		return max( 0, $this->used - $this->quota );
 	}
 
-	/** The quota is exceeded. */
 	public function is_over_quota(): bool {
 		return $this->used > $this->quota;
 	}
 
-	/** A new invitation is possible. */
 	public function can_invite(): bool {
 		return $this->quota > 0 && $this->available() > 0;
 	}

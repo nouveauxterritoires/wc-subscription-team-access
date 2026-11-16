@@ -18,16 +18,12 @@ defined( 'ABSPATH' ) || exit;
  */
 class InvitationAcceptedEmail extends \WC_Email {
 
-	/** Guest's address. */
 	public string $guest_email = '';
 
-	/** Subscription name. */
 	public string $subscription_name = '';
 
-	/** Link to guest management. */
 	public string $manage_url = '';
 
-	/** Constructor. */
 	public function __construct() {
 		$this->id             = 'wcsta_team_invitation_accepted';
 		$this->customer_email = true;
@@ -44,12 +40,10 @@ class InvitationAcceptedEmail extends \WC_Email {
 		parent::__construct();
 	}
 
-	/** Default subject. */
 	public function get_default_subject() {
 		return __( '{guest_email} joined your subscription on {site_title}', 'wc-subscription-team-access' );
 	}
 
-	/** Default heading. */
 	public function get_default_heading() {
 		return __( 'A guest joined your subscription', 'wc-subscription-team-access' );
 	}
@@ -81,12 +75,10 @@ class InvitationAcceptedEmail extends \WC_Email {
 		return $sent;
 	}
 
-	/** HTML content. */
 	public function get_content_html() {
 		return wc_get_template_html( $this->template_html, $this->template_args( false ), '', $this->template_base );
 	}
 
-	/** Plain-text content. */
 	public function get_content_plain() {
 		return wc_get_template_html( $this->template_plain, $this->template_args( true ), '', $this->template_base );
 	}

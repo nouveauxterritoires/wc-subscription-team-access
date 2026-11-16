@@ -33,18 +33,6 @@ final class AdminPage {
 	public const CAPABILITY = 'manage_woocommerce';
 	private const PER_PAGE  = 20;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param TeamManager         $team          Operations.
-	 * @param Reconciler          $reconciler    Synchronization.
-	 * @param SubscriptionManager $subscriptions Subscriptions.
-	 * @param QuotaManager        $quotas        Quotas.
-	 * @param SeatRepository      $seats         Seats.
-	 * @param GrantRepository     $grants        Access grant sources.
-	 * @param MembershipManager   $memberships   Memberships.
-	 * @param Logger              $logger        Log.
-	 */
 	public function __construct(
 		private readonly TeamManager $team,
 		private readonly Reconciler $reconciler,
@@ -56,14 +44,12 @@ final class AdminPage {
 		private readonly Logger $logger
 	) {}
 
-	/** Hooks into WordPress. */
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'add_menu' ), 60 );
 		add_action( 'admin_post_wcsta_admin', array( $this, 'handle_action' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 	}
 
-	/** Adds the WooCommerce submenu. */
 	public function add_menu(): void {
 		add_submenu_page(
 			'woocommerce',
@@ -97,7 +83,6 @@ final class AdminPage {
 		return add_query_arg( array_merge( array( 'page' => self::SLUG ), $args ), admin_url( 'admin.php' ) );
 	}
 
-	/** Renders the page. */
 	public function render(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
 			wp_die( esc_html__( 'You are not allowed to access this page.', 'wc-subscription-team-access' ) );
@@ -405,7 +390,6 @@ final class AdminPage {
 		echo '</form>';
 	}
 
-	/** Log tab. */
 	private function render_logs(): void {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		$level = isset( $_GET['level'] ) ? sanitize_key( wp_unslash( $_GET['level'] ) ) : 'problems';
@@ -671,7 +655,6 @@ final class AdminPage {
 		);
 	}
 
-	/** Displays the stored message. */
 	private function print_notice(): void {
 		$key    = 'wcsta_admin_notice_' . get_current_user_id();
 		$notice = get_transient( $key );
