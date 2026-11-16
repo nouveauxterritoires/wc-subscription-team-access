@@ -3,7 +3,7 @@ Tags: woocommerce, subscriptions, memberships, team, invitations
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,6 +108,9 @@ In the Help tab of the plugin screens, and in the README of the GitHub repositor
 
 == Changelog ==
 
+= 1.2.1 =
+* Fix: the login and registration columns of the invitation page now sit side by side with WooCommerce styles.
+
 = 1.2.0 =
 * Renamed to Exprime Team Access: new slug and text domain (`exprime-team-access`), `exprime_team_` prefix for options, tables, meta keys and hooks, `Exprime\TeamAccess` namespace, WP-CLI command `wp exprime-team`.
 * Stricter SQL placeholders.
@@ -126,6 +129,9 @@ In the Help tab of the plugin screens, and in the README of the GitHub repositor
 * First release.
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+Fixes the layout of the invitation page.
 
 = 1.2.0 =
 New slug, prefixes and hook names. Settings and data from 1.1.0 are not migrated: reinstall and reconfigure.

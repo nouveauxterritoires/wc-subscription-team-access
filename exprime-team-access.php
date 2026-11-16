@@ -3,7 +3,7 @@
  * Plugin Name:          Exprime Team Access
  * Plugin URI:           https://github.com/nouveauxterritoires/wc-subscription-team-access
  * Description:          Team access for WooCommerce Subscriptions: the subscriber shares their WooCommerce Memberships access with guests who use their own accounts. An independent extension, not developed or endorsed by the publisher of WooCommerce.
- * Version:              1.2.0
+ * Version:              1.2.1
  * Requires at least:    6.4
  * Requires PHP:         8.1
  * Requires Plugins:     woocommerce
@@ -23,7 +23,7 @@ declare( strict_types=1 );
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'EXPRIME_TEAM_ACCESS_VERSION', '1.2.0' );
+define( 'EXPRIME_TEAM_ACCESS_VERSION', '1.2.1' );
 define( 'EXPRIME_TEAM_ACCESS_FILE', __FILE__ );
 define( 'EXPRIME_TEAM_ACCESS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EXPRIME_TEAM_ACCESS_URL', plugin_dir_url( __FILE__ ) );

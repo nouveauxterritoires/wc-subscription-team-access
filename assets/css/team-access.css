@@ -51,7 +51,11 @@
 .exprime-team-invitation-card__lead { font-size: 1.1em; }
 .exprime-team-invitation-card__email { opacity: .8; }
 .exprime-team-invitation-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: 2rem; }
-.exprime-team-invitation-columns .col-1, .exprime-team-invitation-columns .col-2 { float: none; width: auto; max-width: none; }
+/* WooCommerce's clearfix pseudo-elements on .col2-set would become grid cells. */
+.woocommerce .exprime-team-invitation-columns.col2-set::before, .woocommerce .exprime-team-invitation-columns.col2-set::after { display: none; }
+/* Beats WooCommerce's `.woocommerce .col2-set .col-1` floats and widths. */
+.woocommerce .exprime-team-invitation-columns.col2-set .col-1,
+.woocommerce .exprime-team-invitation-columns.col2-set .col-2 { float: none; width: auto; max-width: none; order: 0; }
 .exprime-team-invitation .woocommerce-form-login { margin: 0; }
 .exprime-team-register-form input[readonly] { opacity: .75; }
 

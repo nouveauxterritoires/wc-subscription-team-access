@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1 - 2026-11-16
+
+- Fix: the login and registration columns of the invitation page now sit side by side. WooCommerce's `.col2-set` clearfix and column widths overrode the grid.
+
 ## 1.2.0 - 2026-11-16
 
 - Renamed to **Exprime Team Access** (Exprime Team Access for WooCommerce Subscriptions on WordPress.org), so the name and slug follow the WordPress.org trademark rules:
