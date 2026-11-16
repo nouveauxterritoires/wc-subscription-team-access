@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3 - 2026-11-16
+
+- Invitation page: the title and the two column headings get their size, weight and spacing from the plugin stylesheet. Themes that style headings only inside their own content wrapper (Marcelle, for one) showed them as plain text.
+
 ## 1.2.2 - 2026-11-16
 
 - The bundled French catalogue now loads with `load_textdomain()`, and only when no translate.wordpress.org language pack is installed for the locale. `load_plugin_textdomain()` is gone.

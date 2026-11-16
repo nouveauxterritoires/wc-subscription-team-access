@@ -48,8 +48,12 @@
 
 /* Invitation page */
 .exprime-team-invitation { max-width: 960px; margin: 2rem auto; padding: 0 16px; }
-.exprime-team-invitation-card__lead { font-size: 1.1em; }
-.exprime-team-invitation-card__email { opacity: .8; }
+/* Some themes only style headings inside their own content wrappers: set sizes here. */
+.exprime-team-invitation-card__title { font-size: 2em; font-weight: 700; line-height: 1.2; margin: 0 0 1rem; }
+.exprime-team-invitation-columns h2 { font-size: 1.35em; font-weight: 700; line-height: 1.3; margin: 0 0 .5rem; }
+.exprime-team-invitation-columns h2 + p { margin: 0 0 1rem; }
+.exprime-team-invitation-card__lead { font-size: 1.1em; margin: 0 0 .5rem; }
+.exprime-team-invitation-card__email { opacity: .8; margin: 0 0 2rem; }
 .exprime-team-invitation-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: 2rem; }
 /* WooCommerce's clearfix pseudo-elements on .col2-set would become grid cells. */
 .woocommerce .exprime-team-invitation-columns.col2-set::before, .woocommerce .exprime-team-invitation-columns.col2-set::after { display: none; }
