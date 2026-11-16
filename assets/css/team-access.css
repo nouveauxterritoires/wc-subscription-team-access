@@ -1,6 +1,6 @@
 /* Exprime Team Access — customer area. Builds on the theme's WooCommerce styles. */
-.exprime-team-team { display: grid; gap: 2rem; }
-.exprime-team-team__intro { margin: 0; }
+.exprime-team { display: grid; gap: 2rem; }
+.exprime-team__intro { margin: 0; }
 
 .exprime-team-subscription { border: 1px solid rgba(0, 0, 0, .12); border-radius: 6px; padding: 1.25rem; }
 .exprime-team-subscription__header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1rem; margin-bottom: 1rem; }

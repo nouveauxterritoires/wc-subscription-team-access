@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.2 - 2026-11-16
+
+- The bundled French catalogue now loads with `load_textdomain()`, and only when no translate.wordpress.org language pack is installed for the locale. `load_plugin_textdomain()` is gone.
+- Variables of the My guests template are prefixed with `$exprime_team_`. Themes that override `my-account/team-access.php` must rename them too.
+- `readme.txt`: title aligned on the plugin name (Exprime Team Access), contributor `mat_`, screenshots in `.wordpress-org/`.
+- The `exprime-team-team` CSS class and the `exprime-team-team-access` meta box id left over from the rename become `exprime-team` and `exprime-team-access`.
+
 ## 1.2.1 - 2026-11-16
 
 - Fix: the login and registration columns of the invitation page now sit side by side. WooCommerce's `.col2-set` clearfix and column widths overrode the grid.

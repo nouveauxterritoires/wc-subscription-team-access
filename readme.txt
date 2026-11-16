@@ -1,13 +1,14 @@
-=== Exprime Team Access for WooCommerce Subscriptions ===
+=== Exprime Team Access ===
+Contributors: mat_
 Tags: woocommerce, subscriptions, memberships, team, invitations
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Subscribers invite guests by email. Each guest gets the WooCommerce Memberships access of the subscription on their own account.
+Team access for WooCommerce Subscriptions: the subscriber invites guests, who get the Memberships access on their own account.
 
 == Description ==
 
@@ -107,6 +108,11 @@ In the Help tab of the plugin screens, and in the README of the GitHub repositor
 5. Maximum number of guests on a subscription product.
 
 == Changelog ==
+
+= 1.2.2 =
+* Bundled French translation is used only when no language pack is installed.
+* Template variables are prefixed.
+* Screenshots added.
 
 = 1.2.1 =
 * Fix: the login and registration columns of the invitation page now sit side by side with WooCommerce styles.

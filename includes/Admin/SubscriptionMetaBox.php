@@ -37,7 +37,7 @@ final class SubscriptionMetaBox {
 		}
 
 		foreach ( array_unique( $screens ) as $screen ) {
-			add_meta_box( 'exprime-team-team-access', __( 'Team access', 'exprime-team-access' ), array( $this, 'render' ), $screen, 'side', 'default' );
+			add_meta_box( 'exprime-team-access', __( 'Team access', 'exprime-team-access' ), array( $this, 'render' ), $screen, 'side', 'default' );
 		}
 	}
 

@@ -1,4 +1,4 @@
-# Exprime Team Access for WooCommerce Subscriptions
+# Exprime Team Access
 
 > *Version française : [README.fr.md](README.fr.md).*
 

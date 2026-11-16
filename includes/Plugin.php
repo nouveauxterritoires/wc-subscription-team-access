@@ -71,8 +71,20 @@ final class Plugin {
 		return self::$instance;
 	}
 
+	/**
+	 * Language packs from translate.wordpress.org load on their own when a string is
+	 * first translated. The catalogues shipped in languages/ only fill in when no pack
+	 * is installed for the current locale.
+	 */
 	public static function load_textdomain(): void {
-		load_plugin_textdomain( 'exprime-team-access', false, dirname( plugin_basename( EXPRIME_TEAM_ACCESS_FILE ) ) . '/languages' );
+		$domain = 'exprime-team-access';
+		$locale = determine_locale();
+		$pack   = WP_LANG_DIR . '/plugins/' . $domain . '-' . $locale;
+
+		if ( is_readable( $pack . '.mo' ) || is_readable( $pack . '.l10n.php' ) ) {
+			return;
+		}
+		load_textdomain( $domain, EXPRIME_TEAM_ACCESS_DIR . 'languages/' . $domain . '-' . $locale . '.mo', $locale );
 	}
 
 	/**
