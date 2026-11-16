@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1544 500" width="1544" height="500">
+  <!-- One subscriber (left) shares access with three guest accounts (right). -->
+  <defs>
+    <style>
+      .card{fill:#fff;stroke:#0A0A0A;stroke-width:2.5}
+      .cut{fill:#0A0A0A}
+      .wire{fill:none;stroke:#0A0A0A;stroke-width:2.5;stroke-dasharray:7 9}
+      .pkt{fill:#FED639;stroke:#0A0A0A;stroke-width:2.5}
+      .bar{fill:#0A0A0A;fill-opacity:.12}
+      .pass{fill:#E1ECFD;stroke:#0A0A0A;stroke-width:2.5}
+      .made{fill:#418BEE;fill-opacity:.45}
+      .ico{fill:none;stroke:#0A0A0A;stroke-width:2.5;stroke-linecap:square;stroke-linejoin:miter}
+      .icow{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter}
+    </style>
+    <g id="avatar">
+      <circle r="26" fill="#E1ECFD" stroke="#0A0A0A" stroke-width="2.5"/>
+      <circle cy="-7" r="8" class="ico"/>
+      <path d="M-14 17 C-14 5 14 5 14 17" class="ico"/>
+    </g>
+  </defs>
+  <rect width="1544" height="500" fill="#FBF8EE"/>
+
+  <!-- wires: holder -> fan-out -> guests -->
+  <path class="wire" d="M600 290 H750 M750 120 V400 M750 120 H930 M750 260 H930 M750 400 H930"/>
+  <path class="wire" d="M450 102 V160"/>
+
+  <!-- holder card -->
+  <rect class="cut" x="306" y="166" width="294" height="248" rx="12"/>
+  <rect class="card" x="300" y="160" width="294" height="248" rx="12"/>
+  <use href="#avatar" x="352" y="214"/>
+  <rect class="bar" x="394" y="200" width="150" height="12" rx="3"/>
+  <rect class="bar" x="394" y="222" width="100" height="12" rx="3"/>
+  <!-- subscription pass -->
+  <rect class="pass" x="326" y="268" width="242" height="110" rx="10"/>
+  <rect class="made" x="346" y="290" width="120" height="12" rx="3"/>
+  <rect class="made" x="346" y="312" width="80" height="12" rx="3"/>
+  <rect class="bar" x="346" y="346" width="140" height="10" rx="3"/>
+  <!-- renewal loop pictogram -->
+  <path class="ico" d="M548 306 A18 18 0 1 0 530 324"/>
+  <path class="ico" d="M540 296 L549 306 L558 297"/>
+
+  <!-- active node: sharing -->
+  <circle cx="450" cy="66" r="36" fill="#418BEE" stroke="#0A0A0A" stroke-width="2.5"/>
+  <circle cx="437" cy="66" r="7" class="icow"/>
+  <circle cx="464" cy="54" r="7" class="icow"/>
+  <circle cx="464" cy="78" r="7" class="icow"/>
+  <path class="icow" d="M443 62 L458 56 M443 70 L458 76"/>
+
+  <!-- guest cards -->
+  <g>
+    <rect class="cut" x="936" y="76" width="300" height="88" rx="12"/>
+    <rect class="card" x="930" y="70" width="300" height="88" rx="12"/>
+    <use href="#avatar" x="976" y="114"/>
+    <rect class="bar" x="1016" y="94" width="110" height="11" rx="3"/>
+    <rect class="pass" x="1016" y="116" width="90" height="24" rx="6"/>
+    <rect class="made" x="1026" y="123" width="56" height="10" rx="3"/>
+    <path class="ico" d="M1172 114 L1184 126 L1206 102"/>
+  </g>
+  <g>
+    <rect class="cut" x="936" y="216" width="300" height="88" rx="12"/>
+    <rect class="card" x="930" y="210" width="300" height="88" rx="12"/>
+    <use href="#avatar" x="976" y="254"/>
+    <rect class="bar" x="1016" y="234" width="90" height="11" rx="3"/>
+    <rect class="pass" x="1016" y="256" width="90" height="24" rx="6"/>
+    <rect class="made" x="1026" y="263" width="56" height="10" rx="3"/>
+    <path class="ico" d="M1172 254 L1184 266 L1206 242"/>
+  </g>
+  <g>
+    <rect class="cut" x="936" y="356" width="300" height="88" rx="12"/>
+    <rect class="card" x="930" y="350" width="300" height="88" rx="12"/>
+    <use href="#avatar" x="976" y="394"/>
+    <rect class="bar" x="1016" y="374" width="120" height="11" rx="3"/>
+    <rect class="bar" x="1016" y="396" width="80" height="11" rx="3"/>
+    <!-- pending: hourglass -->
+    <path class="ico" d="M1180 378 H1204 L1180 410 H1204 Z"/>
+  </g>
+
+  <!-- invitations in transit -->
+  <g transform="translate(828 108)">
+    <rect class="pkt" width="30" height="22" rx="3"/>
+    <path class="ico" d="M2 3 L15 13 L28 3"/>
+  </g>
+  <g transform="translate(828 389)">
+    <rect class="pkt" width="30" height="22" rx="3"/>
+    <path class="ico" d="M2 3 L15 13 L28 3"/>
+  </g>
+</svg>

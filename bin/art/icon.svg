@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- One subscriber node shared with three guest accounts. -->
+  <defs>
+    <style>
+      .wire{fill:none;stroke:#0A0A0A;stroke-width:4;stroke-dasharray:9 8}
+      .ico{fill:none;stroke:#0A0A0A;stroke-width:4;stroke-linecap:square;stroke-linejoin:miter}
+      .icow{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
+    </style>
+    <g id="guest">
+      <circle cx="4" cy="4" r="30" fill="#0A0A0A"/>
+      <circle r="30" fill="#fff" stroke="#0A0A0A" stroke-width="4"/>
+      <circle cy="-8" r="9" class="ico"/>
+      <path d="M-16 19 C-16 5 16 5 16 19" class="ico"/>
+    </g>
+  </defs>
+  <rect width="256" height="256" fill="#FBF8EE"/>
+  <path class="wire" d="M128 112 V150 M52 150 H204 M52 150 V178 M128 150 V178 M204 150 V178"/>
+  <use href="#guest" x="52" y="204"/>
+  <use href="#guest" x="128" y="204"/>
+  <use href="#guest" x="204" y="204"/>
+  <circle cx="133" cy="73" r="44" fill="#0A0A0A"/>
+  <circle cx="128" cy="68" r="44" fill="#418BEE" stroke="#0A0A0A" stroke-width="4"/>
+  <circle cx="128" cy="56" r="12" class="icow"/>
+  <path d="M106 90 C106 70 150 70 150 90" class="icow"/>
+  <rect x="78" y="140" width="22" height="20" rx="3" fill="#FED639" stroke="#0A0A0A" stroke-width="4"/>
+</svg>
