@@ -1,0 +1,21 @@
+# Files kept out of the distributable zip (bin/build-zip.sh, wp dist-archive).
+/.git
+/.github
+/.gitignore
+/.distignore
+/.wordpress-org
+/.omc
+/.phpunit.result.cache
+/bin
+/tests
+/vendor
+/node_modules
+/build
+/composer.json
+/composer.lock
+/phpunit.xml.dist
+/README.md
+/README.fr.md
+/CHANGELOG.md
+.DS_Store
+*.log
